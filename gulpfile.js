@@ -20,7 +20,7 @@ gulp.task('html', function() {
   return gulp.src(['src/templates/pages/**/*.pug'])
     .pipe(pug({
       basedir: 'src/templates',
-      // pretty: true,
+      pretty: true,
     }))
     .pipe(gulp.dest('dest'))
     .pipe(sync.stream());

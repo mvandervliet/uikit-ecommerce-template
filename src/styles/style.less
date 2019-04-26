@@ -6,7 +6,7 @@
 @import "components/mixin";
 
 // Variables
-@import "_vars.less";
+@import "_custom.less";
 
 
 .hook-base-body() {
@@ -231,7 +231,6 @@
 .uk-margin-xsmall-right { margin-right: @margin-xsmall-margin !important; }
 
 
-
 // Toolbar
 // ========================================================================
 
@@ -240,7 +239,7 @@
 }
 
 .tm-toolbar-container .uk-navbar-item {
-  color: @navbar-nav-item-color;
+  color: @inverse-navbar-nav-item-color;
 }
 
 .tm-toolbar-container .uk-navbar-nav > li > a {
@@ -250,7 +249,8 @@
 .tm-toolbar-container .uk-navbar-nav > li > a,
 .tm-toolbar-container .uk-navbar-item,
 .tm-toolbar-container .uk-navbar-toggle {
-  height: @header-toolbar-nav-item-height;
+  min-height: @header-toolbar-nav-item-height;
+  font-size:  @header-toolbar-nav-item-font-size;
 }
 
 
@@ -263,16 +263,22 @@
 
 .tm-navbar-container {
   border-bottom: @global-border-width solid @global-border;
+  .uk-navbar-nav > li > a,
+  .uk-navbar-item,
+  .uk-navbar-toggle {
+    .backface-visibility;
+    min-height: @header-navbar-nav-item-height;
+    // transition: min-height 0.2s ease-in-out;
+  }
 }
 
-.tm-navbar-container-fixed {
+.uk-sticky-fixed {
   z-index: @header-navbar-z-index;
-}
-
-.tm-navbar-container .uk-navbar-nav > li > a,
-.tm-navbar-container .uk-navbar-item,
-.tm-navbar-container .uk-navbar-toggle {
-  height: @header-navbar-nav-item-height;
+  .uk-navbar-nav > li > a,    // Nav item
+  .uk-navbar-item,            // Content item
+  .uk-navbar-toggle {         // Clickable item
+    min-height: @header-navbar-fixed-nav-item-height;
+  }
 }
 
 
@@ -1257,7 +1263,7 @@
 // ========================================================================
 
 .tm-pseudo {
-  border-bottom: @pseudo-border-width @pseudo-border-style;
+  // border-bottom: @pseudo-border-width @pseudo-border-style;
 }
 
 

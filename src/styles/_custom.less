@@ -19,6 +19,15 @@
 @global-xsmall-font-size:                       0.6875rem; // 11px
 
 //
+// Colors
+//
+@global-color:                                  #000;
+@global-secondary-background:                   #000;
+@inverse-global-color:                          #fff;
+@inverse-global-muted-color:                    fade(@inverse-global-color, 80%);
+
+
+//
 // Borders
 //
 
@@ -147,20 +156,27 @@
  ========================================================================== */
 
 
-// Toolbar
+// Toolbar (type of nav)
 
 @header-toolbar-background:                     @global-secondary-background;
 @header-toolbar-nav-item-height:                40px;
+@header-toolbar-nav-item-font-size:             14px;
 
 
 // Navbar
-@navbar-nav-item-height:                        60px;
+
+@navbar-nav-item-height:                        80px;
+@navbar-nav-item-font-size:                     18px;
+@header-navbar-nav-item-height:                 @navbar-nav-item-height;
+
 @header-navbar-background:                      @global-background;
 @header-navbar-background:                      @global-background;
 @header-navbar-border-width:                    @global-border-width;
 @header-navbar-border:                          @global-border;
-@header-navbar-nav-item-height:                 @navbar-nav-item-height;          
+
+@header-navbar-fixed-nav-item-height:           @header-navbar-nav-item-height * 2/3;
 @header-navbar-z-index:                         @global-z-index + 5;
+@navbar-nav-item-color:                         #121212;
 
 
 // Navbar button
@@ -270,3 +286,9 @@
 
 @pseudo-border-width:                           @global-border-width;
 @pseudo-border-style:                           dotted;
+
+
+.backface-visibility(@vis: hidden) {
+  -webkit-backface-visibility: @vis;
+  backface-visibility: @vis;
+}
