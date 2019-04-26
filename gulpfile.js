@@ -19,7 +19,8 @@ var gulp         = require('gulp'),
 gulp.task('html', function() {
   return gulp.src(['src/templates/pages/**/*.pug'])
     .pipe(pug({
-      basedir: 'src/templates'
+      basedir: 'src/templates',
+      // pretty: true,
     }))
     .pipe(gulp.dest('dest'))
     .pipe(sync.stream());
@@ -30,9 +31,9 @@ gulp.task('html', function() {
 gulp.task('styles', function() {
   return gulp.src(['src/styles/**/*.less', '!src/styles/**/_*.less'])
     .pipe(less({ relativeUrls: true }))
-    .pipe(concat('style.css'))
+    // .pipe(concat('style.css'))
     .pipe(postcss([autoprefixer({ browsers: 'last 2 versions' })]))
-    .pipe(csso())
+    // .pipe(csso())
     .pipe(gulp.dest('dest/styles'))
     .pipe(sync.stream({
       once: true
@@ -51,7 +52,7 @@ gulp.task('scripts', function() {
         __dirname + '/src/js'
       ]
     }))
-    .pipe(jsmin())
+    // .pipe(jsmin())
     .pipe(gulp.dest('dest/scripts'))
     .pipe(sync.stream({
       once: true
@@ -151,7 +152,8 @@ gulp.task('build', gulp.parallel(
   'html',
   'styles',
   'scripts',
-  'copy'
+  'copy',
+  'images',
 ));
 
 // Deploy

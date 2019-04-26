@@ -1,60 +1,13 @@
-// UIKit Core
-@import "_uikit.less";
 
-// Theme
-@import "_uikit.theme.less";
+// Reference UIKit's less to reuse variables but don't actually import the source:
+@import (reference) "uikit.less";
 
 // Mixins
 @import "components/mixin";
 
+// Variables
+@import "_vars.less";
 
-
-/* ========================================================================
-   UIKit
- ========================================================================== */
-
-
-
-// Breakpoints
-// ========================================================================
-
-@breakpoint-tablet:                            768px;
-
-
-// Global variables
-// ========================================================================
-
-//
-// Typography
-//
-
-@global-font-family:                            "Roboto", "Helvetica Neue", Arial, sans-serif;
-@global-xsmall-font-size:                       0.6875rem; // 11px
-
-//
-// Borders
-//
-
-@global-border-radius:                          4px;
-
-//
-// Spacings
-//
-
-@global-xsmall-margin:                          5px;
-@global-xsmall-gutter:                          10px;
-
-
-// Base
-// ========================================================================
-
-@base-body-background:                          @global-muted-background;
-@base-link-hover-text-decoration:               none;
-
-@base-h1-font-size:                             @base-h1-font-size-m * 0.6;
-@base-h2-font-size:                             @base-h2-font-size-m * 0.7;
-@base-h3-font-size-m:                           @global-large-font-size;
-@base-h3-font-size:                             @base-h3-font-size-m * 0.8;
 
 .hook-base-body() {
   -webkit-font-smoothing: antialiased;
@@ -105,16 +58,11 @@
 // Button
 // ========================================================================
 
-@button-border-radius:                          @global-border-radius;
-
 .hook-button() { border-radius: @button-border-radius; }
 
 
 // Section
 // ========================================================================
-
-@section-small-padding-vertical:                @global-margin;
-@section-small-padding-vertical-m:              @global-medium-margin;
 
 .uk-section-small {
   padding-top: @section-small-padding-vertical;
@@ -133,10 +81,6 @@
 // Card
 // ========================================================================
 
-@card-default-border-radius:                    @global-border-radius;
-@card-default-body-border-width:                @global-border-width;
-@card-default-body-border:                      @global-border;
-
 .hook-card-default() {
   border-radius: @card-default-border-radius;
 }
@@ -152,9 +96,6 @@
 
 // Article
 // ========================================================================
-
-@article-title-font-size:                       @article-title-font-size-m * 0.6;
-@article-body-width:                            640px;
 
 .uk-article-body {
 
@@ -221,25 +162,8 @@
 }
 
 
-// Lihgtbox
-// ========================================================================
-
-@lightbox-background:                           #fff;
-@lightbox-item-color:                           rgba(0, 0, 0, 0.7);
-@lightbox-toolbar-background:                   transparent;
-@lightbox-toolbar-color:                        rgba(0, 0, 0, 0.7);
-@lightbox-toolbar-icon-color:                   rgba(0, 0, 0, 0.7);
-@lightbox-toolbar-icon-hover-color:             #000;
-@lightbox-button-background:                    none;
-@lightbox-button-color:                         rgba(0, 0, 0, 0.7);
-@lightbox-button-hover-color:                   #000;
-
-
 // Off-canvas
 // ========================================================================
-
-@offcanvas-bar-background:                      @global-background;
-@offcanvas-card-header-height:                  60px;
 
 .uk-offcanvas-bar .uk-card-header {
   min-height: @offcanvas-card-header-height;
@@ -263,8 +187,6 @@
 // Switcher
 // ========================================================================
 
-@subnav-item-border-radius:                     @global-border-radius;
-
 .hook-subnav-item() {
   border-radius: @subnav-item-border-radius;
 }
@@ -273,8 +195,6 @@
 // Notification
 // ========================================================================
 
-@notification-message-background:               @global-background;
-
 .hook-notification-message() {
   box-shadow: @global-small-box-shadow;
 }
@@ -282,9 +202,6 @@
 
 // Text
 // ========================================================================
-
-@text-xsmall-font-size:                         @global-xsmall-font-size;
-@text-xsmall-line-height:                       1.2;
 
 .uk-text-xsmall {
   font-size: @text-xsmall-font-size;
@@ -299,21 +216,11 @@
 // Background
 // ========================================================================
 
-@background-primary-background-lighten:         lighten(tint(@global-primary-background, 40%), 20%);
-
 .uk-background-primary-lighten { background-color: @background-primary-background-lighten; }
-
-
-// Utility
-// ========================================================================
-
-@border-rounded-border-radius:                  @global-border-radius;
 
 
 // Margin
 // ========================================================================
-
-@margin-xsmall-margin:                          @global-xsmall-margin;
 
 .uk-margin-xsmall { margin-bottom: @margin-xsmall-margin; }
 * + .uk-margin-xsmall { margin-top: @margin-xsmall-margin !important; }
@@ -323,157 +230,6 @@
 .uk-margin-xsmall-left { margin-left: @margin-xsmall-margin !important; }
 .uk-margin-xsmall-right { margin-right: @margin-xsmall-margin !important; }
 
-
-// Inverse
-// ========================================================================
-
-// Card
-@card-primary-color-mode: none;
-@card-secondary-color-mode: none;
-
-// Navbar
-@navbar-color-mode: none;
-
-// Off-canvas
-@offcanvas-bar-color-mode: none;
-
-// Overlay
-@overlay-primary-color-mode: none;
-
-// Section
-@section-primary-color-mode: none;
-@section-secondary-color-mode: none;
-
-
-
-/* ========================================================================
-   Theme
- ========================================================================== */
-
-
-// Toolbar
-
-@header-toolbar-background:                     @global-secondary-background;
-@header-toolbar-nav-item-height:                40px;
-
-
-// Navbar
-
-@header-navbar-background:                      @global-background;
-@header-navbar-background:                      @global-background;
-@header-navbar-border-width:                    @global-border-width;
-@header-navbar-border:                          @global-border;
-@header-navbar-nav-item-height:                 60px;
-@header-navbar-z-index:                         @global-z-index + 5;
-
-
-// Navbar button
-
-@header-navbar-button-badge-width:              18px;
-
-
-// Aside column
-
-@aside-column-width:                            270px;
-
-
-// Product card
-
-@product-card-background-color:                 @global-background;
-@product-card-media-width:                      40%;
-@product-card-title-max-lines:                  3;
-@product-card-title-font-size:                  16px;
-@product-card-title-line-height:                22px;
-@product-card-title-max-height:                 @product-card-title-max-lines * @product-card-title-line-height;
-@product-card-title-font-size-s:                18px;
-@product-card-title-line-height-s:              24px;
-@product-card-title-max-height-s:               @product-card-title-max-lines * @product-card-title-line-height-s;
-@product-card-price-font-size:                  20px;
-@product-card-add-button-width:                 36px;
-@product-card-add-button-height:                36px;
-
-
-// List view product card
-
-@list-view-product-card-media-width:            33.3%;
-@list-view-product-card-media-min-width:        170px;
-@list-view-product-card-price-font-size:        24px;
-
-
-// Scrollbox
-
-@scrollbox-background-color:                    @global-background;
-@scrollbox-max-height:                          300px;
-
-
-// Checkbox, radio
-
-@control-checkbox-image:                        "../../images/backgrounds/form-checkbox.svg";
-@control-radio-image:                           "../../images/backgrounds/form-radio.svg";
-@control-inputs-size:                           16px;
-@control-inputs-margin-right:                   @global-small-margin;
-@control-inputs-hover:                          #F8F8F8;
-@control-inputs-border-width:                   @global-border-width;
-@control-inputs-border:                         @global-border;
-@control-checked-icon-color:                    @global-inverse-color;
-@control-focus-border:                          @global-primary-background;
-@control-checked-background:                    @global-primary-background;
-@control-disabled-border:                       @global-border;
-
-
-// Product
-
-@product-info-width:                            390px;
-@product-price-font-size:                       32px;
-
-
-// Quantity
-
-@quantity-width:                                60px;
-
-
-// Compare table
-
-@compare-table-column-width:                    240px;
-
-
-// Reviews
-
-@reviews-column-width:                          200px;
-
-
-// Cart
-
-@cart-quantity-column-width:                    115px;
-
-
-// Nav
-
-@custom-nav-item-padding-vertical:              10px;
-@custom-nav-item-padding-horizontal:            0;
-@custom-nav-item-active-border-width:           2px;
-@custom-nav-item-active-border-color:           @global-primary-background;
-
-
-// Ratio
-
-@ratio-1-1:                                     100%;
-@ratio-3-2:                                     66.66%;
-@ratio-4-3:                                     75%;
-@ratio-16-9:                                    56.25%;
-
-
-// Media box
-
-@media-box-frame-border-width:                  @global-border-width;
-@media-box-frame-border:                        @global-border;
-@media-box-frame-border-hover-color:            @global-primary-background;
-
-
-// Pseudo
-
-@pseudo-border-width:                           @global-border-width;
-@pseudo-border-style:                           dotted;
 
 
 // Toolbar
@@ -593,7 +349,7 @@
   background-color: @product-card-background-color;
   border-left: @global-border-width solid @global-border;
   border-bottom: @global-border-width solid @global-border;
-  //box-shadow: 0 0 0 @global-border-width @global-border;
+  box-shadow: @global-border-width 0 @global-border;
 
   &.uk-first-column {
     border-left: none;

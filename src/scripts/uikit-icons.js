@@ -1,1 +1,1 @@
-//=require ../../node_modules/uikit/dist/js/uikit-icons.js
+//=require ../../node_modules/uikit/dist/js/uikit-icons.min.js
