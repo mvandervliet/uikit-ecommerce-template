@@ -1,18 +1,33 @@
-div#nav-offcanvas(uk-offcanvas="overlay: true")
+div#nav-offcanvas.tm-nav-offcanvas(uk-offcanvas="overlay: true")
   aside.uk-offcanvas-bar.uk-padding-remove
+
     div.uk-card.uk-card-default.uk-card-small.tm-shadow-remove
 
+      //- Brand
       header.uk-card-header.uk-flex.uk-flex-middle
-        div
-          a.uk-link-muted.uk-text-bold(href="#")= shopInfo.phone
-          div.uk-text-xsmall.uk-text-muted(style="margin-top: -2px;")
-            div!= shopInfo.address
-            div= shopInfo.openingHours
+        a.uk-logo(href="index.html")
+          img(src="images/logo.svg" width="90" height="32" alt="Logo")
 
+      //- Store info
+      nav.uk-card-body
+        div.tm-nav-offcanvas-summary
+          div
+            a.uk-text-small.uk-link-muted(href="tel:"+shopInfo.phone)
+              +icon("receiver", ".75")(class="uk-margin-xsmall-right")
+              span= shopInfo.phone
+          div
+            a.uk-text-small.uk-link-muted(href="contacts.html")
+              +icon("location", ".75")(class="uk-margin-xsmall-right")
+              span= shopInfo.address
+          div.uk-text-small.uk-text-muted
+            +icon("clock", ".75")(class="uk-margin-xsmall-right")
+            span= shopInfo.openingHours
+
+      //- Navigation
       nav.uk-card-small.uk-card-body
         ul.uk-nav-default.uk-nav-parent-icon.uk-list-divider(uk-nav)
           each item in navbarMenu
-            li(class= { "uk-parent": item.items })
+            li(class= { "uk-parent": item.items, "uk-active": item.active })
               a(href= item.href)= item.name
               if item.items
                 ul.uk-nav-sub.uk-list-divider
@@ -28,11 +43,13 @@ div#nav-offcanvas(uk-offcanvas="overlay: true")
             a(href="compare.html") Compare
               span.uk-badge.uk-margin-xsmall-left 3
 
+      //- Toolbar links
       nav.uk-card-small.uk-card-body
         ul.uk-nav.uk-nav-default
           each item in toolbarMenu
             li: a(href= item.href)= item.name
-
+        
+      //- Social
       nav.uk-card-body
         ul.uk-iconnav.uk-flex-center
           each social in socials

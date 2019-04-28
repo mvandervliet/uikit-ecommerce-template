@@ -9,14 +9,14 @@ div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-con
              uk-navbar-toggle-icon)
 
       //- Logo
-      a.uk-active.uk-navbar-item.uk-logo(href="index.html")
+      a.uk-navbar-item.uk-logo(href="index.html")
         img(src="images/logo.svg" width="90" height="32" alt="Logo")
 
       //- Navigation
       nav(class="uk-visible@m")
         ul.uk-navbar-nav
           each item in navbarMenu
-            li(class=item.active ? "uk-active": "")
+            li(class= {"uk-active": item.active})
               a(href= item.href)= item.name
                 if item.items
                   +icon('chevron-down', '.75')(class="uk-margin-xsmall-left")
