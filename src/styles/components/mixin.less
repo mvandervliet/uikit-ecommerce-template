@@ -14,3 +14,9 @@
   & when ( @horizontal = true ) and ( @vertical = false ) {left: 50%;transform: translate(-50%, 0);}
   & when ( @horizontal = false ) and ( @vertical = true ) {top: 50%;transform: translate(0, -50%);}
 }
+
+// set backface visibility for transition elements
+.backface-visibility(@vis: hidden) {
+  -webkit-backface-visibility: @vis;
+  backface-visibility: @vis;
+}

@@ -6,7 +6,7 @@
 @import "components/mixin";
 
 // Variables
-@import "_custom.less";
+@import "_settings.less";
 
 
 .hook-base-body() {
@@ -81,14 +81,6 @@
 // Card
 // ========================================================================
 
-.hook-card-default() {
-  border-radius: @card-default-border-radius;
-}
-
-.hook-card-media() {
-  margin: 0;
-}
-
 .uk-card-body + .uk-card-body {
   border-top: @card-default-body-border-width solid @card-default-body-border;
 }
@@ -154,13 +146,6 @@
   }
 }
 
-// Accordion
-// ========================================================================
-
-.hook-accordion-title() {
-  cursor: pointer;
-}
-
 
 // Off-canvas
 // ========================================================================
@@ -182,23 +167,6 @@
 .uk-offcanvas-bar .uk-card-header .uk-offcanvas-close {
   position: static;
 }
-
-
-// Switcher
-// ========================================================================
-
-.hook-subnav-item() {
-  border-radius: @subnav-item-border-radius;
-}
-
-
-// Notification
-// ========================================================================
-
-.hook-notification-message() {
-  box-shadow: @global-small-box-shadow;
-}
-
 
 // Text
 // ========================================================================
@@ -254,6 +222,7 @@
 }
 
 
+
 // Navbar
 // ========================================================================
 
@@ -268,12 +237,14 @@
   .uk-navbar-toggle {
     .backface-visibility;
     min-height: @header-navbar-nav-item-height;
-    // transition: min-height 0.2s ease-in-out;
+    box-sizing: border-box;
+    border-bottom: @header-navbar-item-border-width solid transparent;
+    margin-bottom: -@global-border-width;
   }
 }
 
 .uk-sticky-fixed {
-  z-index: @header-navbar-z-index;
+  // z-index: @header-navbar-z-index;
   .uk-navbar-nav > li > a,    // Nav item
   .uk-navbar-item,            // Content item
   .uk-navbar-toggle {         // Clickable item
@@ -294,12 +265,14 @@
   }
 
   .uk-badge {
-    font-size: .625rem;
+    font-size: .725rem;
     position: absolute;
-    top: 10px;
-    right: 5px;
+    top: 50%;
+    transform: translateY(@header-navbar-button-badge-width * -1);
+    left: 55%;
     min-width: @header-navbar-button-badge-width;
     height: @header-navbar-button-badge-width;
+    line-height: @header-navbar-button-badge-width;
   }
 }
 

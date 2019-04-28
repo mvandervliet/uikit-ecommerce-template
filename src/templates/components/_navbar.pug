@@ -9,14 +9,14 @@ div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-con
              uk-navbar-toggle-icon)
 
       //- Logo
-      a.uk-navbar-item.uk-logo(href="index.html")
+      a.uk-active.uk-navbar-item.uk-logo(href="index.html")
         img(src="images/logo.svg" width="90" height="32" alt="Logo")
 
       //- Navigation
       nav(class="uk-visible@m")
         ul.uk-navbar-nav
           each item in navbarMenu
-            li
+            li(class=item.active ? "uk-active": "")
               a(href= item.href)= item.name
                 if item.items
                   +icon('chevron-down', '.75')(class="uk-margin-xsmall-left")
@@ -80,7 +80,8 @@ div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-con
     div.uk-navbar-right
 
       //- Search
-      a.uk-navbar-toggle.tm-navbar-button(href="#" uk-search-icon)
+      a.uk-navbar-toggle.tm-navbar-button(href="#")
+        +icon('search', 1.4)
       div.uk-navbar-dropdown.uk-padding-small.uk-margin-remove(
         uk-drop="mode: click;" +
                 "cls-drop: uk-navbar-dropdown;" +
@@ -97,13 +98,13 @@ div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-con
               a.uk-navbar-dropdown-close(href="#" uk-close)
 
       //- Compare
-      a(class="uk-navbar-item uk-link-muted uk-visible@m tm-navbar-button"
-        href="compare.html")
-        span(uk-icon="copy")
+      a(class="uk-navbar-item uk-link-muted uk-visible@m tm-navbar-button" href="compare.html")
+        +icon("copy", 1.4)
         span.uk-badge 3
 
       //- User
-      a.uk-navbar-item.uk-link-muted.tm-navbar-button(href="account.html" uk-icon="user")
+      a.uk-navbar-item.uk-link-muted.tm-navbar-button(href="account.html")
+        +icon("user", 1.4)
       div(class="uk-padding-small uk-margin-remove"
           uk-dropdown="pos: bottom-right; offset: -10; delay-hide: 200;"
           style="min-width: 150px;")
@@ -131,5 +132,5 @@ div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-con
         href="cart.html"
         uk-toggle="target: #cart-offcanvas"
         onclick="return false")
-        span(uk-icon="cart")
+        +icon("cart", 1.4)
         span.uk-badge 2

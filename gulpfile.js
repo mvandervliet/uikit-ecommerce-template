@@ -33,7 +33,7 @@ gulp.task('styles', function() {
     .pipe(less({ relativeUrls: true }))
     // .pipe(concat('style.css'))
     .pipe(postcss([autoprefixer({ browsers: 'last 2 versions' })]))
-    // .pipe(csso())
+    .pipe(csso())
     .pipe(gulp.dest('dest/styles'))
     .pipe(sync.stream({
       once: true
