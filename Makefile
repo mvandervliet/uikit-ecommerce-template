@@ -1,22 +1,16 @@
 IMAGE=mushop-storefront
 
-up: compose test-image deps start
+up: services test-image start
 
-down: kill-server kill-compose
+down: kill-server kill-services
 
 dev: clean test-image start
 
-# Brings the backend services up using Docker Compose
-compose:
-	@docker-compose -p mutest -f test/docker-compose.yml up -d
+stop: kill-server
 
-# Installs Node.js project dependencies
-deps:
-	@docker run               \
-		-it                     \
-		--rm                    \
-		-v $$PWD:/usr/src/app   \
-		$(IMAGE) npm install
+# Brings the backend services up using Docker Compose
+services:
+	@docker-compose -p mutest -f test/docker-compose.yml up -d
 
 # Runs the application with browsersync in a Docker container
 start:
@@ -59,7 +53,7 @@ test-image:
 # 		-v $$PWD:/usr/src/app  \
 # 		$(IMAGE) /usr/src/app/test/e2e/runner.sh
 
-kill-compose:
+kill-services:
 	@docker-compose -f test/docker-compose.yml down
 
 kill-server:
