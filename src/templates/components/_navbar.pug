@@ -1,4 +1,5 @@
 div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-container-fixed")
+  //- div.uk-container(uk-navbar="dropbar: true")
   div.uk-container(uk-navbar)
 
     div.uk-navbar-left
@@ -10,7 +11,8 @@ div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-con
 
       //- Logo
       a.uk-navbar-item.uk-logo(href="index.html")
-        img(src="images/logo.svg" width="90" height="32" alt="Logo")
+        //- img(src="images/logo.svg" width="90" height="32" alt="Logo")
+        span= shopInfo.storeLogoText
 
       //- Navigation
       nav(class="uk-visible@m")
@@ -23,12 +25,10 @@ div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-con
               if item.items
                 div(class="uk-navbar-dropdown uk-margin-remove uk-padding-remove-vertical"
                     uk-drop="pos: bottom-justify;" +
-                            "delay-show: 125;" +
-                            "delay-hide: 50;" +
+                            "delay-hide: 200;" +
                             "duration: 75;" +
                             "boundary: .tm-navbar-container;" +
                             "boundary-align: true;" +
-                            "pos: bottom-justify;" +
                             "flip: x")
 
                   if item.name === "Catalog"
@@ -98,9 +98,9 @@ div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-con
               a.uk-navbar-dropdown-close(href="#" uk-close)
 
       //- Compare
-      a(class="uk-navbar-item uk-link-muted uk-visible@m tm-navbar-button" href="compare.html")
-        +icon("copy", 1.4)
-        span.uk-badge 3
+      //- a(class="uk-navbar-item uk-link-muted uk-visible@m tm-navbar-button" href="compare.html")
+      //-   +icon("copy", 1.4)
+      //-   span.uk-badge 3
 
       //- User
       a.uk-navbar-item.uk-link-muted.tm-navbar-button(href="account.html")

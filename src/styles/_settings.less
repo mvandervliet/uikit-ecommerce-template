@@ -23,11 +23,27 @@
 //
 @global-color:                                  #000;
 @global-muted-color:                            #707070; //#121212;
-@global-secondary-background:                   #000;
 @inverse-global-color:                          #fff;
 @inverse-global-muted-color:                    fade(@inverse-global-color, 80%);
-@color-highlight:                               #DE6C0A;
 
+@color-red:                                     #f80000;
+@color-green:                                   #3a913f;
+@color-blue:                                    #00758f;
+@color-burgundy:                                #942645;
+@color-orange:                                  #DE6C0A;
+@color-slate:                                   #8aadbf;
+@color-grey:                                    #939699;
+@color-highlight:                                 @color-orange;
+@color-hyperlink:                               #00758f;
+
+// incorporate brand
+@global-link-color:                               @color-hyperlink;
+@global-primary-background:                       @color-blue;
+@global-secondary-background:                   #000;
+
+@global-success-background:                       @color-green;
+@global-warning-background:                       @color-orange;
+@global-danger-background:                        @color-red;
 
 //
 // Borders
@@ -54,6 +70,11 @@
 @base-h3-font-size-m:                           @global-large-font-size;
 @base-h3-font-size:                             @base-h3-font-size-m * 0.8;
 
+
+// Logo
+// ========================================================================
+
+@logo-font-size:                                @global-xlarge-font-size;
 
 // Button
 // ========================================================================
@@ -204,8 +225,7 @@
 @header-navbar-z-index:                         @global-z-index + 5;
 @navbar-nav-item-color:                         #121212;
 
-.hook-navbar-toggle-hover() {
-  color: @navbar-nav-item-hover-color;
+.hook-navbar-nav-item() {
 }
 
 .hook-navbar-nav-item-active() {
@@ -213,10 +233,17 @@
 }
 
 .hook-navbar-nav-item-hover() {
-  transition: border 0.5s ease-in;
+  transition: border 0.25s ease-in;
   border-bottom-color: @color-highlight !important;
 }
 
+.hook-navbar-toggle-hover() {
+  color: @navbar-nav-item-hover-color;
+}
+
+.hook-navbar-dropdown() {
+  top: 101% !important;
+}
 
 // Navbar button
 

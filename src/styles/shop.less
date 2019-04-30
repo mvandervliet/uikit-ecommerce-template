@@ -36,9 +36,6 @@ main {
     width: 100%;
     background: @global-secondary-background;
     z-index: 0;
-    // @media (min-width: @breakpoint-medium) {
-
-    // }
   }
 }
 
@@ -1179,6 +1176,9 @@ main {
 
 .tm-cart-quantity-column {
   min-width: @cart-quantity-column-width !important;
+  flex-wrap: nowrap;
+  display: flex;
+  align-items: center;
 }
 
 
