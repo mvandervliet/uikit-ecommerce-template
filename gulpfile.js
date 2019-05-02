@@ -78,6 +78,7 @@ gulp.task('copy', function() {
   return gulp.src([
     'src/*',
     'src/fonts/*',
+    'src/views/*',
     '!src/images/*',
     '!src/styles/*',
     '!src/scripts/*'
@@ -134,13 +135,14 @@ gulp.task('watch:styles', function() {
 });
 
 gulp.task('watch:scripts', function() {
-  return gulp.watch('src/scripts/*.js', gulp.series('scripts'));
+  return gulp.watch('src/scripts/**/*.js', gulp.series('scripts'));
 });
 
 gulp.task('watch:copy', function() {
   return gulp.watch([
     'src/*',
     'src/fonts/*',
+    'src/views/*',
     '!src/images/*',
     '!src/styles/*',
     '!src/scripts/*'

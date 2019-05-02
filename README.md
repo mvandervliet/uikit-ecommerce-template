@@ -11,8 +11,10 @@ Responsive eCommerce storefront built on microservices architecture.
 
 The project leverages:
 
-- [UIkit](https://getuikit.com)
-- [axios](https://www.npmjs.com/package/axios)
+- [UIkit](https://getuikit.com) UI components
+- [axios](https://www.npmjs.com/package/axios) Http client
+- [underscore](https://underscorejs.org) Template engine
+- [core-js](https://www.npmjs.com/package/core-js) ES features
 - [Pug](https://pugjs.org)
 - [Less](http://lesscss.org)
 - [Gulp](https://gulpjs.com)

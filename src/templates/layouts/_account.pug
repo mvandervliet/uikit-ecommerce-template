@@ -43,12 +43,14 @@ block default
                   div.uk-grid-small.uk-flex-center(uk-grid)
 
                     div
-                      a.uk-button.uk-button-default.uk-button-small(href="settings.html")
+                      a.uk-button.uk-button-default.uk-button-small(href="settings.html" mu-route)
                         +icon("cog", ".75")(class="uk-margin-xsmall-right")
                         span Settings
 
                     div
                       button.uk-button.uk-button-default.uk-button-small(
+                        mu
+                        onclick="return this.mu.User.logout();"
                         href="#"
                         title="Log out")
                         +icon("sign-out", ".75")
@@ -58,7 +60,7 @@ block default
                 ul.uk-nav.uk-nav-default.tm-nav
                   each item in profileNav
                     li(class= {"uk-active": item.id == profileActivePage})
-                      a(href= item.href)= item.title
+                      a(href= item.href mu-route)= item.title
                         if item.amount
                           |
                           |

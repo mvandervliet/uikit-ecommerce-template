@@ -44,7 +44,7 @@ block pages
               ul.uk-nav.uk-nav-default
                 each category in catalog
                   each item in category.items
-                    li: a(href="subcategory.html")= item
+                    li: a(href="subcategory.html" mu-route)= item
                   - break
 
             //- Prices

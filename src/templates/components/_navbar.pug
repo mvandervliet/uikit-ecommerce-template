@@ -10,7 +10,7 @@ div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-con
              uk-navbar-toggle-icon)
 
       //- Logo
-      a.uk-navbar-item.uk-logo(href="index.html")
+      a.uk-navbar-item.uk-logo(href="index.html" mu-route)
         //- img(src="images/logo.svg" width="90" height="32" alt="Logo")
         span= shopInfo.storeLogoText
 
@@ -19,7 +19,7 @@ div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-con
         ul.uk-navbar-nav
           each item in navbarMenu
             li(class= {"uk-active": item.active})
-              a(href= item.href)= item.name
+              a(href= item.href mu-route)= item.name
                 if item.items
                   +icon('chevron-down', '.75')(class="uk-margin-xsmall-left")
               if item.items
@@ -37,7 +37,7 @@ div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-con
                         each category in item.items
                           li
                             div.uk-margin-top.uk-margin-bottom
-                              a.uk-link-reset(href= category.href)
+                              a.uk-link-reset(href= category.href mu-route)
                                 if category.image
                                   img(class="uk-display-block uk-margin-auto uk-margin-bottom"
                                       src= category.image
@@ -49,7 +49,7 @@ div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-con
                                 ul.uk-nav.uk-nav-default
                                   each subcategory in category.items
                                     li
-                                      a(href="subcategory.html")= subcategory
+                                      a(href="subcategory.html" mu-route)= subcategory
 
                   if item.name === "Brands"
                     div.uk-container.uk-container-small.uk-margin-top.uk-margin-bottom
@@ -68,14 +68,14 @@ div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-con
                                 figure.tm-media-box-wrap
                                   img(src= brand.image alt= brand.name)
                       div.uk-text-center.uk-margin
-                        +link-to-all('See all brands', item.href)
+                        +link-to-all('See all brands', item.href)(mu-route)
 
                   if item.name === "Pages"
                     div.uk-container.uk-container-small.uk-margin-top.uk-margin-bottom
                       ul.uk-nav.uk-nav-default.uk-column-1-3
                         each page in item.items
                           li
-                            a(href= page.href)= page.name
+                            a(href=page.href mu-route)= page.name
 
     div.uk-navbar-right
 
@@ -103,33 +103,32 @@ div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-con
       //-   span.uk-badge 3
 
       //- User
-      a.uk-navbar-item.uk-link-muted.tm-navbar-button(href="account.html")
+      a.uk-navbar-item.uk-link-muted.tm-navbar-button(href="account.html" mu-route)
         +icon("user", 1.4)
       div(class="uk-padding-small uk-margin-remove"
           uk-dropdown="pos: bottom-right; offset: -10; delay-hide: 200;"
           style="min-width: 150px;")
         ul.uk-nav.uk-dropdown-nav
           li
-            a(href="account.html") Orders
+            a(href="account.html" mu-route) Orders
               |
               |
               span (2)
           li
-            a(href="favorites.html") Favorites
+            a(href="favorites.html" mu-route) Favorites
               |
               |
               span (3)
           li
-            a(href="personal.html") Personal
+            a(href="personal.html" mu-route) Personal
           li
-            a(href="settings.html") Settings
+            a(href="settings.html" mu-route) Settings
           li.uk-nav-divider
           li
-            a(href="#") Log out
+            a(href="#" mu onclick="return this.mu.User.logout();") Log out
 
       //- Cart
       a.uk-navbar-item.uk-link-muted.tm-navbar-button(
-        href="cart.html"
         uk-toggle="target: #cart-offcanvas"
         onclick="return false")
         +icon("cart", 1.4)

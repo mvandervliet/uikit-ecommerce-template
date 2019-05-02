@@ -29,14 +29,14 @@ block pages
               header.uk-card-header
                 div.uk-grid-small.uk-flex-middle(uk-grid)
                   if category.image
-                    a(href= category.href)
+                    a(href= category.href mu-route)
                       img(src= category.image
                           alt= category.name
                           width="50"
                           height="50")
                   div.uk-width-expand
                     h2.uk-h4.uk-margin-remove
-                      a.uk-link-heading(href= category.href)= category.name
+                      a.uk-link-heading(href= category.href mu-route)= category.name
                     div.uk-text-meta= category.quantity + " items"
 
               //- Body
@@ -44,4 +44,4 @@ block pages
                 div.uk-card-body
                   ul.uk-list
                     each subCategory in category.items
-                      li: a(href="subcategory.html")= subCategory
+                      li: a(href="subcategory.html" mu-route)= subCategory

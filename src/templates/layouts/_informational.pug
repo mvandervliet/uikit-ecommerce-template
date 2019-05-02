@@ -19,4 +19,4 @@ block pages
           ul.uk-nav.uk-nav-default.tm-nav
             each item in informationalNav
               li(class= {"uk-active": item.id == informationalActivePage})
-                a(href= item.href)= item.title
+                a(href= item.href mu-route)= item.title

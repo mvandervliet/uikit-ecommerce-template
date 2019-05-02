@@ -5,7 +5,7 @@ mixin product(product)
     //- Media
     div.tm-product-card-media
       div.tm-ratio.tm-ratio-4-3
-        a.tm-media-box(href= product.href)
+        a.tm-media-box(href= product.href mu-route)
 
           //- Labels
           if product.statuses
@@ -39,7 +39,7 @@ mixin product(product)
 
         //- Title
         h3.tm-product-card-title
-          a.uk-link-heading(href= product.href)= product.name
+          a.uk-link-heading(href= product.href mu-route)= product.name
 
         //- Properties
         if product.properties

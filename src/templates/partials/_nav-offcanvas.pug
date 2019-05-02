@@ -5,7 +5,7 @@ div#nav-offcanvas.tm-nav-offcanvas(uk-offcanvas="overlay: true")
 
       //- Brand
       header.uk-card-header.uk-flex.uk-flex-middle
-        a.uk-logo(href="index.html")
+        a.uk-logo(href="index.html" mu-route)
           img(src="images/logo.svg" width="90" height="32" alt="Logo")
 
       //- Store info
@@ -16,7 +16,7 @@ div#nav-offcanvas.tm-nav-offcanvas(uk-offcanvas="overlay: true")
               +icon("receiver", ".75")(class="uk-margin-xsmall-right")
               span= shopInfo.phone
           div
-            a.uk-text-small.uk-link-muted(href="contacts.html")
+            a.uk-text-small.uk-link-muted(href="contacts.html" mu-route)
               +icon("location", ".75")(class="uk-margin-xsmall-right")
               span= shopInfo.address
           div.uk-text-small.uk-text-muted
@@ -28,26 +28,26 @@ div#nav-offcanvas.tm-nav-offcanvas(uk-offcanvas="overlay: true")
         ul.uk-nav-default.uk-nav-parent-icon.uk-list-divider(uk-nav)
           each item in navbarMenu
             li(class= { "uk-parent": item.items, "uk-active": item.active })
-              a(href= item.href)= item.name
+              a(href= item.href mu-route)= item.name
               if item.items
                 ul.uk-nav-sub.uk-list-divider
                   each category in item.items
-                    li: a(href="subcategory.html")= category.name
+                    li: a(href="subcategory.html" mu-route)= category.name
                   if item.name === "Catalog"
                     li.uk-text-center
-                      +link-to-all('see all categories', item.href)
+                      +link-to-all('see all categories', item.href)(mu-route)
                   if item.name === "Brands"
                     li.uk-text-center
-                      +link-to-all('see all brands', item.href)
+                      +link-to-all('see all brands', item.href)(mu-route)
           li
-            a(href="compare.html") Compare
+            a(href="compare.html" mu-route) Compare
               span.uk-badge.uk-margin-xsmall-left 3
 
       //- Toolbar links
       nav.uk-card-small.uk-card-body
         ul.uk-nav.uk-nav-default
           each item in toolbarMenu
-            li: a(href= item.href)= item.name
+            li: a(href= item.href mu-route)= item.name
         
       //- Social
       nav.uk-card-body

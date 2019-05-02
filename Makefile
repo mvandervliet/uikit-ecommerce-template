@@ -1,4 +1,4 @@
-IMAGE=mushop-storefront
+IMAGE=mushop-dev-storefront
 
 up: services test-image start
 

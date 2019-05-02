@@ -6,7 +6,7 @@ section.uk-section.uk-section-secondary.uk-section-small.uk-light
         uk-grid)
 
       div
-        a.uk-logo(href="index.html")
+        a.uk-logo(href="index.html" mu-route)
           img(src="images/logo-inverse.svg" width="90" height="32" alt="Logo")
         p.uk-text-small Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut mauris eros. Nulla quis ante sed tortor efficitur facilisis.
         ul.uk-iconnav
@@ -18,11 +18,11 @@ section.uk-section.uk-section-secondary.uk-section-small.uk-light
           div
             ul.uk-nav.uk-nav-default
               each item in footerMenuLeft
-                li: a(href= item.href)= item.name
+                li: a(href= item.href mu-route)= item.name
           div
             ul.uk-nav.uk-nav-default
               each item in footerMenuRight
-                li: a(href= item.href)= item.name
+                li: a(href= item.href mu-route)= item.name
 
       div
         ul.uk-list.uk-text-small
