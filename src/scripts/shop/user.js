@@ -1,24 +1,23 @@
-(function(M){
-  'use strict';
-  M.macro('User', function User() {
-    var self = this;
-    this.data = null;
+import { Mu } from './mu';
 
-    this.onReady = function() {
+export class UserController {
+  constructor() {
+    this.mu.on('ready', () => {
 
-    };
+    });
+  }
 
-    this.refresh = function() {
+  refresh() {
 
-    };
+  }
 
-    this.logout = function() {
-      return this.mu.api.get('/logout')
-        .then(function(res) {
-          self.data = null;
-          return res;
-        });
-    };
+  logout() {
+    this.mu.api.get('/logout')
+      .then(res => {
+        this.data = null;
+        return res;
+      });
+  }
+}
 
-  });
-})(window.mu);
+export default Mu.macro('User', UserController);

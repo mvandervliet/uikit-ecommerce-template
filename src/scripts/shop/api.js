@@ -1,9 +1,11 @@
-(function(M, axios){
-  'use strict';
-  M.macro('api', function ApiClient() {
-    return axios.create({
-      baseURL: '/api',
-      withCredentials: true,
-    });
+import axios from 'axios';
+import { Mu } from './mu';
+
+export function ApiClient() {
+  return axios.create({
+    baseURL: '/api',
+    withCredentials: true,
   });
-})(window.mu, window.axios);
+}
+
+export default Mu.macro('api', ApiClient);

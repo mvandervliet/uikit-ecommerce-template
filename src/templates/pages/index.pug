@@ -13,13 +13,17 @@ block default
     ul.uk-slideshow-items
       each item in promo
         li(style="background-color: " + item.background)
-          a(href="#")
-            figure.uk-container.uk-height-1-1
-              img(src= item.image
-                  alt= item.title
-                  width="1200"
-                  height="600"
-                  uk-cover)
+          figure.uk-container.uk-height-1-1
+            img(src= item.image
+                alt= item.title
+                uk-cover)
+            div.mu-promo-container(class="uk-position-" + item.position)
+              h2.uk-heading-medium(uk-parallax="opacity: 1,0; y: 0,-100; scale: 1,0; viewport: 0.5;")= item.title
+              p(uk-parallax="opacity: 1,0; y: 0,-100; scale: 1,0; viewport: 0.5;")= item.subtitle
+              a.uk-button.uk-button-default.uk-button-small(
+                mu-route
+                href=item.href
+              )= item.cta
 
     a.uk-position-center-left.uk-position-small.uk-hidden-hover(
       href="#"

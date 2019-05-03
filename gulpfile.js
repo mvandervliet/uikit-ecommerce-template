@@ -1,7 +1,9 @@
 var gulp         = require('gulp'),
+    util         = require('gulp-util'),
     less         = require('gulp-less'),
     sync         = require('browser-sync'),
     // concat       = require('gulp-concat'),
+    webpack      = require('webpack-stream'),
     del          = require('del'),
     imagemin     = require('gulp-imagemin'),
     pngquant     = require('imagemin-pngquant'),
@@ -10,8 +12,6 @@ var gulp         = require('gulp'),
     postcss      = require('gulp-postcss'),
     csso         = require('gulp-csso'),
     pug          = require('gulp-pug'),
-    // jsmin        = require('gulp-jsmin'),
-    include      = require('gulp-include'),
     proxy        = require('http-proxy-middleware');
 
 // HTML
@@ -44,16 +44,11 @@ gulp.task('styles', function() {
 
 gulp.task('scripts', function() {
   return gulp.src('src/scripts/*.js')
-    .pipe(include({
-      extensions: 'js',
-      hardFail: true,
-      includePaths: [
-        __dirname + '/node_modules',
-        __dirname + '/src/scripts'
-      ]
+    .pipe(webpack({
+      mode: util.env.production ? 'production' : 'development',
+      ...require('./webpack.config'),
     }))
-    // .pipe(jsmin())
-    .pipe(gulp.dest('build/scripts'))
+    .pipe(gulp.dest('build'))
     .pipe(sync.stream({
       once: true
     }));
@@ -62,7 +57,7 @@ gulp.task('scripts', function() {
 // Images
 
 gulp.task('images', function() {
-  return gulp.src('src/images/**/*')
+  return gulp.src(['src/images/**/*', '!src/images/hero/*'])
     .pipe(cache(imagemin({
       interlaced: true,
       progressive: true,
@@ -79,6 +74,7 @@ gulp.task('copy', function() {
     'src/*',
     'src/fonts/*',
     'src/views/*',
+    'src/images/hero/*',
     '!src/images/*',
     '!src/styles/*',
     '!src/scripts/*'
@@ -115,7 +111,7 @@ gulp.task('server', function() {
 // Clean
 
 gulp.task('clean', function() {
-  return del.sync('build');
+  return del('build');
 });
 
 // Clear
@@ -169,6 +165,7 @@ gulp.task('build', gulp.parallel(
 // Default
 
 gulp.task('default', gulp.series(
+  'clean',
   'build',
   gulp.parallel(
     'watch',

@@ -25,6 +25,7 @@ RUN mkdir -p /usr/src/app && cp -a /tmp/node_modules /usr/src/app/
 # copy source and build
 WORKDIR /usr/src/app
 COPY . .
+ENV NODE_ENV "production"
 RUN npm run build
 
 ###############################
