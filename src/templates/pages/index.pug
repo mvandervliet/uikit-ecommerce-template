@@ -9,21 +9,21 @@ block vars
 block default
 
   //- Slider
-  section.uk-position-relative.uk-visible-toggle.uk-light(uk-slideshow="min-height: 300; max-height: 600;")
+  section.uk-position-relative.uk-visible-toggle.uk-light(uk-slideshow="animation: pull; ratio: 1920:700")
     ul.uk-slideshow-items
       each item in promo
-        li(style="background-color: " + item.background)
-          figure.uk-container.uk-height-1-1
+        li.mu-promo-container(style="background-color: " + item.background)
+          figure.uk-cover-container.uk-height-1-1(uk-parallax="y: 0,250")
             img(src= item.image
-                alt= item.title
-                uk-cover)
-            div.mu-promo-container(class="uk-position-" + item.position)
-              h2.uk-heading-medium(uk-parallax="opacity: 1,0; y: 0,-100; scale: 1,0; viewport: 0.5;")= item.title
-              p(uk-parallax="opacity: 1,0; y: 0,-100; scale: 1,0; viewport: 0.5;")= item.subtitle
-              a.uk-button.uk-button-default.uk-button-small(
-                mu-route
-                href=item.href
-              )= item.cta
+                alt= item.title)
+            div.mu-promo-detail(class="uk-position-" + item.position)
+              div
+                h2.uk-heading-medium= item.title
+                p= item.subtitle
+                a.uk-button.uk-button-default.uk-button-small(
+                  mu-route
+                  href=item.href
+                )= item.cta
 
     a.uk-position-center-left.uk-position-small.uk-hidden-hover(
       href="#"
