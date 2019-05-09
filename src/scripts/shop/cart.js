@@ -1,9 +1,11 @@
-import { Mu } from './mu';
+import { Mu, MuMx } from '../mu';
+import { ShopMxSubscriber } from './helper/subscriber';
 import { Badge } from './components/badge';
 
 export class CartController {
   constructor() {
-    this.mu.on('ready', this.getCart.bind(this));
+    this.getCart = this.getCart.bind(this);
+    this.mu.on('ready', () => this.mu.user.on('set.user', this.getCart));
   }
 
   add(item) {
@@ -24,15 +26,6 @@ export class CartController {
       .reduce((total, qty) => total + qty, 0);
   }
 
-  subscribe(listener) {
-    this.on('contents', listener);
-    this.emit('contents', this.contents());
-  }
-
-  unsubscribe(listener) {
-    this.off('contents', listener);
-  }
-
   getCart() {
     this.mu.api.get('/cart')
       .then(res => this.data = res.data)
@@ -40,17 +33,11 @@ export class CartController {
   }
 }
 
-class CartListener {
+class CartSubscriber extends MuMx.compose(null, ShopMxSubscriber) {
   constructor() {
+    super();
     this.listener = this.listener.bind(this);
-  }
-
-  onMount() {
-    this.mu.Cart.subscribe(this.listener);
-  }
-
-  onDispose() {
-    this.mu.Cart.unsubscribe(this.listener);
+    this.subscribe('contents', this.mu.cart, this.listener);
   }
 
   listener(cart) {
@@ -61,14 +48,17 @@ class CartListener {
 /**
  * off canvas cart
  */
-export class MiniCart extends CartListener {
+export class MiniCart extends CartSubscriber {
 
   listener(cart) {
-    // console.log('minicart', cart);
+    console.log('TODO minicart', cart);
   }
 }
 
-export class CartBadge extends CartListener {
+/**
+ * Cart contents badge indicator
+ */
+export class CartBadge extends CartSubscriber {
 
   onMount() {
     this.badge = new Badge(this.node, this.view);
@@ -76,10 +66,10 @@ export class CartBadge extends CartListener {
   }
 
   listener(cart) {
-    this.badge.render(this.mu.Cart.size());
+    this.badge.render(this.mu.cart.size());
   }
 }
 
-export default Mu.macro('Cart', CartController)
-  .micro('[mu-minicart]', 'cart', MiniCart)
-  .micro('[mu-cart-badge]', 'cartbadge', CartBadge);
+export default Mu.macro('cart', CartController)
+  .micro('cart.mini', '[mu-minicart]', MiniCart)
+  .micro('cart.badge', '[mu-cart-badge]', CartBadge);

@@ -13,8 +13,7 @@ The project leverages:
 
 - [UIkit](https://getuikit.com) UI components
 - [axios](https://www.npmjs.com/package/axios) Http client
-- [underscore](https://underscorejs.org) Template engine
-- [core-js](https://www.npmjs.com/package/core-js) ES features
+- [core-js](https://www.npmjs.com/package/core-js) ESNext features
 - [Pug](https://pugjs.org)
 - [Less](http://lesscss.org)
 - [Gulp](https://gulpjs.com)

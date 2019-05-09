@@ -1,8 +1,8 @@
 import 'core-js/features/url';
 import 'core-js/features/url-search-params';
 
+import { Mu, MuMx } from '../mu';
 import { getWindow } from '../util/window';
-import { Mu } from './mu';
 
 /**
  * Router macro
@@ -101,9 +101,9 @@ export class MuRouterMacro {
    * make router/state reflect the params
    */
   go(name, search, params, replace) {
-    var route = this._routes[name];
-    var qs = search ? '?' + this.querystring(search) : '';
-    var call = replace ? '_replace' : '_push';
+    const route = this._routes[name];
+    const qs = search ? '?' + this.querystring(search) : '';
+    const call = replace ? '_replace' : '_push';
     this[call](route.path + qs, {
       name: name,
       route: route,
@@ -118,14 +118,16 @@ export class MuRouterMacro {
    * resolve the initial state
    */
   initial(fallback) {
-    var name = this.resolve() || fallback;
-    var route = this._routes[name];
-    var search = this.queryparams(this.search());
+    const name = this.resolve() || fallback;
+    const route = this._routes[name];
+    const search = this.queryparams(this.search());
     this._replace(null, {
       name: name,
       route: route,
       search: search
     });
+    // console.log(typeof this.emit, typeof this.on);
+    console.log('INITIAL', name);
     this.emit('initial', name);
     return name;
   }
@@ -176,5 +178,5 @@ export class MuRouteLink {
   }
 }
 
-export default Mu.macro('router', MuRouterMacro, getWindow())
-  .micro('[mu-route]', 'route', MuRouteLink);
+export default Mu.macro('router', MuMx.pure(MuRouterMacro, getWindow()))
+  .micro('router.link', '[mu-route],.mu-route', MuRouteLink); 

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Mu } from './mu';
+import { Mu } from '../mu';
 
 export function ApiClient() {
   return axios.create({

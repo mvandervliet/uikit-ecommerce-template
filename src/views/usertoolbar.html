@@ -1,0 +1,112 @@
+<ul class="{{classname.nav}}">
+  <li class="uk-navbar-item uk-visible@m" mu-if="profile">
+    <a href="settings.html" mu-route>{{profile.firstName}} {{profile.lastName}}</a>
+  </li>
+  <li mu-if="profile">
+    <a href="" mu onclick="this.mu.user.logout(); return false;">
+      <span class="uk-margin-xsmall-right" uk-icon="icon: sign-out; ratio: .75"></span>
+      Logout
+    </a>
+  </li>
+  <li mu-if="!profile">
+    <a uk-toggle="target: #auth-modal-{{ctxId}}">Login / Register</a>
+  </li>
+</ul>
+
+<div id="auth-modal-{{ctxId}}" uk-modal mu-uk-component="ui.modal" mu-if="!profile">
+  <div class="uk-modal-dialog uk-modal-body">
+    <button class="uk-modal-close-default" type="button" uk-close></button>
+  
+    <!-- switcher -->
+    <ul uk-tab mu-uk-component="ui.tabswitch">
+      <li><a>Login</a></li>
+      <li mu-if="!register"><a>Create Account</a></li>
+      <li mu-if="register" class="uk-active"><a>Create Account</a></li>
+    </ul>
+    <ul class="uk-switcher uk-margin">
+      <!-- User login -->
+      <li>
+        <div class="uk-alert-danger" uk-alert mu-if="error.auth">
+          <a class="uk-alert-close" uk-close></a>
+          {{error.auth}}
+        </div>
+        <form mu-form="form.auth" class="uk-form-stacked">
+          <fieldset class="uk-fieldset">
+            <div uk-grid class="uk-grid-small">
+              <div class="uk-width-1-2@s">
+                <label class="uk-form-label" for="username">Username</label>
+                <div class="uk-inline uk-width-expand">
+                  <span class="uk-form-icon" uk-icon="icon: user"></span>
+                  <input class="uk-input" name="username" type="text" value="{{fields.username}}">
+                </div>
+              </div>
+              <div class="uk-width-1-2@s">
+                <label class="uk-form-label" for="password">Password</label>
+                <div class="uk-inline uk-width-expand">
+                  <span class="uk-form-icon" uk-icon="icon: lock"></span>
+                  <input class="uk-input" name="password" type="password">
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <hr class="uk-divider-icon">
+          <div class="uk-text-right">
+            <button class="uk-button uk-button-primary" type="submit">
+              <span class="uk-margin-xsmall-right" uk-icon="icon: sign-in; ratio: .75"></span>
+              Sign-In
+            </button>
+          </div>
+        </form>
+      </li><!--end login -->
+
+      <!-- Registration -->
+      <li>
+        <div class="uk-alert-danger" uk-alert mu-if="error.reg">
+          <a class="uk-alert-close" uk-close></a>
+          {{error.reg}}
+        </div>
+        <form mu-form="form.reg" class="uk-form-stacked">
+          <fieldset class="uk-fieldset">
+            <div uk-grid class="uk-grid-small">
+              <!-- personal -->
+              <div class="uk-width-1-2@s">
+                <label class="uk-form-label" for="firstName">First Name</label>
+                <input class="uk-input" name="firstName" type="text" placeholder="Mu" value="{{fields.firstName}}">
+              </div>
+              <div class="uk-width-1-2@s">
+                <label class="uk-form-label" for="lastName">Last Name</label>
+                <input class="uk-input" name="lastName" type="text" placeholder="Cat" value="{{fields.lastName}}">
+              </div>
+              <div class="uk-width-1-1">
+                <label class="uk-form-label" for="email">Email</label>
+                <div class="uk-inline uk-width-expand">
+                  <span class="uk-form-icon" uk-icon="icon: mail"></span>
+                  <input class="uk-input" name="email" type="email" placeholder="user@example.com" value="{{fields.email}}">
+                </div>
+              </div>
+              <!-- un/pw -->
+              <div class="uk-width-1-2@s">
+                <label class="uk-form-label" for="username">Username</label>
+                <div class="uk-inline uk-width-expand">
+                  <span class="uk-form-icon" uk-icon="icon: user"></span>
+                  <input class="uk-input" name="username" type="text" value="{{fields.username}}">
+                </div>
+              </div>
+              <div class="uk-width-1-2@s">
+                <label class="uk-form-label" for="password">Password</label>
+                <div class="uk-inline uk-width-expand">
+                  <span class="uk-form-icon" uk-icon="icon: lock"></span>
+                  <input class="uk-input" name="password" type="password">
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <hr class="uk-divider-icon">
+          <div class="uk-text-right">
+            <button class="uk-button uk-button-primary" type="submit">Register</button>
+          </div>
+        </form>
+      </li> <!--end reg-->
+    </ul>
+  </div>
+</div>

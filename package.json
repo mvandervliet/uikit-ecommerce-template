@@ -2,7 +2,6 @@
   "name": "uikit-ecommerce-template",
   "version": "1.0.0",
   "description": "E-commerce template built with UIkIt",
-  "sideEffects": false,
   "scripts": {
     "start": "gulp",
     "server": "gulp server",
@@ -40,7 +39,6 @@
   "dependencies": {
     "axios": "^0.18.0",
     "core-js": "^3.0.1",
-    "mustache": "^3.0.1",
     "uikit": "^3.1.4"
   }
 }

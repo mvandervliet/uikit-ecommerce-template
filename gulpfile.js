@@ -43,10 +43,13 @@ gulp.task('styles', function() {
 // Scripts
 
 gulp.task('scripts', function() {
+  const wpconf = require('./webpack.config');
+  const { production } = util.env;
   return gulp.src('src/scripts/*.js')
     .pipe(webpack({
-      mode: util.env.production ? 'production' : 'development',
-      ...require('./webpack.config'),
+      ...wpconf,
+      mode: production ? 'production' : 'development',
+      devtool: production ? false : 'eval',
     }))
     .pipe(gulp.dest('build'))
     .pipe(sync.stream({
@@ -154,18 +157,20 @@ gulp.task('watch', gulp.parallel(
 
 // Build
 
-gulp.task('build', gulp.parallel(
-  'html',
-  'styles',
-  'scripts',
-  'copy',
-  'images',
+gulp.task('build', gulp.series(
+  'clean',
+  gulp.parallel(
+    'html',
+    'styles',
+    'scripts',
+    'copy',
+    'images',
+  )
 ));
 
 // Default
 
 gulp.task('default', gulp.series(
-  'clean',
   'build',
   gulp.parallel(
     'watch',

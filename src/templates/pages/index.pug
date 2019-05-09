@@ -9,18 +9,18 @@ block vars
 block default
 
   //- Slider
-  section.uk-position-relative.uk-visible-toggle.uk-light(uk-slideshow="animation: pull; ratio: 1920:700")
+  section.uk-position-relative.uk-visible-toggle.uk-light(uk-slideshow="animation: pull; ratio: 1920:700; max-height: 500")
     ul.uk-slideshow-items
       each item in promo
         li.mu-promo-container(style="background-color: " + item.background)
-          figure.uk-cover-container.uk-height-1-1(uk-parallax="y: 0,250")
-            img(src= item.image
+          figure.uk-height-1-1(uk-parallax="y: 0,250")
+            img.uk-animation-kenburns(src= item.image
                 alt= item.title)
-            div.mu-promo-detail(class="uk-position-" + item.position)
-              div
-                h2.uk-heading-medium= item.title
-                p= item.subtitle
-                a.uk-button.uk-button-default.uk-button-small(
+            div.uk-container.uk-position-cover
+              div.mu-promo-detail(class="uk-position-medium uk-position-" + item.position)
+                h2(class="uk-heading-medium uk-visible@m")= item.title
+                p(class="uk-text-lead uk-visible@s")= item.subtitle
+                a.uk-button.uk-button-default(
                   mu-route
                   href=item.href
                 )= item.cta

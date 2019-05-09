@@ -11,8 +11,9 @@ div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-con
 
       //- Logo
       a.uk-navbar-item.uk-logo(href="index.html" mu-route)
-        //- img(src="images/logo.svg" width="90" height="32" alt="Logo")
-        span= shopInfo.storeLogoText
+        img(uk-svg src="images/logo.svg" alt=shopInfo.storeLogoText)
+        //- include ../partials/_logo.pug
+        //- span= shopInfo.storeLogoText
 
       //- Navigation
       nav(class="uk-visible@m")
@@ -103,29 +104,23 @@ div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-con
       //-   span.uk-badge 3
 
       //- User
-      a.uk-navbar-item.uk-link-muted.tm-navbar-button(href="account.html" mu-route)
+      a.uk-navbar-item.uk-link-muted.tm-navbar-button(href="settings.html" mu-route)
         +icon("user", 1.4)
       div(class="uk-padding-small uk-margin-remove"
           uk-dropdown="pos: bottom-right; offset: -10; delay-hide: 200;"
           style="min-width: 150px;")
         ul.uk-nav.uk-dropdown-nav
           li
-            a(href="account.html" mu-route) Orders
-              |
-              |
-              span (2)
+            a(href="orders.html" mu-route) Orders
           li
             a(href="favorites.html" mu-route) Favorites
-              |
-              |
-              span (3)
           li
             a(href="personal.html" mu-route) Personal
           li
             a(href="settings.html" mu-route) Settings
           li.uk-nav-divider
           li
-            a(href="#" mu onclick="return this.mu.User.logout();") Log out
+            a(href="#" mu onclick="return this.mu.user.logout();") Log out
 
       //- Cart
       a.uk-navbar-item.uk-link-muted.tm-navbar-button(
@@ -133,4 +128,4 @@ div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-con
         onclick="return false")
         +icon("cart", 1.4)
         span(mu-cart-badge)
-          span.uk-badge 2
+          //- span.uk-badge 2

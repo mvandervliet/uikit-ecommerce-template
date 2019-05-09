@@ -10,7 +10,7 @@ block default
         //- Profile column
         div(class="uk-width-1-1 uk-width-1-4@m tm-aside-column")
           div.uk-card.uk-card-default.uk-card-small.tm-ignore-container(
-            uk-sticky="offset: 90; bottom: true; media: @m;")
+            uk-sticky="offset: 75; bottom: true; media: @m;")
 
             //- Profile
             div.uk-card-header
@@ -50,7 +50,7 @@ block default
                     div
                       button.uk-button.uk-button-default.uk-button-small(
                         mu
-                        onclick="return this.mu.User.logout();"
+                        onclick="return this.mu.user.logout();"
                         href="#"
                         title="Log out")
                         +icon("sign-out", ".75")
@@ -61,10 +61,6 @@ block default
                   each item in profileNav
                     li(class= {"uk-active": item.id == profileActivePage})
                       a(href= item.href mu-route)= item.title
-                        if item.amount
-                          |
-                          |
-                          span (#{item.amount})
 
         //- Content column
         div(class="uk-width-1-1 uk-width-expand@m")

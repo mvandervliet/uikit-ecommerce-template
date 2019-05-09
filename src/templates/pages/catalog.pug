@@ -13,8 +13,8 @@ block pages
 
     //- Navigation
     aside(class="uk-width-1-4 uk-visible@m tm-aside-column")
-      nav.uk-card.uk-card-default.uk-card-body.uk-card-small(uk-sticky="bottom: true; offset: 90")
-        ul.uk-nav.uk-nav-default(uk-scrollspy-nav="closest: li; scroll: true; offset: 90")
+      nav.uk-card.uk-card-default.uk-card-body.uk-card-small(uk-sticky="bottom: true; offset: 75")
+        ul.uk-nav.uk-nav-default(uk-scrollspy-nav="closest: li; scroll: true; offset: 75")
           each category in catalog
             li: a(href="#" + category.id)= category.name
 

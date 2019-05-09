@@ -44,6 +44,14 @@ main {
   h3, .uk-h3 { font-size: @base-h3-font-size-m; }
 }
 
+// Logo
+// ========
+.uk-logo {
+  img, svg {
+    height: @logo-default-img-height;
+    width: auto;
+  }
+}
 
 // Table
 // ========================================================================
@@ -265,6 +273,11 @@ main {
     border-bottom: @header-navbar-item-border-width solid transparent;
     margin-bottom: -@global-border-width;
   }
+  .uk-logo {
+    img, svg {
+      height: @navbar-nav-logo-height;
+    }
+  }
 }
 
 .uk-sticky-fixed {
@@ -273,6 +286,11 @@ main {
   .uk-navbar-item,            // Content item
   .uk-navbar-toggle {         // Clickable item
     min-height: @header-navbar-fixed-nav-item-height;
+  }
+  .uk-logo {
+    img, svg {
+      height: @logo-default-img-height;
+    }
   }
 }
 
@@ -291,8 +309,9 @@ main {
   .uk-badge {
     font-size: .725rem;
     position: absolute;
-    top: 50%;
-    transform: translateY(@header-navbar-button-badge-width * -1);
+    top: 20%;
+    // top: 50%;
+    // transform: translateY(@header-navbar-button-badge-width * -1);
     left: 55%;
     min-width: @header-navbar-button-badge-width;
     height: @header-navbar-button-badge-width;
@@ -344,11 +363,11 @@ main {
 // Hero
 // 
 .mu-promo-container {
-  figure {
-    position: relative;
-  }
   .mu-promo-detail {
-    padding: 0 4rem;
+    padding: 0 1rem;
+    @media(min-width: @breakpoint-large) {
+      padding: 0;
+    }
   }
 }
 

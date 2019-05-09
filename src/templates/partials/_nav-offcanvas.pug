@@ -6,7 +6,7 @@ div#nav-offcanvas.tm-nav-offcanvas(uk-offcanvas="overlay: true")
       //- Brand
       header.uk-card-header.uk-flex.uk-flex-middle
         a.uk-logo(href="index.html" mu-route)
-          img(src="images/logo.svg" width="90" height="32" alt="Logo")
+          img(uk-svg src="images/logo.svg" alt=shopInfo.storeLogoText)
 
       //- Store info
       nav.uk-card-body
@@ -28,7 +28,7 @@ div#nav-offcanvas.tm-nav-offcanvas(uk-offcanvas="overlay: true")
         ul.uk-nav-default.uk-nav-parent-icon.uk-list-divider(uk-nav)
           each item in navbarMenu
             li(class= { "uk-parent": item.items, "uk-active": item.active })
-              a(href= item.href mu-route)= item.name
+              a(href= item.href class={"mu-route": !item.items})= item.name
               if item.items
                 ul.uk-nav-sub.uk-list-divider
                   each category in item.items
@@ -44,16 +44,14 @@ div#nav-offcanvas.tm-nav-offcanvas(uk-offcanvas="overlay: true")
               span.uk-badge.uk-margin-xsmall-left 3
 
       //- Toolbar links
-      nav.uk-card-small.uk-card-body
-        ul.uk-nav.uk-nav-default
-          each item in toolbarMenu
-            li: a(href= item.href mu-route)= item.name
+      div.uk-card-small.uk-card-body(mu-user-toolbar="uk-nav uk-nav-default")
+        //- ul.uk-nav.uk-nav-default
+        //-   each item in toolbarMenu
+        //-     li: a(href= item.href mu-route)= item.name
         
       //- Social
       nav.uk-card-body
         ul.uk-iconnav.uk-flex-center
           each social in socials
             li: a(href="#" title= social.name uk-icon= social.icon)
-
-
 

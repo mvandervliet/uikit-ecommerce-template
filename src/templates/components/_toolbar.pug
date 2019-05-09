@@ -49,8 +49,7 @@ div(class="uk-navbar-container " +
               +icon("clock", ".75")(class="uk-margin-xsmall-right")
               | #{shopInfo.openingHours}
 
+    //- User login/register component
     div.uk-navbar-right
-      nav
-        ul.uk-navbar-nav
-          each item in toolbarMenu
-            li: a(href= item.href mu-route)= item.name
+      nav(mu-user-toolbar="uk-navbar-nav")
+      
