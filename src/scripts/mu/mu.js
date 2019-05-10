@@ -3,6 +3,7 @@
 import 'core-js/features/map';
 import 'core-js/features/set';
 import axios from 'axios';
+import { attrToSelector } from './util';
 
 const MuUtil = {
 
@@ -327,9 +328,13 @@ export class MuView extends MuEmitter {
     const commonCtx = context && MuContext.toContext(context);
     const _mus = [];
 
+    const [PROP_MU, PROP_CONTEXT] = ['mu', 'muctx'];
     // bind mu to the anything with standard [mu] selector
-    Array.apply(null, target.querySelectorAll('[mu]'))
-      .forEach(node => MuUtil.defineProp(node, 'mu', this.mu));
+    Array.apply(null, target.querySelectorAll(attrToSelector(PROP_MU)))
+      .forEach(node => MuUtil.mergeProp(node, null, {
+        [PROP_MU]: this.mu, // direct access to mu
+        [PROP_CONTEXT]: this.mu.root.context, // global context
+      }));
 
     MuUtil.mergeProp(target, null, { _mus });
 
@@ -338,7 +343,8 @@ export class MuView extends MuEmitter {
       const nodes = target.querySelectorAll(mod.binding);
       // instantiate per node
       Array.apply(null, nodes).forEach(node => {
-        const ctx = commonCtx || MuContext.toContext(); // context may be shared or uniquely scoped
+        const nodeCtx = MuUtil.resolveProp(node, PROP_CONTEXT);
+        const ctx = nodeCtx || commonCtx || MuContext.toContext(); // context may be shared or uniquely scoped
         const instance = MuUtil.initModule(mod, this.mu, this, ctx);
         _mus.push(instance);
         MuUtil.mergeProp(instance, null, { node });
@@ -439,9 +445,9 @@ export class Mu extends MuEmitter {
       selector: opts.root,
     });
   
-    // init macros
+    // init macros with global context
     this._macro.forEach(mod => {
-      var instance = MuUtil.initModule(mod, mu, view, null);
+      var instance = MuUtil.initModule(mod, mu, view, context);
       // assign to the mu instance (as macro)
       MuUtil.mergeProp(mu, mod.name, instance);
     });

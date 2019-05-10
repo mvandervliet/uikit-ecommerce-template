@@ -35,14 +35,14 @@ div#nav-offcanvas.tm-nav-offcanvas(uk-offcanvas="overlay: true")
                   each category in item.items
                     li: a(href="subcategory.html" mu-route)= category.name
                   if item.name === "Catalog"
-                    li.uk-text-center
+                    li
                       +link-to-all('see all categories', item.href)(mu-route)
                   if item.name === "Brands"
-                    li.uk-text-center
+                    li
                       +link-to-all('see all brands', item.href)(mu-route)
-          li
-            a(href="compare.html" mu-route) Compare
-              span.uk-badge.uk-margin-xsmall-left 3
+          //- li
+          //-   a(href="compare.html" mu-route) Compare
+          //-     span.uk-badge.uk-margin-xsmall-left 3
 
       //- Toolbar links
       div.uk-card-small.uk-card-body(mu-user-toolbar="uk-nav uk-nav-default")

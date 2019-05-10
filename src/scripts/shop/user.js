@@ -9,6 +9,7 @@ export class UserController {
 
   _setUser(user) {
     this.user = user;
+    this.context.set('profile', user); // set in global context
     this.emit('set.user', user);
   }
 

@@ -9,6 +9,7 @@ const LOGICAL_ATTR = {
   HTML: 'mu-html',
   IF: 'mu-if',
   SWITCH: 'mu-switch', // TODO
+  GLOBAL: 'mu-global',
 };
 
 

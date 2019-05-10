@@ -140,7 +140,7 @@ export class MuRouterMacro {
     var routes = this._routes;
     var route = Object.keys(routes).reduce(function(p, name) {
       return p || (routes[name].paths.reduce(function(m, rule) {
-        rule = rule instanceof RegExp ? rule : new RegExp(rule);
+        rule = rule instanceof RegExp ? rule : new RegExp(`^\\/?${rule}`);
         return m || rule.test(path);
       }, false) && name);
     }, null);
