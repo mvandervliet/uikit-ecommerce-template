@@ -1,6 +1,11 @@
 <ul class="{{classname.nav}}">
   <li class="uk-navbar-item uk-visible@m" mu-if="profile">
-    <a href="settings.html" mu-route>{{profile.firstName}} {{profile.lastName}}</a>
+    <a href="settings.html" mu-route>
+      <!-- {{profile.firstName}} {{profile.lastName}} -->
+      <span mu-html="profile.firstName"></span>
+      &nbsp;
+      <span mu-html="profile.lastName"></span>
+    </a>
   </li>
   <li mu-if="profile">
     <a href="" mu onclick="this.mu.user.logout(); return false;">
@@ -20,8 +25,7 @@
     <!-- switcher -->
     <ul uk-tab mu-uk-component="ui.tabswitch">
       <li><a>Login</a></li>
-      <li mu-if="!register"><a>Create Account</a></li>
-      <li mu-if="register" class="uk-active"><a>Create Account</a></li>
+      <li mu-class="{'uk-active': 'register'}"><a>Create Account</a></li>
     </ul>
     <ul class="uk-switcher uk-margin">
       <!-- User login -->
@@ -37,7 +41,7 @@
                 <label class="uk-form-label" for="username">Username</label>
                 <div class="uk-inline uk-width-expand">
                   <span class="uk-form-icon" uk-icon="icon: user"></span>
-                  <input class="uk-input" name="username" type="text" value="{{fields.username}}">
+                  <input class="uk-input" name="username" type="text" mu-attr mu-attr-value="fields.username">
                 </div>
               </div>
               <div class="uk-width-1-2@s">
@@ -71,17 +75,17 @@
               <!-- personal -->
               <div class="uk-width-1-2@s">
                 <label class="uk-form-label" for="firstName">First Name</label>
-                <input class="uk-input" name="firstName" type="text" placeholder="Mu" value="{{fields.firstName}}">
+                <input class="uk-input" name="firstName" type="text" placeholder="Mu" mu-attr mu-attr-value="fields.firstName">
               </div>
               <div class="uk-width-1-2@s">
                 <label class="uk-form-label" for="lastName">Last Name</label>
-                <input class="uk-input" name="lastName" type="text" placeholder="Cat" value="{{fields.lastName}}">
+                <input class="uk-input" name="lastName" type="text" placeholder="Cat" mu-attr mu-attr-value="fields.lastName">
               </div>
               <div class="uk-width-1-1">
                 <label class="uk-form-label" for="email">Email</label>
                 <div class="uk-inline uk-width-expand">
                   <span class="uk-form-icon" uk-icon="icon: mail"></span>
-                  <input class="uk-input" name="email" type="email" placeholder="user@example.com" value="{{fields.email}}">
+                  <input class="uk-input" name="email" type="email" placeholder="user@example.com" mu-attr mu-attr-value="fields.email">
                 </div>
               </div>
               <!-- un/pw -->
@@ -89,7 +93,7 @@
                 <label class="uk-form-label" for="username">Username</label>
                 <div class="uk-inline uk-width-expand">
                   <span class="uk-form-icon" uk-icon="icon: user"></span>
-                  <input class="uk-input" name="username" type="text" value="{{fields.username}}">
+                  <input class="uk-input" name="username" type="text" mu-attr mu-attr-value="fields.username">
                 </div>
               </div>
               <div class="uk-width-1-2@s">

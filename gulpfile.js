@@ -60,7 +60,7 @@ gulp.task('scripts', function() {
 // Images
 
 gulp.task('images', function() {
-  return gulp.src(['src/images/**/*', '!src/images/hero/*'])
+  return gulp.src(['src/images/**/*'])
     .pipe(cache(imagemin({
       interlaced: true,
       progressive: true,
@@ -77,7 +77,6 @@ gulp.task('copy', function() {
     'src/*',
     'src/fonts/*',
     'src/views/*',
-    'src/images/hero/*',
     '!src/images/*',
     '!src/styles/*',
     '!src/scripts/*'

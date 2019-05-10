@@ -67,7 +67,7 @@ const MuUtil = {
    */
   initModule(mod, mu, view, context) {
     const emitter = new MuEmitter(mod.ctor.name);
-    const ModCtor = MuMx.mixin(mod.ctor, ...mod.args);
+    const ModCtor = MuMx.pure(mod.ctor, ...mod.args);
     MuUtil.mergeProp(ModCtor.prototype, null, {
       mu, 
       view,
@@ -80,7 +80,6 @@ const MuUtil = {
     });
 
     // instantiate
-    // var instance = new mod.ctor(...mod.args);
     const instance = new ModCtor();
     // call lifecycle hook
     instance.onInit && instance.onInit();
@@ -266,8 +265,12 @@ export class MuView extends MuEmitter {
 
   virtual(html, selector) {
     const parser = new DOMParser();
-    const virtual = parser.parseFromString(html, 'text/html');
+    const virtual = parser.parseFromString(html || '', 'text/html');
     return selector ? virtual.querySelector(selector) : virtual;
+  }
+
+  virtualContainer() {
+    return this.virtual('<div></div>', 'div');
   }
 
   load(path) {

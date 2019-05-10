@@ -72,7 +72,7 @@ export class UserToolbar extends MuMx.compose(null, ShopMxSubscriber) {
 
   onUser(profile) {
     this._debug('onUser', profile);
-    this.render({ profile, things: ['one', 'two'] });
+    this.render({ profile, things: ['one', 'two', 3] });
   }
 
   modal() {
@@ -82,7 +82,7 @@ export class UserToolbar extends MuMx.compose(null, ShopMxSubscriber) {
   success(message) {
     this.mu.ui.notification(`<span uk-icon="icon: check"></span> ${message}`, {
       status: 'success',
-      pos: 'top-right',
+      pos: 'bottom-right',
     });
   }
 

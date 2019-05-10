@@ -12,9 +12,10 @@ export const MuCtxAttrMixin = ctor => class extends ctor {
 
   // handler to make any changes to the attribute value before reading in context
   _ctxAttrPropKey(str) {
-    return str;
+    return (str || '').replace(/^\!/, '');
   }
   
+  // resolve the context lookup key
   _ctxKey(attr) {
     return this._ctxAttrPropKey(this._ctxAttrProp(attr));
   }
@@ -25,14 +26,33 @@ export const MuCtxAttrMixin = ctor => class extends ctor {
     return key && this.context.get(key);
   }
 
+  // determine boolean or not
+  _ctxAttrBool(attr) {
+    const expression = this._ctxAttrProp(attr);
+    return this._ctxBool(expression);
+  }
+
+  _ctxBool(expression) {
+    const invert = /^\!/.test(expression || '');
+    const ctxKey = this._ctxAttrPropKey(expression);
+    const ctxVal = ctxKey && this.context.get(ctxKey);
+    let test = !!ctxVal;
+    if (typeof ctxVal === 'function') { // invoke bound test to
+      test = ctxVal();
+    } else if (!ctxVal && typeof expression === 'string') {
+      try { test = JSON.parse(expression); } catch { }
+    }
+    return invert ? !test : test;
+  }
+
 };
 
 export const MuCtxSingleAttrMixin = (ctor, attr) => class extends MuCtxAttrMixin(ctor) {
-  _ctxAttrProp() {
-    return super._ctxAttrProp(attr);
+  _ctxAttrProp(a) {
+    return super._ctxAttrProp(a || attr);
   }
-  _ctxAttrValue() {
-    return super._ctxAttrValue(attr);
+  _ctxAttrValue(a) {
+    return super._ctxAttrValue(a || attr);
   }
 }
 
@@ -43,7 +63,7 @@ export const MuCtxSingleAttrMixin = (ctor, attr) => class extends MuCtxAttrMixin
  * @param  {...string} attributes 
  */
 export const MuCtxSetterMixin = (ctor, ...attributes) => class extends MuCtxAttrMixin(ctor) {
-  
+
   onMount() {
     attributes
       .map(attr => ({ attr, prop: this._ctxAttrProp(attr) }))

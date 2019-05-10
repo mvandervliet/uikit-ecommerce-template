@@ -11,12 +11,12 @@ export class MuForm extends MuMx.compose(null, [MuCtxSetterMixin, 'mu-form']) {
   }
 
   onMount() {
-    super.onMount();
     const eNoop = e => e.preventDefault();
     this._change = this.node.onchange || eNoop;
     this._submit = this.node.onsubmit || eNoop;
     this.node.onchange = this.change;
     this.node.onsubmit = this.submit;
+    return super.onMount && super.onMount();
   }
 
   submit(e) {
