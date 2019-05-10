@@ -31,17 +31,17 @@ div(class="uk-navbar-container " +
                         "uk-padding-small " +
                         "uk-padding-remove-horizontal " +
                         "uk-padding-remove-bottom")
-                figure.uk-card-media-top.uk-height-small.js-map(
-                  data-latitude= shopInfo.latitude
-                  data-longitude= shopInfo.longitude
-                  data-zoom="14")
+                //- figure.uk-card-media-top.uk-height-small.js-map(
+                //-   data-latitude= shopInfo.latitude
+                //-   data-longitude= shopInfo.longitude
+                //-   data-zoom="14")
                 div.uk-card-body
                   div.uk-text-small
                     div.uk-text-bolder= shopInfo.storeName
                     div!= shopInfo.address
                     div= shopInfo.openingHours
                   div.uk-margin-small
-                    +link-to-all("contacts", "contacts.html")(class="uk-link-reset")
+                    +link-to-all("contact", "contacts.html")(class="uk-link-reset")
 
           //- Opening hours
           li

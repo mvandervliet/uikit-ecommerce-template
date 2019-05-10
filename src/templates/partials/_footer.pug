@@ -11,9 +11,6 @@ section.uk-section.uk-section-secondary.uk-section-small.uk-light
           //- img(uk-svg src="images/logo-inverse.svg" alt=shopInfo.storeLogoText)
           //- include _logo-inverse.pug
         p.uk-text-small Specialty products that every cat deserves, especially yours.
-        ul.uk-iconnav
-          each social in socials
-            li: a(href="#" title= social.name uk-icon= social.icon)
 
       div
         nav.uk-grid-small.uk-child-width-1-2(uk-grid)
@@ -25,6 +22,10 @@ section.uk-section.uk-section-secondary.uk-section-small.uk-light
             ul.uk-nav.uk-nav-default
               each item in footerMenuRight
                 li: a(href= item.href mu-route)= item.name
+        
+        ul.uk-iconnav.uk-margin
+          each social in socials
+            li: a(href="#" title= social.name uk-icon= social.icon)
 
       div
         ul.uk-list.uk-text-small

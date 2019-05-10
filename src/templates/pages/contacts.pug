@@ -3,11 +3,11 @@ extends /layouts/_informational
 block vars
   -
     page = {
-      title: 'Contacts',
+      title: 'Contact',
       breadcrumbs: {}
     }
 
-    informationalActivePage = 2
+    informationalActivePage = 'contacts'
 
 block informational
   article(class="uk-card " +
@@ -17,11 +17,11 @@ block informational
                 "uk-article " +
                 "tm-ignore-container")
 
-    div.tm-wrapper
-      figure.tm-ratio.tm-ratio-16-9.js-map(
-        data-latitude="59.9356728"
-        data-longitude="30.3258604"
-        data-zoom="14")
+    //- div.tm-wrapper
+    //-   figure.tm-ratio.tm-ratio-16-9.js-map(
+    //-     data-latitude="59.9356728"
+    //-     data-longitude="30.3258604"
+    //-     data-zoom="14")
 
     div(class="uk-child-width-1-1 uk-child-width-1-2@s uk-margin-top"
             uk-grid)
@@ -49,16 +49,17 @@ block informational
       section
         h3 Feedback
         dl.uk-description-list
-          dt Cooperation
-          dd: a.uk-link-muted(href="#") cooperation@example.com
+          dt Information
+          dd: a.uk-link-muted(href="#") info@example.com
           dt Partners
           dd: a.uk-link-muted(href="#") partners@example.com
           dt Press
           dd: a.uk-link-muted(href="#") press@example.com
 
       section.uk-width-1-1
-        h2.uk-text-center Contact Us
-        form
+        h2.uk-text-center Send a Note
+        p.uk-text-muted.uk-text-center (A cat will respond as soon as is convenient)
+        form(mu-form)
           div.uk-grid-small.uk-child-width-1-1(uk-grid)
             div
               label

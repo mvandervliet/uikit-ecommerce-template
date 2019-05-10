@@ -88,7 +88,7 @@ block default
         +link-to-all("shop all", "subcategory.html")
 
   //- Brands
-  section.uk-section.uk-section-default.uk-section-small
+  //- section.uk-section.uk-section-default.uk-section-small
     div.uk-container
 
       h2.uk-text-center Popular Brands
@@ -132,7 +132,7 @@ block default
         +link-to-all("see all brands", "brands.html")
 
   //- Blog
-  section.uk-section.uk-section-small
+  //- section.uk-section.uk-section-small
     div.uk-container
 
       h2.uk-text-center Blog
@@ -151,7 +151,7 @@ block default
         +link-to-all("see all articles", "blog.html")
 
   //- About & News
-  section.uk-section.uk-section-default.uk-section-small
+  //- section.uk-section.uk-section-default.uk-section-small
     div.uk-container
       div(class="uk-grid-medium " +
                 "uk-child-width-1-1 " +
@@ -167,29 +167,6 @@ block default
           p Quisque rhoncus fermentum sapien id congue. Nam at rutrum turpis. Aliquam sagittis imperdiet tortor vel dignissim. Ut ipsum nunc, egestas et odio id, vestibulum posuere orci. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
           div(class="uk-text-center uk-text-left@s")
             +link-to-all("read more", "about.html")
-
-        //- News
-        section
-
-          h2(class="uk-text-center uk-text-left@s") Latest News
-
-          ul.uk-list.uk-list-small.uk-list-divider
-            each article in news
-              li
-                article.uk-article
-                  div.uk-article-body
-                    //- Date
-                    div.uk-article-meta.uk-margin-xsmall-bottom
-                      time= article.date
-                    //- Title
-                    h3.uk-h4.uk-margin-remove
-                      a.uk-link-heading(href= article.href)= article.title
-                    //- Description
-                    if article.description
-                      div.uk-margin-xsmall-top.uk-text-small!= article.description
-
-          div(class="uk-margin uk-text-center uk-text-left@s")
-            +link-to-all("see all news", "news.html")
 
   //- Subscribe
   section.uk-section.uk-section-primary.uk-section-small.uk-light
