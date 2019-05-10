@@ -30,11 +30,11 @@ section.uk-section.uk-section-secondary.uk-section-small.uk-light
       div
         ul.uk-list.uk-text-small
           li
-            a.uk-link-muted(href="#")
+            a.uk-link-muted(href="tel:"+shopInfo.phone)
               +icon("receiver")(class="uk-margin-small-right")
               span.tm-pseudo= shopInfo.phone
           li
-            a.uk-link-muted(href="#")
+            a.uk-link-muted(href="email:"+shopInfo.email)
               +icon("mail")(class="uk-margin-small-right")
               span.tm-pseudo= shopInfo.email
           li
@@ -58,5 +58,4 @@ section.uk-section.uk-section-secondary.uk-section-small.uk-light
           p Made with 
             span(uk-icon="heart")
             |  by Oracle A-Team
-
 

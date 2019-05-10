@@ -40,7 +40,7 @@ export const MuCtxAttrMixin = ctor => class extends ctor {
     if (typeof ctxVal === 'function') { // invoke bound test to
       test = ctxVal();
     } else if (!ctxVal && typeof expression === 'string') {
-      try { test = JSON.parse(expression); } catch { }
+      try { test = JSON.parse(expression); } catch (e) { }
     }
     return invert ? !test : test;
   }

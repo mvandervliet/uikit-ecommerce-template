@@ -11,6 +11,7 @@ export class UserController {
     this.user = user;
     this.context.set('global.profile', user); // set in global context
     this.emit('set.user', user);
+    return user;
   }
 
   _userError(err) {
@@ -83,7 +84,7 @@ export class UserToolbar extends MuMx.compose(null, ShopMxSubscriber) {
   success(message) {
     this.mu.ui.notification(`<span uk-icon="icon: check"></span> ${message}`, {
       status: 'success',
-      pos: 'bottom-right',
+      pos: 'top-left',
     });
   }
 
@@ -92,7 +93,7 @@ export class UserToolbar extends MuMx.compose(null, ShopMxSubscriber) {
     const fields = form.getData();
     const { username, password } = fields;
     this.mu.user.login(username, password)
-      .then(() => this.success('Welcome Back!'))
+      .then(u => this.success(`Welcome back ${u.firstName}!`))
       .catch(() => this.renderShow({
         fields,
         register: false,

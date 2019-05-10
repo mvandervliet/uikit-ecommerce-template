@@ -30,11 +30,11 @@ block informational
         h3 Store
         ul.uk-list
           li
-            a.uk-link-heading(href="#")
+            a.uk-link-heading(href="tel:"+shopInfo.phone)
               +icon("receiver")(class="uk-margin-small-right")
               span.tm-pseudo= shopInfo.phone
           li
-            a.uk-link-heading(href="#")
+            a.uk-link-heading(href="mailto:"+shopInfo.email)
               +icon("mail")(class="uk-margin-small-right")
               span.tm-pseudo= shopInfo.email
           li
@@ -58,7 +58,6 @@ block informational
 
       section.uk-width-1-1
         h2.uk-text-center Send a Note
-        p.uk-text-muted.uk-text-center (A cat will respond as soon as is convenient)
         form(mu-form)
           div.uk-grid-small.uk-child-width-1-1(uk-grid)
             div
@@ -81,4 +80,5 @@ block informational
                 div.uk-form-label Message
                 textarea.uk-textarea(rows="5")
             div.uk-text-center
+              p.uk-text-muted (A cat will respond as soon as is convenient)
               button.uk-button.uk-button-primary Send
