@@ -187,9 +187,9 @@ export class MuClassLogical extends MuMx.compose(null, [MuCtxSingleAttrMixin, LO
     try {
       const { classList } = this.node;
       const rules = this._ctxAttrValue() || JSON.parse(this._ctxAttrProp().replace(/\'/g,'"'));
-      const classes = Object.keys(rules);
-      classList.remove(...classes);
-      classes.forEach(cname => this._ctxBool(rules[cname]) && classList.add(cname));
+      const keys = Object.keys(rules);
+      classList.remove(...[].concat(keys.map(c => c.split(/\s+/))));
+      keys.forEach(key => this._ctxBool(rules[key]) && classList.add(...key.split(/\s+/)));
     } catch (e) {
       // console.warn(this.constructor.name, e);
     }

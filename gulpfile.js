@@ -15,16 +15,27 @@ var gulp         = require('gulp'),
     proxy        = require('http-proxy-middleware');
 
 // HTML
+const pugOpt = {
+  basedir: 'src/templates',
+  doctype: 'html',
+  pretty: true,
+};
 
-gulp.task('html', function() {
-  return gulp.src(['src/templates/pages/**/*.pug'])
-    .pipe(pug({
-      basedir: 'src/templates',
-      pretty: true,
-    }))
+gulp.task('html:pages', function() {
+  return gulp.src('src/templates/pages/**/*.pug')
+    .pipe(pug(pugOpt))
     .pipe(gulp.dest('build'))
-    .pipe(sync.stream());
+    .pipe(sync.stream({once: true}))
 });
+
+gulp.task('html:views', function() {
+  return gulp.src('src/templates/views/**/*.pug')
+    .pipe(pug(pugOpt))
+    .pipe(gulp.dest('build/views'))
+    .pipe(sync.stream({once: true}))
+});
+
+gulp.task('html', gulp.parallel('html:pages', 'html:views'));
 
 // Styles
 
@@ -76,7 +87,6 @@ gulp.task('copy', function() {
   return gulp.src([
     'src/*',
     'src/fonts/*',
-    'src/views/*',
     '!src/images/*',
     '!src/styles/*',
     '!src/scripts/*'
@@ -140,7 +150,6 @@ gulp.task('watch:copy', function() {
   return gulp.watch([
     'src/*',
     'src/fonts/*',
-    'src/views/*',
     '!src/images/*',
     '!src/styles/*',
     '!src/scripts/*'

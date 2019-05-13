@@ -1,0 +1,59 @@
+include ../mixins/_icon
+
+article.tm-product-card
+  //- Media
+  div.tm-product-card-media
+    div.tm-ratio.tm-ratio-4-3
+      a.tm-media-box(href="product.html?id={{product.id}}" mu-route)
+
+        //- Image
+        figure.tm-media-box-wrap
+          img(mu-if="product.image" mu-attr mu-attr-alt="product.name" mu-attr-src="product.image")
+          span(mu-if="!product.image")
+            +icon("image", "3")(class="uk-text-muted")
+
+  //- Body
+  div.tm-product-card-body
+
+    //- Info
+    div.tm-product-card-info
+
+      //- Type
+      //- div.uk-text-meta.uk-margin-xsmall-bottom= product.type
+
+      //- Title
+      h3.tm-product-card-title
+        a.uk-link-heading(href="product.html?id={{product.id}}" mu-route mu-html="product.name")
+
+      //- Properties
+      div.uk-text-small.tm-product-card-properties
+        span(mu-html="product.description")
+
+    //- Shop
+    div.tm-product-card-shop
+
+      //- Prices
+      div.tm-product-card-prices
+        del.uk-text-meta(mu-if="product.sale")
+          |$
+          span(mu-html="product.sale")
+        div.tm-product-card-price
+          |$
+          span(mu-html="product.price")
+
+      //- Actions buttons
+      div.tm-product-card-add
+        div.uk-text-meta.tm-product-card-actions
+
+          //- //- Favorite
+          //- a.tm-product-card-action.js-add-to.js-add-to-favorites(
+          //-   title="Add to favorites")
+          //-   +icon("heart", ".75")
+          //-   span.tm-product-card-action-text Add to favorites
+
+        //- Add to cart
+        button.uk-button.uk-button-primary.tm-product-card-add-button.tm-shine.js-add-to-cart(
+          mu-attr mu-attr-disabled="!product.count"
+        )
+          +icon("cart")(class="tm-product-card-add-button-icon")
+          span.tm-product-card-add-button-text add to cart

@@ -54,7 +54,7 @@ test-image:
 # 		$(IMAGE) /usr/src/app/test/e2e/runner.sh
 
 kill-services:
-	@docker-compose -f test/docker-compose.yml down
+	@docker-compose -p mutest -f test/docker-compose.yml down
 
 kill-server:
 	@if [ $$(docker ps -a -q -f name=$(IMAGE) | wc -l) -ge 1 ]; then docker rm -f $(IMAGE); fi

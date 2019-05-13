@@ -67,14 +67,14 @@ export class UserToolbar extends MuMx.compose(null, ShopMxSubscriber) {
   }
 
   onMount() {
-    this.context.set('classname.nav', this.node.getAttribute(UserToolbarAttr) || '');
+    this.context.set('offcanvas', this.node.getAttribute(UserToolbarAttr) === 'offcanvas');
     super.onMount();
     this._debug('MOUNTED');
   }
 
   onUser(profile) {
     this._debug('onUser', profile);
-    this.render({ profile, things: ['one', 'two', 3] });
+    this.render({ profile });
   }
 
   modal() {
@@ -120,7 +120,7 @@ export class UserToolbar extends MuMx.compose(null, ShopMxSubscriber) {
 
   render(data) {
     this._debug('RENDER');
-    return this.view.renderRemote(this.node, 'usertoolbar.html', this.context.extend(data));
+    return this.view.renderRemote(this.node, 'userToolbar.html', this.context.extend(data));
   }
 
 }
