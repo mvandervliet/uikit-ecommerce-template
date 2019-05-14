@@ -1,10 +1,10 @@
 import { Mu } from '../mu';
 
 const alias = { home: [/^\/$/] };
-const errPage = '50x';
 const pages = {
-  '50x':      '50x.html',
   '404':      '404.html',
+  '50x':      '50x.html',
+  auth:       'auth.html',
   about:      'about.html',
   article:    'article.html',
   blog:       'blog.html',
@@ -27,6 +27,11 @@ const pages = {
   subcategory:'subcategory.html'
 };
 
+const authPage = 'auth';
+const errPage = '50x';
+const nfPage = '404';
+const restricted = ['personal', 'settings', 'orders'];
+
 function pageHref(page) {
   return pages[page];
 };
@@ -34,29 +39,66 @@ function pageHref(page) {
 export class PageController {
   constructor() {
     // handle mu initialization
-    this.mu.on('ready', this._initRouter.bind(this));
+    this.mu.on('ready', this._init.bind(this));
   }
 
-  _initRouter() {
-    const router = this.mu.router;
+  _init() {
+    this._bindRouter();
+    this._bindAuth();
+  }
 
-    // add router listeners
-    router.on('back', state => {
-      var page = (state && state.name);
-      return page && this.update(page);
-    }).on('update', (page, search, params) => {
-      this.update(page);
+  _bindAuth() {
+    const { user } = this.mu;
+    this.context.on('user.ready', () => {
+      user.on('user.profile', this._aclUpdate.bind(this));
     });
+  }
+
+  _bindRouter() {
+    const { router } = this.mu;
 
     // register pages with the router
     Object.keys(pages).forEach(route => {
       router.register(route, pages[route], alias[route]);
     });
+
+    // add router listeners
+    router.on('back', state => {
+      var page = (state && state.name);
+      return page && this._aclGate(page);
+      // return page && this.update(page);
+    // }).on('update', (page, search, params) => {
+    //   this.update(page);
+    }).on('update', this._aclGate.bind(this));
     
-    // resolve the initial page
-    const nf = '404';
-    var page = router.initial(nf);
-    return page === nf ? router.go(nf) : this.setPage(nf);
+    // // resolve the initial page
+    // var page = router.initial(nfPage);
+    // // return page === nfPage ? router.go(nfPage) : this.setPage(page);
+    // return page === nfPage ? router.go(nfPage) : this._aclGate(page);
+  }
+
+  _aclGate(page, search, params) {
+    const deny = (!this._hasAuth && restricted.indexOf(page) > -1);
+    console.log('ACL CHECK', page, { deny });
+    if (deny) {
+      this._afterAuth = { page, search, params };
+      this.mu.router.go(authPage, null, null);
+    } else {
+      this.update(page, search, params);
+    }
+  }
+
+  _aclUpdate(profile) {
+    const auth = this._hasAuth = !!profile;
+    const doAfter = this._afterAuth;
+    const redir = doAfter || { page: this.mu.router.initial(nfPage) };
+    let { page, search, params } = redir;
+    this._afterAuth = null;
+    console.log('AFTER AUTH', auth, page);
+    // if (auth && page === authPage) {
+    //   page = 'home';
+    // }
+    this._aclGate(page, search, params);
   }
 
   setPage(page) {

@@ -74,6 +74,7 @@ const MuUtil = {
       view,
       // emitter
       on: emitter.on.bind(emitter),
+      one: emitter.one.bind(emitter),
       off: emitter.off.bind(emitter),
       emit: emitter.emit.bind(emitter),
       // context
@@ -150,6 +151,12 @@ export class MuEmitter {
     this._listeners.set(hook, set);
     this._emitLast(hook, listener);
     return this;
+  }
+
+  one(hook, listener) {
+    this._listeners.set(hook, new Set());
+    this._emits.set(hook, null);
+    return this.on(hook, listener);
   }
 
   off(hook, listener) {

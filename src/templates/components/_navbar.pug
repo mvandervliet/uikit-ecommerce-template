@@ -41,7 +41,7 @@ div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-con
                             div.uk-margin-top.uk-margin-bottom
                               a.uk-link-reset(href= category.href mu-route)
                                 if category.image
-                                  img(class="uk-display-block uk-margin-auto uk-margin-bottom"
+                                  img(class="uk-display-block uk-margin-auto uk-margin-bottom mu-category-image"
                                       src= category.image
                                       alt= category.name
                                       width="80"
@@ -105,7 +105,7 @@ div.uk-navbar-container.tm-navbar-container(uk-sticky="cls-active: tm-navbar-con
       //-   span.uk-badge 3
 
       //- User
-      a.uk-navbar-item.uk-link-muted.tm-navbar-button(href="settings.html" mu-route)
+      a.uk-navbar-item.uk-link-muted.tm-navbar-button(href="personal.html" mu-route)
         +icon("user", 1.4)
       div(mu mu-if="global.profile"
           class="uk-padding-small uk-margin-remove"

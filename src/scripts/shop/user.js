@@ -12,7 +12,10 @@ export class UserController {
     // echo local profile to global context
     this.on('user.profile', p => this.context.set('global.profile', p));
     // initialize user when ready
-    this.mu.on('ready', this.getUser.bind(this));
+    this.mu.on('ready', () => {
+      this.getUser()
+        .then(() => this.context.emit('user.ready'));
+    });
   }
 
   _clear() {
@@ -139,9 +142,9 @@ export const UserViewMixin = (ctor, attr, viewName) => class extends MuMx.compos
   constructor() {
     super();
     // listen to user change
-    this.subscribe('user.profile', this.mu.user, this.onUpdate.bind(this, 'profile'));
-    this.subscribe('user.address', this.mu.user, this.onUpdate.bind(this, 'address'));
-    this.subscribe('user.card', this.mu.user, this.onUpdate.bind(this, 'card'));
+    this.subscribe('user.profile', this.mu.user, this.onUpdate.bind(this, 'profile'))
+      .subscribe('user.address', this.mu.user, this.onUpdate.bind(this, 'address'))
+      .subscribe('user.card', this.mu.user, this.onUpdate.bind(this, 'card'));
   }
 
   _debug(...args) {
@@ -168,13 +171,13 @@ export class UserToolbar extends MuMx.compose(null, [UserViewMixin, null, 'userT
   constructor() {
     super();
     // view context bindings
-    console.log('TOOLBAR SUBSCRIBING');
-    this.subscribe('form.auth', this.context, f => f && f.on('submit', this.submitAuth.bind(this)));
-    this.subscribe('form.reg', this.context, f => f && f.on('submit', this.submitReg.bind(this)));
+    // console.log('TOOLBAR SUBSCRIBING');
+    this.subscribeOne('form.auth', this.context, f => f && f.one('submit', this.submitAuth.bind(this)))
+      .subscribeOne('form.reg', this.context, f => f && f.one('submit', this.submitReg.bind(this)));
   }
 
   onMount() {
-    console.log('TOOLBAR MOUNT', this.node);
+    // console.log('TOOLBAR MOUNT', this.node);
     this.context.extend({
       inline: this._ctxAttrBool('inline'),
       offcanvas: this.node.getAttribute(USER_MICRO.TOOLBAR) === 'offcanvas',
@@ -183,10 +186,11 @@ export class UserToolbar extends MuMx.compose(null, [UserViewMixin, null, 'userT
     return super.onMount();
   }
 
-  onDispose() {
-    console.log('TOOLBAR DISPOSE', this.node);
-    return super.onDispose();
-  }
+  // onDispose() {
+  //   const forms = this.context.get('form') || {};
+  //   Object.keys(forms).forEach(name => forms[name].one('submit', () => {}));
+  //   return super.onDispose();
+  // }
 
   modal() {
     return this.context.get('ui.modal');
@@ -200,7 +204,7 @@ export class UserToolbar extends MuMx.compose(null, [UserViewMixin, null, 'userT
   }
 
   submitAuth(form, e) {
-    this._debug('SUBMIT AUTH', form);
+    console.log('SUBMIT AUTH', form);
     const fields = form.getData();
     const { username, password } = fields;
     this.mu.user.login(username, password)
@@ -234,10 +238,9 @@ export class UserToolbar extends MuMx.compose(null, [UserViewMixin, null, 'userT
 export class UserAddress extends MuMx.compose(null, [UserViewMixin, null, 'address.html']) {
   constructor() {
     super();
-    console.log('WHERE AM I');
     this.mu.on('ready', () => this.mu.user.address());
     this.subscribe('form', this.context, f => {
-      return f && f.on('submit', this.save.bind(this))
+      return f && f.one('submit', this.save.bind(this))
         .on('change', this.change.bind(this));
     });
   }

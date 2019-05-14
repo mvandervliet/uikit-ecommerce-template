@@ -254,7 +254,6 @@ main {
 }
 
 
-
 // Navbar
 // ========================================================================
 
@@ -355,8 +354,9 @@ main {
 // User Toolbar
 // 
 .mu-user-toolbar-inline {
-  display: inline;
+  display: flex;
   li > a {
+    min-height: 0;
     text-transform: none;
     color: @global-link-color;
   }
@@ -393,6 +393,13 @@ main {
   }
 }
 
+// Catalog
+// ========================================================================
+
+.mu-category-image {
+  height: @catalog-category-img-height;
+  width: auto;
+}
 
 // Product card
 // ========================================================================

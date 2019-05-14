@@ -14,13 +14,18 @@ export const ShopMxSubscriber = ctor => class extends ctor {
    * @param {*} publisher 
    * @param {*} listener 
    */
-  subscribe(event, publisher, listener) {
-    this._shopMxSubs.add({ event, publisher, listener });
+  subscribe(event, publisher, listener, one) {
+    this._shopMxSubs.add({ event, publisher, listener, one });
+    return this;
+  }
+
+  subscribeOne(event, publisher, listener) {
+    return this.subscribe(event, publisher, listener, true);
   }
 
   onMount() {
     const sup = super.onMount && super.onMount();
-    this._shopMxSubs.forEach(sub => sub.publisher.on(sub.event, sub.listener));
+    this._shopMxSubs.forEach(sub => sub.publisher[sub.one ? 'one' : 'on'](sub.event, sub.listener));
     return sup;
   }
 

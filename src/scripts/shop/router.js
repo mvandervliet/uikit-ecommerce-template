@@ -173,6 +173,7 @@ export class MuRouteLink {
       var query = router.queryparams(href);
       router.go(page, query);
     } else {
+      console.log('unresolved route', href);
       router.set(href);
     }
   }

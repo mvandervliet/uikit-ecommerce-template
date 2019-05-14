@@ -9,7 +9,8 @@ block vars
     profileActivePage = 3
 
 block account
-  div(mu mu-if="global.profile")
+  //- div(mu mu-if="global.profile")
+  div
     div.uk-card-body
       //- Contact
       form.uk-form-stacked(mu-form mu-user-view)
@@ -51,6 +52,6 @@ block account
     div.uk-card-body
       div(mu-user-address editing="true" type="home" legend="Address")
   
-  //- NO USER
-  div(mu mu-if="!global.profile")
-    div(mu-user-view="userNotAuthenticated.html")
+  //- //- NO USER
+  //- div(mu mu-if="!global.profile")
+  //-   div(mu-user-view="userNotAuthenticated.html")

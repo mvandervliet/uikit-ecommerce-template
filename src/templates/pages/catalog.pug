@@ -30,7 +30,7 @@ block pages
                 div.uk-grid-small.uk-flex-middle(uk-grid)
                   if category.image
                     a(href= category.href mu-route)
-                      img(src= category.image
+                      img.mu-category-image(src= category.image
                           alt= category.name
                           width="50"
                           height="50")
