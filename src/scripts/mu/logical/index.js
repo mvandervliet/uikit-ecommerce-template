@@ -24,9 +24,16 @@ export class MuIF extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_ATTR
   }
 
   onMount() {
+    const { parentNode } = this.node;
     const virtual = this.view.virtual();
     this.ifComment = virtual.createComment(LOGICAL_ATTR.IF);
-    this.node.parentNode.insertBefore(this.ifComment, this.node);
+    // create placeholder target and
+    parentNode.insertBefore(this.ifComment, this.node);
+    parentNode.removeChild(this.node);
+
+    // clone the node for re-use
+    const c = this.ifNode = this.node.cloneNode(true);
+    c.removeAttribute(LOGICAL_ATTR.IF); // prevent re-binding
 
     this.refresh();
     this.context.on(this._ctxKey(), this.refresh);
@@ -34,18 +41,37 @@ export class MuIF extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_ATTR
   }
 
   onDispose() {
+    this.falsey();
     this.context.off(this._ctxKey(), this.refresh);
+    const { parentNode } = this.ifComment;
+    parentNode && parentNode.removeChild(this.ifComment);
     return super.onDispose && super.onDispose();
+  }
+
+  falsey() {
+    // const { parentNode } = this.node;
+    // return parentNode && parentNode.removeChild(this.node);
+    const { parentNode } = this.ifComment;
+    this.view.dispose(this.ifNode, true);
+    try {
+      return parentNode && parentNode.removeChild(this.ifNode);
+    } catch (e) { }
   }
 
   refresh() {
     const test = this._ctxAttrBool();
-    if (!test) {
-      const { parentNode } = this.node;
-      return parentNode && parentNode.removeChild(this.node);
+    const exist = !!this.ifNode.parentNode;
+    if (test) {
+      if (!exist) {
+        // const { node, ifComment: { parentNode } } = this;
+        const { parentNode } = this.ifComment;
+        const node = this.ifNode = this.ifNode.cloneNode(true);
+        const insert = parentNode && parentNode.insertBefore(node, this.ifComment);
+        this.view.attach(node, this.context.child());
+        return insert;
+      }
     } else {
-      const { parentNode } = this.ifComment;
-      return parentNode && parentNode.insertBefore(this.node, this.ifComment);
+      this.falsey();
     }
   }
 }
@@ -68,6 +94,7 @@ export class MuEach extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_AT
   onMount() {
     // capture some ivars
     const { parentNode } = this.node;
+
     const virtual = this.view.virtual();
     this.eachComment = virtual.createComment(LOGICAL_ATTR.EACH);
     parentNode.insertBefore(this.eachComment, this.node);
@@ -160,7 +187,13 @@ export class MuHtml extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_AT
 
   onMount() {
     this.refresh();
+    this.context.on(this._ctxKey(), this.refresh);
     return super.onMount && super.onMount();
+  }
+
+  onDispose() {
+    this.context.off(this._ctxKey(), this.refresh);
+    return super.onDispose && super.onDispose();
   }
 
   refresh() {

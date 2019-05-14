@@ -1,0 +1,24 @@
+import { MuMx, MuCtxAttrMixin } from "../../mu";
+
+/**
+ * Mixin for /views/{viewName} rendering
+ * @param {function} ctor 
+ * @param {string} attr - selector attribute
+ * @param {string} [viewName] - static remote view name
+ */
+export const ViewTemplateMixin = (ctor, attr, viewName) => class extends MuMx.compose(ctor, MuCtxAttrMixin) {
+
+  onMount() {
+    this._remoteView = viewName || // explicitly defined by mixin
+      this._ctxAttrValue(attr) || // value from context (dynamic)
+      this._ctxAttrProp(attr); // value from attribute string
+    this._localView = !this._remoteView && this.node.innerHTML;
+    return super.onMount && super.onMount();
+  }
+
+  render(data) {
+    const view = this._localView || this._remoteView;
+    const renderMethod = this._localView ? 'render': 'renderRemote';
+    return view && this.view[renderMethod](this.node, view, this.context.extend(data));
+  }
+}

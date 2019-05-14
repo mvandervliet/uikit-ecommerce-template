@@ -5,7 +5,7 @@ import { Badge } from './components/badge';
 export class CartController {
   constructor() {
     this.getCart = this.getCart.bind(this);
-    this.mu.on('ready', () => this.mu.user.on('set.user', this.getCart));
+    this.mu.on('ready', () => this.mu.user.on('user.profile', this.getCart));
   }
 
   add(item) {

@@ -239,6 +239,8 @@ export class MuContext extends MuEmitter {
 
 }
 
+const [PROP_MU, PROP_MUS, PROP_CONTEXT] = ['mu', 'mus', 'muctx'];
+
 /**
  * Mu client rendering engine
  * @param {Mu} mu - Mu instance
@@ -328,7 +330,6 @@ export class MuView extends MuEmitter {
     const commonCtx = context && MuContext.toContext(context);
     const _mus = [];
 
-    const [PROP_MU, PROP_CONTEXT] = ['mu', 'muctx'];
     // bind mu to the anything with standard [mu] selector
     Array.apply(null, target.querySelectorAll(attrToSelector(PROP_MU)))
       .forEach(node => MuUtil.mergeProp(node, null, {
@@ -336,7 +337,8 @@ export class MuView extends MuEmitter {
         [PROP_CONTEXT]: this.mu.root.context, // global context
       }));
 
-    MuUtil.mergeProp(target, null, { _mus });
+    // keep mus array on target
+    MuUtil.defineProp(target, PROP_MUS, _mus);
 
     // bind micros
     micro.forEach(mod => {
@@ -346,9 +348,9 @@ export class MuView extends MuEmitter {
         const nodeCtx = MuUtil.resolveProp(node, PROP_CONTEXT);
         const ctx = nodeCtx || commonCtx || MuContext.toContext(); // context may be shared or uniquely scoped
         const instance = MuUtil.initModule(mod, this.mu, this, ctx);
+        MuUtil.mergeProp(instance, null, { node }); // assign the node to the instance
+        // MuUtil.mergeProp(node, mod.name, instance); // assign the module instance to the node
         _mus.push(instance);
-        MuUtil.mergeProp(instance, null, { node });
-        MuUtil.mergeProp(node, mod.name, instance); // assign the module to the node
         return instance.onMount && instance.onMount();
       });
     });
@@ -358,13 +360,19 @@ export class MuView extends MuEmitter {
     return target;
   }
 
-  dispose(target) {
-    const _mus = MuUtil.resolveProp(target, '_mus');
+  dispose(target, andContext) {
+    const _mus = MuUtil.resolveProp(target, PROP_MUS);
+    const { context: rootCtx } = this.mu.root;
     if (_mus) {
-      _mus.forEach(instance => {
-        instance.emit('dispose').dispose();
-        return instance.onDispose && instance.onDispose();
-      });
+      let m = _mus.shift();
+      while (m) {
+        m.emit('dispose').dispose();  // dispose emitter
+        m.onDispose && m.onDispose(); // dispose hook
+        if (andContext && m.context !== rootCtx) { // dispose (non-root) context
+          m.context.dispose();
+        }
+        m = _mus.shift();
+      }
     }
     return target;
   }

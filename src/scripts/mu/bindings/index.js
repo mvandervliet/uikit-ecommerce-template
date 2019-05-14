@@ -32,6 +32,7 @@ export const MuCtxAttrMixin = ctor => class extends ctor {
     return this._ctxBool(expression);
   }
 
+  // evaluate boolean expression
   _ctxBool(expression) {
     const invert = /^\!/.test(expression || '');
     const ctxKey = this._ctxAttrPropKey(expression);
@@ -43,6 +44,11 @@ export const MuCtxAttrMixin = ctor => class extends ctor {
       try { test = JSON.parse(expression); } catch (e) { }
     }
     return invert ? !test : test;
+  }
+  
+  // resolves either the attribute value, or the string representation
+  _ctxProp(attr) {
+    return this._ctxAttrValue(attr) || this._ctxAttrProp(attr);
   }
 
 };

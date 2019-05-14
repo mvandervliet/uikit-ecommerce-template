@@ -6,7 +6,7 @@ export class Badge {
 
   render(value) {
     return this.view.render(this.node, value && `
-      <span class="uk-badge uk-animation-scale-up">${value}</span>
+      <span class="uk-badge">${value}</span>
     `);
   }
 }

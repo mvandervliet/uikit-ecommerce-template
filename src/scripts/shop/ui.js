@@ -5,7 +5,7 @@ import { UI_GLOBAL } from '../util/constants';
 export class MuUi {
   constructor() {
     this.kit = getGlobal(UI_GLOBAL);
-    this.view.on('attached', this.kit.update.bind(this.kit));
+    // this.view.on('attached', this.kit.update.bind(this.kit));
   }
 
   notification(msg, options) {
@@ -19,7 +19,8 @@ export class UKComponent extends MuMx.compose(null, [MuCtxSetterMixin, UkCompone
   onDispose() {
     super.onDispose();
     // ensure the node is removed (incase ui-kit relocates with dom manipulations)
-    this.node.parentNode.removeChild(this.node);
+    const { parentNode } = this.node;
+    return parentNode && parentNode.removeChild(this.node);
   }
 
   valueForCtx(attr) {

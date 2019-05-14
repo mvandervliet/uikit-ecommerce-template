@@ -2,5 +2,5 @@ export { Mu, MuMx } from './mu';
 export * from './bindings';
 export * from './util';
 
-import './handlers';
-import './logical';
+import './logical'; // if/each/attr/class/html
+import './handlers'; // click/change/submit

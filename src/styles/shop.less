@@ -352,6 +352,16 @@ main {
   }
 }
 
+// User Toolbar
+// 
+.mu-user-toolbar-inline {
+  display: inline;
+  li > a {
+    text-transform: none;
+    color: @global-link-color;
+  }
+}
+
 
 // Aside column
 // ========================================================================
@@ -365,7 +375,7 @@ main {
 .mu-promo-container {
   .mu-promo-detail {
     padding: 0 1rem;
-    @media(min-width: @breakpoint-large) {
+    @media(min-width: @breakpoint-xlarge) {
       padding: 0;
     }
   }

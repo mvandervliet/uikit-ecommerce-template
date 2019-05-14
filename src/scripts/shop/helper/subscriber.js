@@ -19,8 +19,9 @@ export const ShopMxSubscriber = ctor => class extends ctor {
   }
 
   onMount() {
+    const sup = super.onMount && super.onMount();
     this._shopMxSubs.forEach(sub => sub.publisher.on(sub.event, sub.listener));
-    return super.onMount && super.onMount();
+    return sup;
   }
 
   onDispose() {

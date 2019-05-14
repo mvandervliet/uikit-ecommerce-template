@@ -11,6 +11,7 @@ import './shop/page';
 import './shop/cart';
 import './shop/user';
 import './shop/catalog';
+import './shop/components/debug';
 import './shop/components/form';
 
 // Run Mu Shop

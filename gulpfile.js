@@ -25,14 +25,14 @@ gulp.task('html:pages', function() {
   return gulp.src('src/templates/pages/**/*.pug')
     .pipe(pug(pugOpt))
     .pipe(gulp.dest('build'))
-    .pipe(sync.stream({once: true}))
+    .pipe(sync.stream())
 });
 
 gulp.task('html:views', function() {
   return gulp.src('src/templates/views/**/*.pug')
     .pipe(pug(pugOpt))
     .pipe(gulp.dest('build/views'))
-    .pipe(sync.stream({once: true}))
+    .pipe(sync.stream())
 });
 
 gulp.task('html', gulp.parallel('html:pages', 'html:views'));

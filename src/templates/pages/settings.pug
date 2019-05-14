@@ -10,46 +10,31 @@ block vars
 
 block account
   div.uk-card-body
-    form.uk-form-stacked
+    form.uk-form-stacked(mu-form mu-user-view)
       div.uk-grid-medium.uk-child-width-1-1(uk-grid)
-
-        //- Email
-        fieldset.uk-fieldset
-          legend.uk-h4 Email
-          div(class="uk-grid-small " +
-                    "uk-child-width-1-1"
-              uk-grid)
-            div
-              label
-                div.uk-form-label Current Email
-                input.uk-input.uk-form-width-large(type="email" value= profile.email disabled)
-            div
-              label
-                div.uk-form-label New Email
-                input.uk-input.uk-form-width-large(type="email")
-            div
-              button.uk-button.uk-button-primary update email
-
+        
         //- Password
         fieldset.uk-fieldset
           legend.uk-h4 Password
-          div(class="uk-grid-small " +
-                    "uk-child-width-1-1"
-              uk-grid)
-            div
+          div(uk-grid class="uk-grid-small uk-child-width-1-1 uk-child-width-1-2@s")
+            div(class="uk-width-1-1")
               label
-                div.uk-form-label Current Password
-                input.uk-input.uk-form-width-large(type="password")
+                div.uk-form-label.uk-form-label-required Current Password
+                input.uk-input(type="password" required disabled)
             div
               label
                 div.uk-form-label New Password
-                input.uk-input.uk-form-width-large(type="password")
+                input.uk-input(type="password" disabled)
             div
               label
                 div.uk-form-label Confirm Password
-                input.uk-input.uk-form-width-large(type="password")
-            div
-              button.uk-button.uk-button-primary update password
+                input.uk-input(type="password" disabled)
+            div.uk-width-1-1.uk-text-right
+              //- indicate non-functional
+              span.uk-text-warning.uk-margin-small-right
+                +icon('warning')(class="uk-margin-small-right")
+                span Password updates are not enabled
+              button.uk-button.uk-button-primary(disabled) update password
 
         //- Email notifications
         fieldset.uk-fieldset
