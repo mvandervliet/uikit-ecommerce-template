@@ -154,9 +154,9 @@ export class MuEmitter {
   }
 
   one(hook, listener) {
-    this._listeners.set(hook, new Set());
-    this._emits.set(hook, null);
-    return this.on(hook, listener);
+    // replace all listeners with this one
+    this._listeners.set(hook, new Set([listener]));
+    return this;
   }
 
   off(hook, listener) {
@@ -169,6 +169,11 @@ export class MuEmitter {
     this._emits.set(hook, args);
     const set = this._listeners.get(hook) || [];
     set.forEach(l => this._emitLast(hook, l));
+    return this;
+  }
+
+  emitOnce(hook, ...args) {
+    (this._listeners.get(hook) || []).forEach(l => l(...args));
     return this;
   }
 
@@ -265,14 +270,6 @@ export class MuView extends MuEmitter {
     this._templatePattern = /\{\{([\w\.:]+)\}\}/; // TODO, make option
   }
 
-  all(sel) {
-    return mu.root.element.querySelectorAll(sel);
-  }
-
-  one(sel) {
-    return mu.root.element.querySelector(sel);
-  }
-
   virtual(html, selector) {
     const parser = new DOMParser();
     const virtual = parser.parseFromString(html || '', 'text/html');
@@ -306,7 +303,7 @@ export class MuView extends MuEmitter {
   render(target, template, context) {
     const output = this.interpolate(template, context);
     // this.emit('rendered', target, data);
-    return this.apply(target, output, context);
+    return Promise.resolve(this.apply(target, output, context));
   }
 
   interpolate(template, context) {
@@ -360,10 +357,14 @@ export class MuView extends MuEmitter {
         _mus.push(instance);
         return instance.onMount && instance.onMount();
       });
+      
+      if (nodes.length) {
+        this.emitOnce(`attached:${mod.name}`, target, nodes);
+      }
     });
 
     // emit that view was attached
-    this.emit('attached', target);
+    this.emitOnce('attached', target);
     return target;
   }
 

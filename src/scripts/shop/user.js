@@ -120,7 +120,7 @@ export class UserController {
 }
 
 
-const USER_MICRO = {
+const USER_MU = {
   VIEW: 'mu-user-view',
   TOOLBAR: 'mu-user-toolbar',
   ADDRESS: 'mu-user-address',
@@ -159,7 +159,7 @@ export const UserViewMixin = (ctor, attr, viewName) => class extends MuMx.compos
 /**
  * arbitrary any user view
  */
-export class UserView extends MuMx.compose(null, [UserViewMixin, USER_MICRO.VIEW]) {
+export class UserView extends MuMx.compose(null, [UserViewMixin, USER_MU.VIEW]) {
 
 }
 
@@ -180,7 +180,7 @@ export class UserToolbar extends MuMx.compose(null, [UserViewMixin, null, 'userT
     // console.log('TOOLBAR MOUNT', this.node);
     this.context.extend({
       inline: this._ctxAttrBool('inline'),
-      offcanvas: this.node.getAttribute(USER_MICRO.TOOLBAR) === 'offcanvas',
+      offcanvas: this.node.getAttribute(USER_MU.TOOLBAR) === 'offcanvas',
     });
     this._debug('MOUNTED');
     return super.onMount();
@@ -294,6 +294,6 @@ export class UserAddress extends MuMx.compose(null, [UserViewMixin, null, 'addre
 }
 
 export default Mu.macro('user', UserController)
-  .micro('user.view', attrToSelector(USER_MICRO.VIEW), UserView)
-  .micro('user.address', attrToSelector(USER_MICRO.ADDRESS), UserAddress)
-  .micro('user.toolbar', attrToSelector(USER_MICRO.TOOLBAR), UserToolbar);
+  .micro('user.view', attrToSelector(USER_MU.VIEW), UserView)
+  .micro('user.address', attrToSelector(USER_MU.ADDRESS), UserAddress)
+  .micro('user.toolbar', attrToSelector(USER_MU.TOOLBAR), UserToolbar);

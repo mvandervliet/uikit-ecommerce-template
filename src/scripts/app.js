@@ -8,9 +8,9 @@ import './shop/api'; // axios adapter
 import './shop/router'; 
 import './shop/page';
 // shop specific
-import './shop/cart';
 import './shop/user';
 import './shop/catalog';
+import './shop/cart';
 import './shop/components/debug';
 import './shop/components/form';
 

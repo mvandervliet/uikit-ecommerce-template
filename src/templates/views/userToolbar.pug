@@ -2,7 +2,7 @@ include ../mixins/_icon
 
 ul(mu-class="{'uk-navbar-nav': '!offcanvas', 'uk-nav uk-nav-default': 'offcanvas', 'mu-user-toolbar-inline': 'inline'}")
   li(class="uk-visible@m" mu-if="profile")
-    a(href="settings.html" mu-route)
+    a(href="personal.html" mu-route)
       | {{profile.firstName}} {{profile.lastName}}
   li(mu-if="profile")
     a(mu onclick="this.mu.user.logout(); return false;") Logout

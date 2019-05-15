@@ -36,7 +36,10 @@ block default
                 div.uk-text-center
                   div.uk-h4.uk-margin-remove
                     //- +icon('user')
-                    span(mu-user-view="userDisplayName.html")
+                    span(mu-user-view)
+                      span(mu-html="profile.firstName")
+                      | 
+                      span(mu-html="profile.lastName")
 
                 div
                   div.uk-grid-small.uk-flex-center(uk-grid)

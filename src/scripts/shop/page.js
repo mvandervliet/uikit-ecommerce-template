@@ -76,12 +76,16 @@ export class PageController {
     // // return page === nfPage ? router.go(nfPage) : this.setPage(page);
     // return page === nfPage ? router.go(nfPage) : this._aclGate(page);
   }
+  
+  _aclDeny(page) {
+    return (!this._hasAuth && ~restricted.indexOf(page));
+  }
 
   _aclGate(page, search, params) {
-    const deny = (!this._hasAuth && restricted.indexOf(page) > -1);
+    const deny = this._aclDeny(page);
     console.log('ACL CHECK', page, { deny });
     if (deny) {
-      this._afterAuth = { page, search, params };
+      this._authRedir = { page, search, params };
       this.mu.router.go(authPage, null, null);
     } else {
       this.update(page, search, params);
@@ -90,22 +94,25 @@ export class PageController {
 
   _aclUpdate(profile) {
     const auth = this._hasAuth = !!profile;
-    const doAfter = this._afterAuth;
-    const redir = doAfter || { page: this.mu.router.initial(nfPage) };
-    let { page, search, params } = redir;
-    this._afterAuth = null;
-    console.log('AFTER AUTH', auth, page);
-    // if (auth && page === authPage) {
-    //   page = 'home';
-    // }
-    this._aclGate(page, search, params);
+    const current = this.mu.router.initial(nfPage);
+    console.log('ACL CHANGE', auth, current);
+    const authRedir = this._authRedir; // case when auth was requried due to prior nav 
+    if (authRedir) {
+      this._authRedir = null; // clear 
+      const { page, search, params } = authRedir;
+      this._aclGate(page, search, params);
+    } else if (this._aclDeny(current)) {
+      this._aclGate(current);
+    } else {
+      return current === nfPage ? router.go(nfPage) : this.setPage(current);
+    }
   }
 
   setPage(page) {
     this.emit(page);
   }
   
-  update(page) {
+  update(page, search, params) {
     return this.load(page).then(this.setPage.bind(this, page));
   }
 
@@ -121,6 +128,7 @@ export class PageController {
         const node = this.view.virtual(html, root.selector); // render full page in virtual DOM
         this.view.apply(root.element, (node ? node.innerHTML : html)); // swap root content
       }).catch(e => {
+        console.error(page, e);
         return page !== errPage ? this.load(errPage) : Promise.reject(e);
       });
   }

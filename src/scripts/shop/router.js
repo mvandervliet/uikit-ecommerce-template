@@ -127,8 +127,7 @@ export class MuRouterMacro {
       search: search
     });
     // console.log(typeof this.emit, typeof this.on);
-    console.log('INITIAL', name);
-    this.emit('initial', name);
+    // this.emit('initial', name);
     return name;
   }
 

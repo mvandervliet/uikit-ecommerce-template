@@ -104,18 +104,21 @@ export class MuEach extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_AT
     const c = this.eachTemp = this.node.cloneNode(true); 
     c.removeAttribute(LOGICAL_ATTR.EACH); // prevent re-binding
 
+    // console.log('MOUNTED each', this.eachTemp);
     this.refresh();
     this.context.on(this._ctxKey(), this.refresh);
     super.onMount && super.onMount();
   }
 
   onDispose() {
+    // console.log('DISPOSED each', this.eachTemp);
     this.context.off(this._ctxKey(), this.refresh);
     return super.onDispose && super.onDispose();
   }
 
   refresh() {
     const val = this._ctxAttrValue();
+    // console.log('EACH RENDER', this.eachTemp, val);
     // dispose old
     this.eachNodes = this.eachNodes.reduce((empty, old) => {
       this.view.dispose(old);
@@ -128,8 +131,8 @@ export class MuEach extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_AT
         if (items && items.length) {
           const itemAs = this.eachTemp.getAttribute('mu-each-as') || this._ctxKey();
           const { parentNode } = this.eachComment;
-          const virtual = this.view.virtualContainer();
-          parentNode.insertBefore(virtual, this.eachComment);
+          const virtualEnd = this.view.virtualContainer();
+          parentNode.insertBefore(virtualEnd, this.eachComment);
 
           // populate virtual node with items
           items.reduce((last, current) => {
@@ -138,9 +141,9 @@ export class MuEach extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_AT
             this.view.attach(fresh, this.context.child({ [itemAs]: current }));
             this.eachNodes.push(fresh);
             return fresh;
-          }, virtual);
+          }, virtualEnd);
 
-          parentNode.removeChild(virtual);
+          parentNode.removeChild(virtualEnd);
         }
       });
   }
@@ -160,13 +163,15 @@ export class MuAttr extends MuMx.compose(null, MuCtxAttrMixin) {
 
   refresh() {
     const attrReg = new RegExp(`^${LOGICAL_ATTR.ATTR}-([\\w-]+)`);
+    const bools = ['disabled', 'checked', 'selected'];
     // resolve all matching attr bindings
     const muAttrs = this.node.getAttributeNames()
       .filter(n => attrReg.test(n));
     // iterate and assign
     muAttrs.forEach(mattr => {
       const att = mattr.replace(attrReg, '$1');
-      const val = this._ctxAttrValue(mattr);
+      const bool = !!~bools.indexOf(att);
+      const val = bool ? this._ctxAttrBool(mattr) : this._ctxAttrValue(mattr);
       return val ? this.node.setAttribute(att, val) : this.node.removeAttribute(att);
     });
   }

@@ -1,5 +1,7 @@
+include ../mixins/_price
+
 div#cart-offcanvas(mu-minicart uk-offcanvas="overlay: true; flip: true")
-  aside.uk-offcanvas-bar.uk-padding-remove
+  //- aside.uk-offcanvas-bar.uk-padding-remove
     div(class="uk-card " +
               "uk-card-default " +
               "uk-card-small " +
@@ -16,42 +18,46 @@ div#cart-offcanvas(mu-minicart uk-offcanvas="overlay: true; flip: true")
 
       div.uk-card-body.uk-overflow-auto
         ul.uk-list.uk-list-divider
-          each product in products
-            if product.isAddedToCart
-              li.uk-visible-toggle
-                article
-                  div.uk-grid-small(uk-grid)
+          //- each product in products
+          //-   if product.isAddedToCart
+          div(mu-each="items" mu-each-as="row")
+            li.uk-visible-toggle
+              article
+                div.uk-grid-small(uk-grid)
 
-                    //- Image
-                    div.uk-width-1-4
-                      div.tm-ratio.tm-ratio-4-3
-                        a.tm-media-box(href= product.href mu-route)
-                          figure.tm-media-box-wrap
-                            if product.image
-                              img(src= product.image.small alt= product.name)
-                            else
-                              +icon("image", "3")(class="uk-text-muted")
-                    //- Info
-                    div.uk-width-expand
-                      div.uk-text-meta.uk-text-xsmall= product.type
-                      a.uk-link-heading.uk-text-small(href= product.href mu-route)= product.name
-                      div.uk-margin-xsmall.uk-grid-small.uk-flex-middle(uk-grid)
-                        div.uk-text-bolder.uk-text-small= product.price
-                        div.uk-text-meta.uk-text-xsmall 1 × #{product.price}
-
-                    //- Delete
-                    div
-                      a(class="uk-icon-link " +
-                              "uk-text-danger " +
-                              "uk-invisible-hover"
-                        href="#"
-                        uk-icon="icon: close; ratio: .75"
-                        uk-tooltip="Remove")
+                  //- Image
+                  div.uk-width-1-4
+                    div.tm-ratio.tm-ratio-4-3
+                      a.tm-media-box(mu-attr mu-attr-href="row.product.href" mu-route)
+                        figure.tm-media-box-wrap
+                          img(mu-if="row.product.image" mu-attr mu-attr-src="row.product.image" mu-attr-alt="row.product.name")
+                          span(mu-if="!row.product.image")
+                            +icon("image", "4")(class="uk-text-muted")
+                  //- Info
+                  div.uk-width-expand
+                    a.uk-link-heading.uk-text-small(mu-attr mu-attr-href="row.product.href" mu-route)
+                      span(mu-html="row.product.name")
+                    div.uk-margin-xsmall.uk-grid-small.uk-flex-middle(uk-grid)
+                      div.uk-text-bolder.uk-text-small
+                        +price("row.item.rowTotalPrice")
+                      div.uk-text-meta.uk-text-xsmall
+                        span(mu-html="row.item.quantity")
+                        | × 
+                        +price("row.item.rowUnitPrice")
+                  //- Delete
+                  div
+                    a(class="uk-icon-link " +
+                            "uk-text-warning " +
+                            "uk-invisible-hover"
+                      mu-click="row.remove"
+                      uk-icon="icon: close; ratio: 1.5"
+                      uk-tooltip="Remove")
 
       footer.uk-card-footer
         div.uk-grid-small(uk-grid)
           div.uk-width-expand.uk-text-muted.uk-h4 Subtotal
-          div.uk-h4.uk-text-bolder $3148.00
+          div.uk-h4.uk-text-bolder
+            +price("totals.subtotal")
         div(class="uk-grid-small " +
                   "uk-child-width-1-1 " +
                   "uk-child-width-1-2@m " +
@@ -62,3 +68,5 @@ div#cart-offcanvas(mu-minicart uk-offcanvas="overlay: true; flip: true")
           div
             a(class="uk-button uk-button-primary uk-margin-small uk-width-1-1"
               href="checkout.html" mu-route) checkout
+  
+      div(mu-debug="items")

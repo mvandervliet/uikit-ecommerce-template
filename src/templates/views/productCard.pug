@@ -1,4 +1,5 @@
 include ../mixins/_icon
+include ../mixins/_price
 
 article.tm-product-card
   //- Media
@@ -7,10 +8,14 @@ article.tm-product-card
       a.tm-media-box(href="product.html?id={{product.id}}" mu-route)
 
         //- Image
-        figure.tm-media-box-wrap
-          img(mu-if="product.image" mu-attr mu-attr-alt="product.name" mu-attr-src="product.image")
+        figure.tm-media-box-wrap.uk-background-muted
+          //- img( mu-if="product.image" mu-attr mu-attr-alt="product.name" mu-attr-src="product.image")
+          div.uk-animation-fade.uk-background-cover.uk-width-1-1.uk-height-1-1(
+            uk-img
+            mu-if="product.image"
+            mu-attr mu-attr-data-src="product.image")
           span(mu-if="!product.image")
-            +icon("image", "3")(class="uk-text-muted")
+            +icon("image", "5")(class="uk-text-muted")
 
   //- Body
   div.tm-product-card-body
@@ -18,16 +23,17 @@ article.tm-product-card
     //- Info
     div.tm-product-card-info
 
-      //- Type
-      //- div.uk-text-meta.uk-margin-xsmall-bottom= product.type
-
       //- Title
       h3.tm-product-card-title
         a.uk-link-heading(href="product.html?id={{product.id}}" mu-route mu-html="product.name")
 
+      //- short desc
+      div.uk-text-meta.uk-text-truncate(mu-html="product.shortDescription")
+
+
       //- Properties
-      div.uk-text-small.tm-product-card-properties
-        span(mu-html="product.description")
+      //- div.uk-text-small.tm-product-card-properties
+      //-   span(mu-html="product.description")
 
     //- Shop
     div.tm-product-card-shop
@@ -35,11 +41,9 @@ article.tm-product-card
       //- Prices
       div.tm-product-card-prices
         del.uk-text-meta(mu-if="product.sale")
-          |$
-          span(mu-html="product.sale")
+          +price("product.sale")
         div.tm-product-card-price
-          |$
-          span(mu-html="product.price")
+          +price("product.price")
 
       //- Actions buttons
       div.tm-product-card-add
@@ -53,6 +57,7 @@ article.tm-product-card
 
         //- Add to cart
         button.uk-button.uk-button-primary.tm-product-card-add-button.tm-shine.js-add-to-cart(
+          mu-click="atc"
           mu-attr mu-attr-disabled="!product.count"
         )
           +icon("cart")(class="tm-product-card-add-button-icon")
