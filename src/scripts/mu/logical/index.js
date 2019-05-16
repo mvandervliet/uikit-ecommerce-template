@@ -31,8 +31,8 @@ export class MuIF extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_ATTR
     parentNode.insertBefore(this.ifComment, this.node);
     parentNode.removeChild(this.node);
 
-    // clone the node for re-use
-    const c = this.ifNode = this.node.cloneNode(true);
+    // clone the original node for re-use
+    const c = this.nodeCopy = this.node.cloneNode(true);
     c.removeAttribute(LOGICAL_ATTR.IF); // prevent re-binding
 
     this.refresh();
@@ -49,23 +49,24 @@ export class MuIF extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_ATTR
   }
 
   falsey() {
-    // const { parentNode } = this.node;
-    // return parentNode && parentNode.removeChild(this.node);
-    const { parentNode } = this.ifComment;
-    this.view.dispose(this.ifNode, true);
-    try {
-      return parentNode && parentNode.removeChild(this.ifNode);
-    } catch (e) { }
+    const { ifNode, ifComment } = this;
+    if (ifNode) {
+      const { parentNode } = ifComment;
+      this.view.dispose(ifNode, true);
+      this.ifNode = null;
+      return parentNode && 
+        parentNode.contains(ifNode) && 
+        parentNode.removeChild(ifNode);
+    }
   }
 
   refresh() {
     const test = this._ctxAttrBool();
-    const exist = !!this.ifNode.parentNode;
+    const exist = this.ifNode && !!this.ifNode.parentNode;
     if (test) {
       if (!exist) {
-        // const { node, ifComment: { parentNode } } = this;
         const { parentNode } = this.ifComment;
-        const node = this.ifNode = this.ifNode.cloneNode(true);
+        const node = this.ifNode = this.nodeCopy.cloneNode(true);
         const insert = parentNode && parentNode.insertBefore(node, this.ifComment);
         this.view.attach(node, this.context.child());
         return insert;
@@ -101,24 +102,24 @@ export class MuEach extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_AT
     parentNode.removeChild(this.node);
 
     // clone the node for re-use
-    const c = this.eachTemp = this.node.cloneNode(true); 
+    const c = this.original = this.node.muOriginal();
     c.removeAttribute(LOGICAL_ATTR.EACH); // prevent re-binding
 
-    // console.log('MOUNTED each', this.eachTemp);
+    // console.log('MOUNTED each', this.original);
     this.refresh();
     this.context.on(this._ctxKey(), this.refresh);
     super.onMount && super.onMount();
   }
 
   onDispose() {
-    // console.log('DISPOSED each', this.eachTemp);
+    // console.log('DISPOSED each', this.original);
     this.context.off(this._ctxKey(), this.refresh);
     return super.onDispose && super.onDispose();
   }
 
   refresh() {
     const val = this._ctxAttrValue();
-    // console.log('EACH RENDER', this.eachTemp, val);
+    // console.log('EACH RENDER', this.original, val);
     // dispose old
     this.eachNodes = this.eachNodes.reduce((empty, old) => {
       this.view.dispose(old);
@@ -129,14 +130,14 @@ export class MuEach extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_AT
     return Promise.resolve(typeof val === 'function' ? val() : val)
       .then(items => {
         if (items && items.length) {
-          const itemAs = this.eachTemp.getAttribute('mu-each-as') || this._ctxKey();
+          const itemAs = this.original.getAttribute('mu-each-as') || this._ctxKey();
           const { parentNode } = this.eachComment;
           const virtualEnd = this.view.virtualContainer();
           parentNode.insertBefore(virtualEnd, this.eachComment);
 
           // populate virtual node with items
           items.reduce((last, current) => {
-            const fresh = this.eachTemp.cloneNode(true);
+            const fresh = this.original.cloneNode(true);
             last.insertAdjacentElement("afterend", fresh);
             this.view.attach(fresh, this.context.child({ [itemAs]: current }));
             this.eachNodes.push(fresh);
@@ -235,7 +236,7 @@ export class MuClassLogical extends MuMx.compose(null, [MuCtxSingleAttrMixin, LO
 }
 
 export default Mu.micro('logical.attr', attrToSelector(LOGICAL_ATTR.ATTR), MuAttr)
-  .micro('logical.class', attrToSelector(LOGICAL_ATTR.CLASS), MuClassLogical)
-  .micro('logical.each', attrToSelector(LOGICAL_ATTR.EACH), MuEach)
   .micro('logical.if', attrToSelector(LOGICAL_ATTR.IF), MuIF)
+  .micro('logical.each', attrToSelector(LOGICAL_ATTR.EACH), MuEach)
+  .micro('logical.class', attrToSelector(LOGICAL_ATTR.CLASS), MuClassLogical)
   .micro('logical.html', attrToSelector(LOGICAL_ATTR.HTML), MuHtml);

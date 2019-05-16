@@ -67,18 +67,42 @@ export class CartController {
     const subtotal = this.contents()
       .map(item => (item.quantity || 1) * item.unitPrice)
       .reduce((total, line) => total + line, 0);
+    let discounts = 0;
     const tax = subtotal * CART.TAX_RATE;
     const shipRate = CART.SHIPPING_STANDARD;
-    const shipping = subtotal >= CART.FREE_THRESHOLD ? 0 : shipRate;
+    let shipping = shipRate;
+    if( subtotal >= CART.FREE_THRESHOLD) {
+      discounts += shipping;
+      shipping = 0;
+    }
     const total = subtotal + tax + shipping;
 
-    return { subtotal, shipRate, shipping, tax, total };
+    return { subtotal, shipRate, shipping, discounts, tax, total };
   }
 
   totalsToFixed() {
     const totals = this.totals();
     Object.keys(totals).forEach(k => totals[k] = totals[k].toFixed(2));
     return totals;
+  }
+
+  combined() {
+    // resolve with corresponding sku records from catalog svc
+    const { catalog } = this.mu;
+    const contents = this.contents();
+    
+    return Promise.all(contents.map(item => catalog.product(item.itemId)))
+      // map to {[id]: product} hash
+      .then(products => Object.assign({}, ...products.map(p => ({[p.id]: p}))))
+      // map to a new object for mixed use
+      .then(pMap => contents.map(item => ({
+        item,
+        product: pMap[item.itemId],
+        actions: {
+          update: this.update.bind(this, pMap[item.itemId]),
+          remove: this.remove.bind(this, pMap[item.itemId]),
+        }
+      })));
   }
 }
 
@@ -97,36 +121,52 @@ class CartSubscriber extends MuMx.compose(null, ShopMxSubscriber) {
 /**
  * off canvas cart
  */
-export class MiniCart extends MuMx.compose(
+export class MuCart extends MuMx.compose(
   CartSubscriber,
-  [ViewTemplateMixin, null, 'miniCart.html']) {
+  ViewTemplateMixin) {
+  
+  viewTemplateDelegate() {
+    return this._ctxProp('template') || // source the template remotely
+      null; // use node contents
+  }
 
-  listener(cartItems) {
+  listener(rows) {
     // const cartCtl = this.mu.cart;
-    const { cart, catalog } = this.mu;
+    const { cart } = this.mu;
+    const size = cart.size();
+    const rawTotals = cart.totals();
     const totals = cart.totalsToFixed();
 
     // load corresponding sku records
-    Promise.all(cartItems.map(item => catalog.product(item.itemId)))
-      // map to {[id]: product} hash
-      .then(products => Object.assign(...products.map(p => ({[p.id]: p}))))
-      // map to a new object for mixed use
-      .then(pMap => cartItems.map(item => ({
-        item,
-        product: pMap[item.itemId],
-        remove: cart.remove.bind(cart, pMap[item.itemId]),
+    return cart.combined()
+      .then(items => items.map(row => ({
+        ...row,
+        // qty manipulations
+        qty: {
+          inc: this.increment.bind(this, row, 1),
+          dec: this.increment.bind(this, row, -1),
+          change: this.qtyChange.bind(this, row),
+        }
       })))
-      // render
       .then(items => this.render({
         items,
+        size,
         totals,
+        rawTotals,
       }));
   }
 
-  // render(data) {
-  //   console.log(`will render`, data);
-  //   return super.render(data);
-  // }
+  increment(row, amnt) {
+    const { item: { quantity } } = row;
+    const v = Math.max(1, quantity + amnt);
+    return row.actions.update(v);
+  }
+
+  qtyChange(row, e) {
+    const v = Math.max(1, ~~e.target.value);
+    e.target.value = v;
+    return row.actions.update(v);
+  }
 
 }
 
@@ -146,5 +186,5 @@ export class CartBadge extends CartSubscriber {
 }
 
 export default Mu.macro('cart', CartController)
-  .micro('cart.mini', '[mu-minicart]', MiniCart)
+  .micro('cart.view', '[mu-cart]', MuCart)
   .micro('cart.badge', '[mu-cart-badge]', CartBadge);

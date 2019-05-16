@@ -13,7 +13,7 @@ export const ViewTemplateMixin = (ctor, attr, viewName) => class extends MuMx.co
       this._ctxAttrValue(attr) || // value from context (dynamic)
       this._ctxAttrProp(attr) ||  // value from attribute string
       this.viewTemplateDelegate(); // delegated to child
-    this._localView = !this._remoteView && this.node.innerHTML;
+    this._localView = !this._remoteView && this.node.muOriginal().innerHTML;
     return super.onMount && super.onMount();
   }
 

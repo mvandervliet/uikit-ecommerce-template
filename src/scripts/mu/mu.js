@@ -344,6 +344,14 @@ export class MuView extends MuEmitter {
     // keep mus array on target
     MuUtil.defineProp(target, PROP_MUS, _mus);
 
+    // assign getters on prebound objects
+    const any = micro.map(mod => mod.binding).join(',');
+    Array.apply(null, target.querySelectorAll(any))
+      .forEach(node => {
+        const clone = node.cloneNode(true);
+        MuUtil.defineProp(node, 'muOriginal', () => clone.cloneNode(true));
+      });
+    
     // bind micros
     micro.forEach(mod => {
       const nodes = target.querySelectorAll(mod.binding);
@@ -357,7 +365,7 @@ export class MuView extends MuEmitter {
         _mus.push(instance);
         return instance.onMount && instance.onMount();
       });
-      
+
       if (nodes.length) {
         this.emitOnce(`attached:${mod.name}`, target, nodes);
       }

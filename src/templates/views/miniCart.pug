@@ -17,14 +17,19 @@ aside.uk-offcanvas-bar.uk-padding-remove
         button.uk-offcanvas-close(type="button" uk-close)
 
     div.uk-card-body.uk-overflow-auto
-      ul.uk-list.uk-list-divider
-        //- each product in products
-        //-   if product.isAddedToCart
+      //- empty
+      div.uk-text-warning.uk-text-center(mu-if="!items.length")
+        +icon('ban')(class="uk-margin-small-right")
+        span There are no items in your cart
+
+      //- list
+      ul.uk-list.uk-list-divider(mu-if="items.length")
+        //- item iterator
         li.uk-visible-toggle(mu-each="items" mu-each-as="row")
           article.uk-position-relative
             //- Delete
             a.uk-icon-link.uk-text-warning.uk-invisible-hover.uk-position-top-right(
-              mu-click="row.remove"
+              mu-click="row.actions.remove"
               uk-icon="icon: close; ratio: 1"
               uk-tooltip="Remove")
 
@@ -49,6 +54,8 @@ aside.uk-offcanvas-bar.uk-padding-remove
                   div.uk-text-bolder.uk-text-small
                     +price("row.item.rowTotalPrice")
 
+              //- div(mu-debug="row.product")
+
     footer.uk-card-footer
       div.uk-grid-small(uk-grid)
         div.uk-width-expand.uk-text-muted.uk-h4 Subtotal
@@ -58,11 +65,17 @@ aside.uk-offcanvas-bar.uk-padding-remove
                 "uk-child-width-1-1 " +
                 "uk-child-width-1-2@m " +
                 "uk-margin-small" uk-grid)
-        div
-          a(class="uk-button uk-button-default uk-margin-small uk-width-1-1"
+
+        div.uk-width-1-1(mu-if="!items.length")
+          a.uk-button.uk-button-primary.uk-margin-small.uk-width-1-1(
+            href="catalog.html" mu-route) Shop Products
+
+        div(mu-if="items.length")
+          a.uk-button.uk-button-default.uk-margin-small.uk-width-1-1(
             href="cart.html" mu-route) view cart
-        div
-          a(class="uk-button uk-button-primary uk-margin-small uk-width-1-1"
+
+        div(mu-if="items.length")
+          a.uk-button.uk-button-primary.uk-margin-small.uk-width-1-1(
             href="checkout.html" mu-route) checkout
 
     //- div(mu-debug="items")

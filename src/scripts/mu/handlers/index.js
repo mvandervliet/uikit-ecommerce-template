@@ -33,7 +33,7 @@ export class MuChange extends MuMx.compose(null,
  * <div mu-submit="handler.submit"></div>
  */
 export class MuSubmit extends MuMx.compose(null,
-  [MuCtxEventBindingMixin, [EVENT_ATTR.CHANGE, 'change']],
+  [MuCtxEventBindingMixin, [EVENT_ATTR.SUBMIT, 'submit']],
 ) { }
 
 // /**
