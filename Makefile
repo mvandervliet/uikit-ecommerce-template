@@ -1,4 +1,5 @@
 IMAGE=mushop-dev-storefront
+BACKEND=http://backend:8080
 
 up: services test-image start
 
@@ -21,7 +22,7 @@ start:
 		-v $$PWD:/usr/src/app   \
 		-P                      \
 		-e NODE_ENV=development \
-		-e API_PROXY=http://backend:8080 \
+		-e API_PROXY=$(BACKEND) \
 		-e PORT=3000            \
 		-p 3000:3000            \
 		--network mutest_default  \
@@ -55,6 +56,9 @@ test-image:
 
 kill-services:
 	@docker-compose -p mutest -f test/docker-compose.yml down
+
+stop-services:
+	@docker-compose -p mutest -f test/docker-compose.yml stop
 
 kill-server:
 	@if [ $$(docker ps -a -q -f name=$(IMAGE) | wc -l) -ge 1 ]; then docker rm -f $(IMAGE); fi

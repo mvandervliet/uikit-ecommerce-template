@@ -9,3 +9,7 @@ export function getGlobal(prop) {
 export function getWindow() {
   return window || {};
 }
+
+export function getDocument() {
+  return getGlobal('document');
+}

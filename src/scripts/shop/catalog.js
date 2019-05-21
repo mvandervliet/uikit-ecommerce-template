@@ -20,7 +20,18 @@ export class CatalogController {
     product.price = product.price.toFixed(2);
     // create pseudo shortdesc
     product.shortDescription = product.description.split('.').shift();
+    // backcompat
+    product.count = product.count || product.qty || 0;
+    product.name = product.name || product.title || '';
     return product;
+  }
+
+  _productRes(res) {
+    if (res.data && !(res.data.status_code > 200)) {
+      return this._normalize(res.data);
+    } else {
+      return Promise.reject(res.data.status_text);
+    }
   }
 
   search(params) {
@@ -32,7 +43,7 @@ export class CatalogController {
 
   product(id) {
     return this.mu.api.get(`${this._serviceUri}/${id}`)
-      .then(res => this._normalize(res.data))
+      .then(res => this._productRes(res))
   }
 }
 

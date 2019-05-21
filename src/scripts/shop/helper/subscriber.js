@@ -15,6 +15,7 @@ export const ShopMxSubscriber = ctor => class extends ctor {
    * @param {*} listener 
    */
   subscribe(event, publisher, listener, one) {
+    // console.log(`SUBSCRIBE`, event);
     this._shopMxSubs.add({ event, publisher, listener, one });
     return this;
   }

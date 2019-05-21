@@ -1,6 +1,7 @@
 import { Mu, MuMx, attrToSelector } from '../mu';
 import { ShopMxSubscriber } from './helper/subscriber';
 import { ViewTemplateMixin } from './helper/viewmx';
+import { MxCtxInsulator } from './helper/insulator';
 
 export class UserController {
   constructor() {
@@ -135,23 +136,22 @@ const USER_MU = {
  * @param {string} [viewName] 
  */
 export const UserViewMixin = (ctor, attr, viewName) => class extends MuMx.compose(ctor,
-  [ViewTemplateMixin, attr, viewName],
+  MxCtxInsulator,
   ShopMxSubscriber,
+  [ViewTemplateMixin, attr, viewName],
   ) {
 
   constructor() {
     super();
     // listen to user change
-    this.subscribe('user.profile', this.mu.user, this.onUpdate.bind(this, 'profile'))
-      .subscribe('user.address', this.mu.user, this.onUpdate.bind(this, 'address'))
-      .subscribe('user.card', this.mu.user, this.onUpdate.bind(this, 'card'));
+    this.subscribe('user.profile', this.mu.user, this._dataUpdate.bind(this, 'profile'));
   }
 
   _debug(...args) {
     // console.log(...args);
   }
 
-  onUpdate(prop, data) {
+  _dataUpdate(prop, data) {
     return this.render({ [prop]: data });
   }
 }
@@ -204,7 +204,7 @@ export class UserToolbar extends MuMx.compose(null, [UserViewMixin, null, 'userT
   }
 
   submitAuth(form, e) {
-    console.log('SUBMIT AUTH', form);
+    // console.log('SUBMIT AUTH', form);
     const fields = form.getData();
     const { username, password } = fields;
     this.mu.user.login(username, password)
@@ -238,11 +238,11 @@ export class UserToolbar extends MuMx.compose(null, [UserViewMixin, null, 'userT
 export class UserAddress extends MuMx.compose(null, [UserViewMixin, null, 'address.html']) {
   constructor() {
     super();
-    this.mu.on('ready', () => this.mu.user.address());
-    this.subscribe('form', this.context, f => {
-      return f && f.one('submit', this.save.bind(this))
-        .on('change', this.change.bind(this));
-    });
+    this.subscribeOne('user.address', this.mu.user, this._dataUpdate.bind(this, 'address')) // subscribe to address changes
+      .subscribeOne('attached:user.address', this.view, () => this.mu.user.address()) // fire GET address
+      .subscribeOne('addressForm', this.context, f => f && f // when form attaches
+        .one('submit', this.save.bind(this))
+        .on('change', this.change.bind(this)));
   }
 
   onMount() {
@@ -256,6 +256,7 @@ export class UserAddress extends MuMx.compose(null, [UserViewMixin, null, 'addre
       // actions
       edit: this.edit.bind(this)
     });
+    
     super.onMount();
   }
 
@@ -270,7 +271,7 @@ export class UserAddress extends MuMx.compose(null, [UserViewMixin, null, 'addre
 
   change(form) {
     // keep form data in sync
-    // NOTE: address originally is set by subscriber
+    // NOTE: address originally is set by subscriber('user.address')
     this.context.set('address', form.getData());
   }
 
@@ -293,7 +294,59 @@ export class UserAddress extends MuMx.compose(null, [UserViewMixin, null, 'addre
   }
 }
 
+
+export class UserPayment extends MuMx.compose(null, [UserViewMixin, null, 'userPayment.html']) {
+  constructor() {
+    super();
+    this.subscribeOne('user.card', this.mu.user, this._dataUpdate.bind(this, 'card')) // subscribe user payment
+      .subscribeOne('attached:user.payment', this.view, () => this.mu.user.card()) // trigger card into
+      .subscribeOne('paymentForm', this.context, f => f && f.one('submit', this.save.bind(this))); // when form attaches
+  }
+
+  onMount() {
+    this.context.extend({
+      // state
+      error: null,
+      loading: false,
+      editing: this._ctxAttrBool('editing'),
+      legend: this._ctxProp('legend'),
+      // actions
+      edit: this.edit.bind(this)
+    });
+    
+    super.onMount();
+  }
+
+  edit() {
+    this._toggleEdit = true;
+    this.render({ editing: true });
+  }
+
+  loading(loading) {
+    return this.render({ loading });
+  }
+
+  save(form) {
+    this.loading(true);
+    const card = form.getData();
+    this.mu.user.saveCard(card)
+      .then(a => this.done(null, a))
+      .catch(e => this.done(e, card));
+  }
+
+  done(error, card) {
+    return this.render({
+      error,
+      card,
+      loading: false,
+      success: !error,
+      editing: !!error || !this._toggleEdit,
+    });
+  }
+}
+
 export default Mu.macro('user', UserController)
   .micro('user.view', attrToSelector(USER_MU.VIEW), UserView)
   .micro('user.address', attrToSelector(USER_MU.ADDRESS), UserAddress)
+  .micro('user.payment', attrToSelector(USER_MU.PAYMENT), UserPayment)
   .micro('user.toolbar', attrToSelector(USER_MU.TOOLBAR), UserToolbar);

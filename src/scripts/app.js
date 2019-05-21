@@ -11,6 +11,7 @@ import './shop/page';
 import './shop/user';
 import './shop/catalog';
 import './shop/cart';
+import './shop/order';
 import './shop/components/debug';
 import './shop/components/form';
 

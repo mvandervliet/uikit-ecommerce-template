@@ -146,7 +146,7 @@ export class MuEmitter {
   }
 
   on(hook, listener) {
-    const set = this._listeners.get(hook) || new Set();
+    const set = this._getSet(hook);
     set.add(listener);
     this._listeners.set(hook, set);
     this._emitLast(hook, listener);
@@ -160,21 +160,23 @@ export class MuEmitter {
   }
 
   off(hook, listener) {
-    const set = this._listeners.get(hook) || new Set();
-    set.delete(listener);
+    this._getSet(hook).delete(listener);
     return this;
   }
 
   emit(hook, ...args) {
     this._emits.set(hook, args);
-    const set = this._listeners.get(hook) || [];
-    set.forEach(l => this._emitLast(hook, l));
+    this._getSet(hook).forEach(l => this._emitLast(hook, l));
     return this;
   }
 
   emitOnce(hook, ...args) {
-    (this._listeners.get(hook) || []).forEach(l => l(...args));
+    this._getSet(hook).forEach(l => l(...args));
     return this;
+  }
+
+  _getSet(hook) {
+    return this._listeners.get(hook) || new Set();
   }
 
   _emitLast(hook, listener) {
@@ -251,7 +253,7 @@ export class MuContext extends MuEmitter {
 
 }
 
-const [PROP_MU, PROP_MUS, PROP_CONTEXT] = ['mu', 'mus', 'muctx'];
+const [PROP_MU, PROP_MUS, PROP_CONTEXT, PROP_CLOAK] = ['mu', 'mus', 'muctx', 'mu-cloak'];
 
 /**
  * Mu client rendering engine
@@ -370,6 +372,9 @@ export class MuView extends MuEmitter {
         this.emitOnce(`attached:${mod.name}`, target, nodes);
       }
     });
+
+    // remove cloak
+    target.removeAttribute(PROP_CLOAK);
 
     // emit that view was attached
     this.emitOnce('attached', target);

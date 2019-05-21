@@ -8,7 +8,9 @@
 // Variables
 @import "_settings.less";
 
-
+*[mu-cloak] {
+  visibility: hidden;
+}
 
 @fixed-footer-reveal-height: 200px;
 @fixed-footer-reveal-height-sm: 600px;
@@ -22,10 +24,13 @@ main {
   @media (min-width: @breakpoint-medium) {
     margin-bottom: @fixed-footer-reveal-height;
   }
+  &.short-footer {
+    margin-bottom: @global-xlarge-margin;
+  }
 
   + footer {
     position: fixed;
-    padding-top: @global-margin;
+    // padding-top: @global-margin;
     bottom: 0;
     width: 100%;
     background: @global-secondary-background;
@@ -390,6 +395,13 @@ main {
 // Catalog
 // ========================================================================
 
+// lazy loading image
+img[data-src][src*='data:image'] {
+  background: url(images/logo.png) no-repeat center center;
+  background-size: contain; 
+}
+
+
 .mu-category-image {
   height: @catalog-category-img-height;
   width: auto;
@@ -412,8 +424,8 @@ li.mu-product-slider-item {
   transition: box-shadow @box-shadow-duration ease-in-out;
   background-color: @product-card-background-color;
   border: @global-border-width solid @global-border;
-  border-left: none;
-  box-shadow: 0 0 @global-border;
+  // border-left: none;
+  // box-shadow: 0 0 @global-border;
 
   // &.uk-first-column {
   //   border-left: none;
@@ -425,17 +437,18 @@ li.mu-product-slider-item {
 
   @media (min-width: @product-card-layout-breakpoint) {
     flex-direction: column;
-    border-top: none;
+    // border-top: none;
     border-left: @global-border-width solid @global-border;
     &:hover {
       z-index: 2;
-      box-shadow: @global-large-box-shadow;
+      // box-shadow: @global-large-box-shadow;
     }
   }
 
   // collapsed grid
   .uk-grid-collapse & {
     // border-left: @global-border-width solid @global-border;
+    border-left: none;
     border-top: none;
   }
 
@@ -449,6 +462,8 @@ li.mu-product-slider-item {
   width: @product-card-media-width;
   flex-shrink: 0;
   transition: transform 0.1s ease-in;
+  transform-origin: 0 50%;
+  padding: @global-small-gutter 0;
 
   & > .tm-ratio {
     height: 100%;
@@ -461,10 +476,12 @@ li.mu-product-slider-item {
 
   &:hover {
     transform: scale(1.02);
+    box-shadow: 0 2px 8px @global-border;
   }
 
   @media (min-width: @product-card-layout-breakpoint) {
     width: 100%;
+    transform-origin: 50% 0;
   }
 
 }
@@ -476,6 +493,11 @@ li.mu-product-slider-item {
   flex-direction: column;
   padding: @global-small-gutter;
   flex-grow: 1;
+  box-sizing: border-box;
+  width: 100% - @product-card-media-width;
+  @media (min-width: @product-card-layout-breakpoint) {
+    width: 100%;
+  }
 
   // @media (min-width: @breakpoint-small) {
   //   padding: 20px 20px 20px 0;
@@ -494,7 +516,8 @@ li.mu-product-slider-item {
   display: -webkit-box;
   display: -ms-flexbox;
   overflow: hidden;
-  max-height: @product-card-title-max-height;
+  // max-height: @product-card-title-max-height;
+  height: @product-card-title-max-height;
   margin: 0 0 20px;
   text-overflow: ellipsis;
   color: inherit;
@@ -504,7 +527,8 @@ li.mu-product-slider-item {
   @media (min-width: @breakpoint-small) {
     font-size: @product-card-title-font-size-s;
     line-height: @product-card-title-line-height-s;
-    max-height: @product-card-title-max-height-s;
+    // max-height: @product-card-title-max-height-s;
+    height: @product-card-title-max-height-s;
   }
 }
 
@@ -1033,61 +1057,66 @@ li.mu-product-slider-item {
 // ========================================================================
 
 .tm-choose {
-  position: relative;
-  width: 100%;
-  padding: 40px 20px 10px;
-  cursor: pointer;
-  border: @global-border-width solid @global-border;
-  border-radius: @global-border-radius;
+  > div {
+    position: relative;
+    width: 100%;
+    padding: 40px 20px 10px;
+    cursor: pointer;
+    border: @global-border-width solid @global-border;
+    border-radius: @global-border-radius;
 
-  &.uk-active {
-    border-color: @global-primary-background;
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      display: block;
+      width: @control-inputs-size;
+      height: @control-inputs-size;
+      cursor: pointer;
+      transform: translate(-50%, 0);
+    }
+
+    &::before {
+      border: @control-inputs-border-width solid @control-inputs-border;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    &:hover::before {
+      background-color: @control-inputs-hover;
+    }
+    &::after {
+      position: absolute;
+      border: 1px solid transparent;
+    }
   }
 
   &:not(.uk-active):hover,
   &:not(.uk-active):focus {
-    background-color: @global-muted-background;
+    > div {
+      background-color: @global-muted-background;
+    }
   }
 
-  &::before,
-  &::after {
-    content: "";
-    position: absolute;
-    top: 12px;
-    left: 50%;
-    display: block;
-    width: @control-inputs-size;
-    height: @control-inputs-size;
-    cursor: pointer;
-    transform: translate(-50%, 0);
+  &.uk-active {
+    
+    > div {
+      border-color: @global-primary-background;  
+      &::before {
+        border-color: transparent;
+        background-color: @control-checked-background;
+      }
+      &::after {
+        background-color: transparent;
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
+        .svg-fill(@control-radio-image, "#000", @control-checked-icon-color);
+      }
+    }
   }
 
-  &::before {
-    border: @control-inputs-border-width solid @control-inputs-border;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  &:hover::before {
-    background-color: @control-inputs-hover;
-  }
-
-  &.uk-active::before {
-    border-color: transparent;
-    background-color: @control-checked-background;
-  }
-
-  &::after {
-    position: absolute;
-    border: 1px solid transparent;
-  }
-
-  &.uk-active::after {
-    background-color: transparent;
-    background-repeat: no-repeat;
-    background-position: 50% 50%;
-    .svg-fill(@control-radio-image, "#000", @control-checked-icon-color);
-  }
 
   .tm-choose-title {
     font-size: @global-small-font-size;

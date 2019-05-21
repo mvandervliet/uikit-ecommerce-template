@@ -20,7 +20,7 @@ block index
             span.tm-pseudo= shopInfo.phone
 
 
-  main
+  main.short-footer
     section.uk-section.uk-section-small
       div.uk-container
         div.uk-grid-medium.uk-child-width-1-1(uk-grid)
@@ -36,11 +36,11 @@ block index
 
   footer
     div.uk-section.uk-section-secondary.uk-section-small.uk-light
-      div.uk-container
+      div.uk-container.uk-text-muted.uk-text-small
         div.uk-flex-middle(uk-grid)
 
           div.uk-width-expand
-            div= "©" + shopInfo.storeName + ". All rights reserved"
+            include /partials/_copyright
 
           div
             a.uk-link-muted(href="#")

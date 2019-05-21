@@ -165,6 +165,7 @@ export class MuRouteLink {
 
   click(e) {
     e.preventDefault();
+    e.stopPropagation();
     var router = this.mu.router;
     var href = this.node.getAttribute('mu-route-href') || this.node.getAttribute('href') || '';
     var page = router.resolve(href);
@@ -175,6 +176,7 @@ export class MuRouteLink {
       console.log('unresolved route', href);
       router.set(href);
     }
+    return false;
   }
 }
 

@@ -3,14 +3,15 @@ include ../mixins/_price
 
 article.tm-product-card
   //- Media
-  div.tm-product-card-media
+  div.tm-product-card-media.uk-background-default
     div.tm-ratio.tm-ratio-4-3
       a.tm-media-box(href="product.html?id={{product.id}}" mu-route)
 
         //- Image
-        figure.tm-media-box-wrap.uk-background-muted
+        figure.tm-media-box-wrap
           //- img( mu-if="product.image" mu-attr mu-attr-alt="product.name" mu-attr-src="product.image")
-          div.uk-animation-fade.uk-background-cover.uk-width-1-1.uk-height-1-1(
+          //- div.uk-animation-fade.uk-background-cover.uk-width-1-1.uk-height-1-1(
+          div.uk-animation-fade.uk-background-contain.uk-width-1-1.uk-height-1-1(
             uk-img
             mu-if="product.image"
             mu-attr mu-attr-data-src="product.image")

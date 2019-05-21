@@ -3,7 +3,7 @@
 Responsive eCommerce storefront built on microservices architecture.
 
 - Built with `[UIkit](https://getuikit.com)`
-- Templates courtesy of [Roman Chekurov](https://github.com/chekromul/uikit-ecommerce-template)
+- Original templates by [Roman Chekurov](https://github.com/chekromul/uikit-ecommerce-template)
 
 ## Overview
 

@@ -4,6 +4,7 @@ import { attrToSelector } from '../util';
 
 const LOGICAL_ATTR = {
   ATTR: 'mu-attr',
+  HIDE: 'mu-hide',
   CLASS: 'mu-class',
   EACH: 'mu-each',
   HTML: 'mu-html',
@@ -26,7 +27,7 @@ export class MuIF extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_ATTR
   onMount() {
     const { parentNode } = this.node;
     const virtual = this.view.virtual();
-    this.ifComment = virtual.createComment(LOGICAL_ATTR.IF);
+    this.ifComment = virtual.createComment(`${LOGICAL_ATTR.IF} ${this._ctxAttrProp()}`);
     // create placeholder target and
     parentNode.insertBefore(this.ifComment, this.node);
     parentNode.removeChild(this.node);
@@ -62,6 +63,7 @@ export class MuIF extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_ATTR
 
   refresh() {
     const test = this._ctxAttrBool();
+    // console.log(test, this._ctxAttrProp(), this.ifNode);
     const exist = this.ifNode && !!this.ifNode.parentNode;
     if (test) {
       if (!exist) {
@@ -164,7 +166,7 @@ export class MuAttr extends MuMx.compose(null, MuCtxAttrMixin) {
 
   refresh() {
     const attrReg = new RegExp(`^${LOGICAL_ATTR.ATTR}-([\\w-]+)`);
-    const bools = ['disabled', 'checked', 'selected'];
+    const bools = ['disabled', 'checked', 'selected', 'hidden'];
     // resolve all matching attr bindings
     const muAttrs = this.node.getAttributeNames()
       .filter(n => attrReg.test(n));
@@ -175,6 +177,27 @@ export class MuAttr extends MuMx.compose(null, MuCtxAttrMixin) {
       const val = bool ? this._ctxAttrBool(mattr) : this._ctxAttrValue(mattr);
       return val ? this.node.setAttribute(att, val) : this.node.removeAttribute(att);
     });
+  }
+}
+
+/**
+ * MuHide micro - hides the element based on context conditions
+ * @example
+ * <div mu-hide="true">hidden</div>
+ */
+export class MuHide extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_ATTR.HIDE]) {
+
+  onMount() {
+    this.refresh();
+    return super.onMount && super.onMount();
+  }
+
+  refresh() {
+    const test = this._ctxAttrBool();
+    const attr = 'hidden';
+    return test ?
+      this.node.setAttribute(attr, true) :
+      this.node.removeAttribute(attr);
   }
 }
 
@@ -237,6 +260,7 @@ export class MuClassLogical extends MuMx.compose(null, [MuCtxSingleAttrMixin, LO
 
 export default Mu.micro('logical.attr', attrToSelector(LOGICAL_ATTR.ATTR), MuAttr)
   .micro('logical.if', attrToSelector(LOGICAL_ATTR.IF), MuIF)
+  .micro('logical.hide', attrToSelector(LOGICAL_ATTR.HIDE), MuHide)
   .micro('logical.each', attrToSelector(LOGICAL_ATTR.EACH), MuEach)
   .micro('logical.class', attrToSelector(LOGICAL_ATTR.CLASS), MuClassLogical)
   .micro('logical.html', attrToSelector(LOGICAL_ATTR.HTML), MuHtml);

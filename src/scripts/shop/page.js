@@ -1,4 +1,5 @@
 import { Mu } from '../mu';
+import { getDocument } from '../util/window';
 
 const alias = { home: [/^\/$/] };
 const pages = {
@@ -37,9 +38,10 @@ function pageHref(page) {
 };
 
 export class PageController {
-  constructor() {
+  constructor(document) {
     // handle mu initialization
     this.mu.on('ready', this._init.bind(this));
+    this.document = document;
   }
 
   _init() {
@@ -109,6 +111,7 @@ export class PageController {
   }
 
   setPage(page) {
+    this.document.title = `MuShop::${page}`;
     this.emit(page);
   }
   
@@ -135,4 +138,4 @@ export class PageController {
 
 }
 
-export default Mu.macro('page', PageController);
+export default Mu.macro('page', PageController, getDocument());

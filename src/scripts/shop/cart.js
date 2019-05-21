@@ -6,7 +6,7 @@ import { ViewTemplateMixin } from './helper/viewmx';
 // some fixed business info
 const CART = {
   SHIPPING_STANDARD: 4.99,
-  FREE_THRESHOLD: 100,
+  FREE_THRESHOLD: 10000, // shipping is fixed :(
   TAX_RATE: 0,
 };
 
@@ -48,8 +48,14 @@ export class CartController {
   }
 
   remove(item) {
-    const { id, name } = item;
+    const id = typeof item === 'string' ? item : item.id;
     return this.mu.api.delete(`/cart/${id}`)
+      .then(this.getCart);
+  }
+
+  empty() {
+    this.data = null;
+    return this.mu.api.delete('/cart')
       .then(this.getCart);
   }
 
@@ -69,7 +75,7 @@ export class CartController {
       .reduce((total, line) => total + line, 0);
     let discounts = 0;
     const tax = subtotal * CART.TAX_RATE;
-    const shipRate = CART.SHIPPING_STANDARD;
+    const shipRate = subtotal ? CART.SHIPPING_STANDARD : 0;
     let shipping = shipRate;
     if( subtotal >= CART.FREE_THRESHOLD) {
       discounts += shipping;
@@ -102,7 +108,11 @@ export class CartController {
           update: this.update.bind(this, pMap[item.itemId]),
           remove: this.remove.bind(this, pMap[item.itemId]),
         }
-      })));
+      })))
+      .catch(() => {
+        this.empty(); // fire delete and reload
+        return this.contents(); // resolve promise
+      });
   }
 }
 
@@ -138,10 +148,11 @@ export class MuCart extends MuMx.compose(
     const totals = cart.totalsToFixed();
 
     // load corresponding sku records
-    return cart.combined()
+    return this.render({ loading: true })
+      .then(() => cart.combined())
       .then(items => items.map(row => ({
         ...row,
-        // qty manipulations
+        // qty manipulation bindings
         qty: {
           inc: this.increment.bind(this, row, 1),
           dec: this.increment.bind(this, row, -1),
@@ -149,6 +160,7 @@ export class MuCart extends MuMx.compose(
         }
       })))
       .then(items => this.render({
+        loading: false,
         items,
         size,
         totals,

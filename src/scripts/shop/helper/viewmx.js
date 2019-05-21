@@ -17,6 +17,14 @@ export const ViewTemplateMixin = (ctor, attr, viewName) => class extends MuMx.co
     return super.onMount && super.onMount();
   }
 
+  onDispose() {
+    const { parentNode } = this.node;
+    if (parentNode) {
+      parentNode.removeChild(this.node);
+    }
+    return super.onDispose && super.onDispose();
+  }
+
   viewTemplateDelegate() {
 
   }
@@ -26,4 +34,5 @@ export const ViewTemplateMixin = (ctor, attr, viewName) => class extends MuMx.co
     const renderMethod = this._localView ? 'render': 'renderRemote';
     return view && this.view[renderMethod](this.node, view, this.context.extend(data));
   }
+  
 }

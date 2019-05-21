@@ -57,15 +57,28 @@ aside.uk-offcanvas-bar.uk-padding-remove
               //- div(mu-debug="row.product")
 
     footer.uk-card-footer
-      div.uk-grid-small(uk-grid)
+
+      div.uk-grid-small(uk-grid)      
         div.uk-width-expand.uk-text-muted.uk-h4 Subtotal
         div.uk-h4.uk-text-bolder
           +price("totals.subtotal")
+      
+      //- div.uk-grid-small(uk-grid)
+        div.uk-width-expand.uk-text-muted.uk-h4(mu-class="{'uk-text-success': '!rawTotals.shipping'}")
+          span(mu-if="!rawTotals.shipping") FREE
+            | 
+          span Shipping
+        div.uk-h4.uk-text-bolder
+          div(mu-if="rawTotals.shipping")
+            +price("totals.shipping")
+          s(mu-if="!rawTotals.shipping")
+            +price("totals.shipRate")
+
       div(class="uk-grid-small " +
                 "uk-child-width-1-1 " +
                 "uk-child-width-1-2@m " +
                 "uk-margin-small" uk-grid)
-
+      
         div.uk-width-1-1(mu-if="!items.length")
           a.uk-button.uk-button-primary.uk-margin-small.uk-width-1-1(
             href="catalog.html" mu-route) Shop Products

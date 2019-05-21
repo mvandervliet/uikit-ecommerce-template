@@ -15,7 +15,10 @@ export class MuUi {
 
 const UkComponentAttr = 'mu-uk-component';
 export class UKComponent extends MuMx.compose(null, [MuCtxSetterMixin, UkComponentAttr]) {
-
+  // onMount() {
+  //   this.mu.ui.kit.update(this.node);
+  //   return super.onMount && super.onMount();
+  // }
   onDispose() {
     super.onDispose();
     // ensure the node is removed (incase ui-kit relocates with dom manipulations)
