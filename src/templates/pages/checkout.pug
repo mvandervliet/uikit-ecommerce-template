@@ -74,7 +74,7 @@ block checkout
 
                 //- Delivery
                 section
-                  div(mu-user-address editing="false" type="shipping")
+                  div(mu-user-address onAddress="onAddress" editing="false" type="shipping")
 
                 //- Pick up
                 section
@@ -114,7 +114,7 @@ block checkout
                 
                 div.uk-switcher.uk-margin
                   section
-                    div(mu-user-payment editing="false")
+                    div(mu-user-payment editing="false" onCard="onCard")
                   section
                     p.uk-text-warning
                       +icon('warning')(class="uk-margin-small-right")
@@ -142,7 +142,7 @@ block checkout
         div.uk-card.uk-card-default.uk-card-small.tm-ignore-container(
           uk-sticky="offset: 30; bottom: true; media: @m;")
 
-          div(mu-cart)
+          div(mu-cart onItems="onCartItems")
             section.uk-card-body
               h4 Items in order
               div.uk-grid-small(uk-grid mu-each="items" mu-each-as="row")
@@ -203,6 +203,6 @@ block checkout
           div.uk-text-center
             button.uk-button.uk-button-primary.uk-width-1-1(
               type="submit"
-              mu-click="order.submit"
-              mu-attr mu-attr-disabled="!order.ready"
+              mu-click="handleSubmit"
+              mu-attr mu-attr-disabled="!canCheckout"
             ) Place Order

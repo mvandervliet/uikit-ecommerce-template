@@ -55,20 +55,16 @@ export class MuRouterMacro {
 
   querystring(q) {
     var query = new URLSearchParams();
-    Object.keys(q).forEach(function(p){
-      query.set(p, q[p]);
-    });
+    Object.keys(q).forEach(p => query.set(p, q[p]));
     return query.toString();
   }
 
   queryparams(q) {
-    q = q.split('?').slice(1).join('?');
+    q = (q || this.search()).split('?').slice(1).join('?');
     if (q) {
       var query = new URLSearchParams(q);
       var search = {};
-      query.forEach(function(key, val) {
-        search[key] = val;
-      });
+      query.forEach((val, key) => search[key] = val);
       return search;
     }
   }
@@ -97,14 +93,20 @@ export class MuRouterMacro {
     }
   }
 
+  href(name, search) {
+    const route = this._routes[name];
+    const qs = search ? '?' + this.querystring(search) : '';
+    return route.path + qs;
+  }
+
   /**
    * make router/state reflect the params
    */
   go(name, search, params, replace) {
     const route = this._routes[name];
-    const qs = search ? '?' + this.querystring(search) : '';
+    const href = this.href(name, search);
     const call = replace ? '_replace' : '_push';
-    this[call](route.path + qs, {
+    this[call](href, {
       name: name,
       route: route,
       search: search,

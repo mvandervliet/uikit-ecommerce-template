@@ -1,5 +1,14 @@
 
 /**
+ * mixin to ensure new context is not created during micro binding
+ * @param {*} ctor 
+ */
+export const MuCtxInheritOnly = ctor => {
+  ctor.CTX_INHERIT_ONLY = true;
+  return ctor;
+}
+
+/**
  * 
  * @param {*} ctor 
  */
@@ -43,6 +52,7 @@ export const MuCtxAttrMixin = ctor => class extends ctor {
     } else if (!ctxVal && typeof expression === 'string') {
       try { test = JSON.parse(expression); } catch (e) { }
     }
+    // TODO: invert if promise?
     return invert ? !test : test;
   }
   
@@ -74,16 +84,25 @@ export const MuCtxSetterMixin = (ctor, ...attributes) => class extends MuCtxAttr
     attributes
       .map(attr => ({ attr, prop: this._ctxAttrProp(attr) }))
       .filter(m => m.prop)
-      .forEach(m => this.context.set(m.prop, this.valueForCtx(m.attr)));
+      .forEach(m => this.ctxForProp(m.attr).set(m.prop, this.valueForCtx(m.attr)));
     return super.onMount && super.onMount();
   }
 
   onDispose() {
     attributes
-      .map(attr => this._ctxAttrProp(attr))
-      .filter(p => !!p)
-      .forEach(p => this.context.set(p, null));
+      .map(attr => ({ attr, prop: this._ctxAttrProp(attr) }))
+      .filter(m => m.prop)
+      // .forEach(m => this.ctxForProp(m.attr).set(m.prop, null));
+      .forEach(m => this.ctxForProp(m.attr).delete(m.prop));
     return super.onDispose && super.onDispose();
+  }
+
+  /**
+   * Can be overidden to supply alternate context
+   * @param {*} attr 
+   */
+  ctxForProp(attr) {
+    return this.context;
   }
 
   /**

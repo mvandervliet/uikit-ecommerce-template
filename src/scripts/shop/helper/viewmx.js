@@ -6,7 +6,8 @@ import { MuMx, MuCtxAttrMixin } from "../../mu";
  * @param {string} attr - selector attribute
  * @param {string} [viewName] - static remote view name
  */
-export const ViewTemplateMixin = (ctor, attr, viewName) => class extends MuMx.compose(ctor, MuCtxAttrMixin) {
+export const ViewTemplateMixin = (ctor, attr, viewName) => 
+class extends MuMx.compose(ctor, MuCtxAttrMixin) {
 
   onMount() {
     this._remoteView = viewName || // explicitly defined by mixin

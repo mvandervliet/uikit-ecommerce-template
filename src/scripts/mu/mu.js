@@ -16,6 +16,13 @@ const MuUtil = {
     return (path || '').split(/[:\.]/).filter(p => !!p);
   },
 
+  propTarget(object, prop) {
+    const path = this.propPath(prop);
+    const key = path.pop();
+    const target = path.reduce((last, key) => (last[key] = last[key] || {}), object);
+    return { target, key };
+  },
+
   /**
    * define property on object
    * @param {*} object
@@ -23,10 +30,13 @@ const MuUtil = {
    * @param {*} value 
    */
   defineProp(object, prop, value) {
-    const path = this.propPath(prop);
-    const propName = path.pop();
-    const target = path.reduce((last, key) => (last[key] = last[key] || {}), object);
-    Object.assign(target, propName ? { [propName]: value } : value);
+    const { target, key } = this.propTarget(object, prop);
+    Object.assign(target, key ? { [key]: value } : value);
+  },
+
+  deleteProp(object, prop) {
+    const { target, key } = this.propTarget(object, prop);
+    delete target[key];
   },
 
   mergeProp(object, prop, mixin) {
@@ -69,16 +79,14 @@ const MuUtil = {
   initModule(mod, mu, view, context) {
     const emitter = new MuEmitter(mod.ctor.name);
     const ModCtor = MuMx.pure(mod.ctor, ...mod.args);
+    const emits = ['on', 'one', 'always', 'off', 'emit', 'emitOnce'];
     MuUtil.mergeProp(ModCtor.prototype, null, {
       mu, 
       view,
-      // emitter
-      on: emitter.on.bind(emitter),
-      one: emitter.one.bind(emitter),
-      off: emitter.off.bind(emitter),
-      emit: emitter.emit.bind(emitter),
       // context
       ...(context ? { context } : {}),
+      // emitter methods
+      ...Object.assign(...emits.map(m => ({[m]: emitter[m].bind(emitter)}))),
     });
 
     // instantiate
@@ -146,16 +154,19 @@ export class MuEmitter {
   }
 
   on(hook, listener) {
-    const set = this._getSet(hook);
-    set.add(listener);
-    this._listeners.set(hook, set);
-    this._emitLast(hook, listener);
+    this._getSet(hook).add(listener);
+    // this._emitLast(hook, listener);
     return this;
   }
 
   one(hook, listener) {
     // replace all listeners with this one
-    this._listeners.set(hook, new Set([listener]));
+    this._getSet(hook).clear();
+    return this.on(hook, listener);
+  }
+
+  always(hook, listener) {
+    this.on(hook, listener)._emitLast(hook, listener);
     return this;
   }
 
@@ -176,7 +187,12 @@ export class MuEmitter {
   }
 
   _getSet(hook) {
-    return this._listeners.get(hook) || new Set();
+    let s = this._listeners.get(hook);
+    if (!s) {
+      s = new Set();
+      this._listeners.set(hook, s);
+    }
+    return s;
   }
 
   _emitLast(hook, listener) {
@@ -232,6 +248,32 @@ export class MuContext extends MuEmitter {
   }
 
   /**
+   * check if key is set in context
+   * @param {string} key 
+   */
+  has(key) {
+    return !!this.get(key);
+  }
+
+  /**
+   * delete property
+   * @param {*} key 
+   */
+  delete(key) {
+    MuUtil.deleteProp(this.data, key);
+  }
+
+  /**
+   * 
+   * @param {string} key 
+   * @param {function} cb 
+   */
+  always(key, cb) {
+    cb(this.get(key));
+    return this.on(key, cb);
+  }
+
+  /**
    * extend the root context with the new object
    * @param {object} data 
    */
@@ -251,9 +293,22 @@ export class MuContext extends MuEmitter {
     });
   }
 
+  /**
+   * resolve parent context
+   */
+  parent() {
+    return this.get('ctxParent');
+  }
+
 }
 
-const [PROP_MU, PROP_MUS, PROP_CONTEXT, PROP_CLOAK] = ['mu', 'mus', 'muctx', 'mu-cloak'];
+const MUPROP = {
+  MU: 'mu',
+  MUS: 'mus',
+  CTX: 'muctx',
+  DEBOUNCE: 'mudebounce',
+  CLOAK: 'mu-cloak',
+};
 
 /**
  * Mu client rendering engine
@@ -337,44 +392,66 @@ export class MuView extends MuEmitter {
     const _mus = [];
 
     // bind mu to the anything with standard [mu] selector
-    Array.apply(null, target.querySelectorAll(attrToSelector(PROP_MU)))
+    Array.apply(null, target.querySelectorAll(attrToSelector(MUPROP.MU)))
       .forEach(node => MuUtil.mergeProp(node, null, {
-        [PROP_MU]: this.mu, // direct access to mu
-        [PROP_CONTEXT]: this.mu.root.context, // global context
+        [MUPROP.MU]: this.mu, // direct access to mu
+        [MUPROP.CTX]: this.mu.root.context, // global context
       }));
 
     // keep mus array on target
-    MuUtil.defineProp(target, PROP_MUS, _mus);
+    MuUtil.defineProp(target, MUPROP.MUS, _mus);
+
+    const addPrebindings = parent => {
+      const any = micro.map(mod => mod.binding).join(',');
+      Array.apply(null, parent.querySelectorAll(any))
+        .filter(c => !c.muOriginal)
+        .forEach(child => {
+          const clone = child.cloneNode(true);
+          MuUtil.defineProp(child, 'muOriginal', () => 
+            addPrebindings(clone.cloneNode(true)));
+        });
+
+      return parent;
+    };
 
     // assign getters on prebound objects
-    const any = micro.map(mod => mod.binding).join(',');
-    Array.apply(null, target.querySelectorAll(any))
-      .forEach(node => {
-        const clone = node.cloneNode(true);
-        MuUtil.defineProp(node, 'muOriginal', () => clone.cloneNode(true));
-      });
+    addPrebindings(target);
     
     // bind micros
     micro.forEach(mod => {
       const nodes = target.querySelectorAll(mod.binding);
+      const list = [];
       // instantiate per node
       Array.apply(null, nodes).forEach(node => {
-        const nodeCtx = MuUtil.resolveProp(node, PROP_CONTEXT);
-        const ctx = nodeCtx || commonCtx || MuContext.toContext(); // context may be shared or uniquely scoped
-        const instance = MuUtil.initModule(mod, this.mu, this, ctx);
-        MuUtil.mergeProp(instance, null, { node }); // assign the node to the instance
-        // MuUtil.mergeProp(node, mod.name, instance); // assign the module instance to the node
-        _mus.push(instance);
-        return instance.onMount && instance.onMount();
-      });
+        // determine context
+        const nodeCtx = MuUtil.resolveProp(node, MUPROP.CTX);
+        const ctx = nodeCtx || commonCtx || 
+          (!mod.ctor.CTX_INHERIT_ONLY && MuContext.toContext()); // context may be shared or uniquely scoped
+        
+        if (ctx && target.contains(node)) {
+          const instance = MuUtil.initModule(mod, this.mu, this, ctx);
+          MuUtil.defineProp(instance, 'node', node); // assign the node to the instance
+          // MuUtil.defineProp(node, MUPROP.CTX, ctx); // assign sticky context to the node for persistence
+          // reference the instance in the target mus
+          _mus.push(instance);
+          list.push(node);
+          return instance.onMount && instance.onMount();
+        } else {
+          // if (!target.contains(node)) {
+          //   console.log('SKIP NODE DETACHED', mod.binding, node);
+          // }
+        }
 
-      if (nodes.length) {
-        this.emitOnce(`attached:${mod.name}`, target, nodes);
+      });
+      // TODO: need to find a way to dedupe attachments when a parent contains a child
+      if (list.length) {
+        // console.log(`attached:${mod.name}`, target);
+        this.emitOnce(`attached:${mod.name}`, target, list);
       }
     });
 
     // remove cloak
-    target.removeAttribute(PROP_CLOAK);
+    target.removeAttribute(MUPROP.CLOAK);
 
     // emit that view was attached
     this.emitOnce('attached', target);
@@ -382,7 +459,7 @@ export class MuView extends MuEmitter {
   }
 
   dispose(target, andContext) {
-    const _mus = MuUtil.resolveProp(target, PROP_MUS);
+    const _mus = MuUtil.resolveProp(target, MUPROP.MUS);
     const { context: rootCtx } = this.mu.root;
     if (_mus) {
       let m = _mus.shift();

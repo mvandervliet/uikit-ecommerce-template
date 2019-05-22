@@ -12,21 +12,26 @@ export const ShopMxSubscriber = ctor => class extends ctor {
    * 
    * @param {*} event 
    * @param {*} publisher 
-   * @param {*} listener 
+   * @param {*} listener
+   * @param {*} [method] - subscription type (on|one|always)
    */
-  subscribe(event, publisher, listener, one) {
+  subscribe(event, publisher, listener, method) {
     // console.log(`SUBSCRIBE`, event);
-    this._shopMxSubs.add({ event, publisher, listener, one });
+    this._shopMxSubs.add({ event, publisher, listener, method });
     return this;
   }
 
   subscribeOne(event, publisher, listener) {
-    return this.subscribe(event, publisher, listener, true);
+    return this.subscribe(event, publisher, listener, 'one');
+  }
+
+  subscribeAlways(event, publisher, listener) {
+    return this.subscribe(event, publisher, listener, 'always');
   }
 
   onMount() {
     const sup = super.onMount && super.onMount();
-    this._shopMxSubs.forEach(sub => sub.publisher[sub.one ? 'one' : 'on'](sub.event, sub.listener));
+    this._shopMxSubs.forEach(sub => sub.publisher[sub.method || 'on'](sub.event, sub.listener));
     return sup;
   }
 

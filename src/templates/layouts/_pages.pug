@@ -13,11 +13,18 @@ block default
               li: a(href="index.html" mu-route) Home
               each href, breadcrumb in page.breadcrumbs
                 li: a(href= href mu-route)= breadcrumb
-              if page.title
+              if page.muTitle
+                li
+                  span(mu mu-html="page.title")
+                    |...
+              else if page.title
                 li: span= page.title
-          if page.title
+          if page.muTitle
+            h1.uk-margin-small-top.uk-margin-remove-bottom(mu mu-html="page.title")
+              |...
+          else if page.title
             h1.uk-margin-small-top.uk-margin-remove-bottom= page.title
-          if page.quantity
+          //- if page.quantity
             div.uk-text-meta.uk-margin-xsmall-top #{page.quantity} items
 
         div

@@ -1,7 +1,8 @@
-import { Mu, MuMx } from '../mu';
+import { Mu, MuMx, MuCtxSetterMixin } from '../mu';
 import { ShopMxSubscriber } from './helper/subscriber';
 import { Badge } from './components/badge';
 import { ViewTemplateMixin } from './helper/viewmx';
+import { MxCtxInsulator } from './helper/mixins';
 
 // some fixed business info
 const CART = {
@@ -12,8 +13,8 @@ const CART = {
 
 export class CartController {
   constructor() {
-    this.getCart = this.getCart.bind(this);
-    this.mu.on('ready', () => this.mu.user.on('user.profile', this.getCart));
+    this.load = this.load.bind(this);
+    this.mu.on('ready', () => this.mu.user.always('user.profile', this.load));
   }
 
   _conditioner(items) {
@@ -24,17 +25,23 @@ export class CartController {
     }));
   }
 
-  getCart() {
+  _setCart(items) {
+    this.data = this._conditioner(items);
+    this.combinedData = null;
+    this.emit('contents', this.data);
+    return this.data;
+  }
+
+  load() {
     this.mu.api.get('/cart')
-      .then(res => this.data = this._conditioner(res.data))
-      .then(() => this.emit('contents', this.contents()));
+      .then(res => this._setCart(res.data))
   }
 
   add(item, quantity) {
     const { api, ui } = this.mu;
     const { id, name } = item; 
     return api.post('/cart', { id, quantity })
-      .then(this.getCart)
+      .then(this.load)
       .then(() => ui.notification(`"${name}" added to cart!`, {
         status: 'success',
         timeout: 1e3
@@ -44,19 +51,19 @@ export class CartController {
   update(item, quantity) {
     const { id } = item;
     return this.mu.api.post('/cart/update', { id, quantity })
-      .then(this.getCart);
+      .then(this.load);
   }
 
   remove(item) {
     const id = typeof item === 'string' ? item : item.id;
     return this.mu.api.delete(`/cart/${id}`)
-      .then(this.getCart);
+      .then(this.load);
   }
 
   empty() {
     this.data = null;
     return this.mu.api.delete('/cart')
-      .then(this.getCart);
+      .then(this.load);
   }
 
   contents() {
@@ -97,7 +104,7 @@ export class CartController {
     const { catalog } = this.mu;
     const contents = this.contents();
     
-    return Promise.all(contents.map(item => catalog.product(item.itemId)))
+    this.combinedData = this.combinedData || Promise.all(contents.map(item => catalog.product(item.itemId)))
       // map to {[id]: product} hash
       .then(products => Object.assign({}, ...products.map(p => ({[p.id]: p}))))
       // map to a new object for mixed use
@@ -109,10 +116,11 @@ export class CartController {
           remove: this.remove.bind(this, pMap[item.itemId]),
         }
       })))
-      .catch(() => {
-        this.empty(); // fire delete and reload
-        return this.contents(); // resolve promise
-      });
+      // .catch(() => {
+      //   this.empty(); // fire delete and reload
+      //   return this.contents(); // resolve promise
+      // });
+    return this.combinedData;
   }
 }
 
@@ -120,7 +128,7 @@ class CartSubscriber extends MuMx.compose(null, ShopMxSubscriber) {
   constructor() {
     super();
     this.listener = this.listener.bind(this);
-    this.subscribe('contents', this.mu.cart, this.listener);
+    this.subscribeAlways('contents', this.mu.cart, this.listener);
   }
 
   listener(cart) {
@@ -131,13 +139,15 @@ class CartSubscriber extends MuMx.compose(null, ShopMxSubscriber) {
 /**
  * off canvas cart
  */
-export class MuCart extends MuMx.compose(
-  CartSubscriber,
-  ViewTemplateMixin) {
+export class MuCart extends MuMx.compose(CartSubscriber,
+  MxCtxInsulator,
+  ViewTemplateMixin,
+  // [MuCtxSetterMixin, 'mu-cart'],
+  ) {
   
   viewTemplateDelegate() {
-    return this._ctxProp('template') || // source the template remotely
-      null; // use node contents
+    // source the template remotely from the property, || use node.innerHTML
+    return this._ctxProp('template') || null;
   }
 
   listener(rows) {
@@ -146,6 +156,8 @@ export class MuCart extends MuMx.compose(
     const size = cart.size();
     const rawTotals = cart.totals();
     const totals = cart.totalsToFixed();
+
+    const cb = this._ctxAttrValue('onItems') || (() => {});
 
     // load corresponding sku records
     return this.render({ loading: true })
@@ -165,7 +177,7 @@ export class MuCart extends MuMx.compose(
         size,
         totals,
         rawTotals,
-      }));
+      }).then(() => cb(items)));
   }
 
   increment(row, amnt) {

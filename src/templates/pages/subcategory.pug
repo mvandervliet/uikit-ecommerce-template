@@ -3,16 +3,16 @@ extends /layouts/_pages
 block vars
   -
     page = {
-      title: 'Laptops',
+      muTitle: true,
       breadcrumbs: {
         'Catalog': 'catalog.html',
-        'Laptops & Tablets': 'category.html'
+        //- 'Laptops & Tablets': 'category.html'
       },
       quantity: 289
     }
 
 block pages
-  div.uk-grid-medium(uk-grid)
+  div.uk-grid-medium(uk-grid mu-category)
 
     //- Filters
     aside#filters.uk-width-1-4.tm-aside-column.tm-filters(
@@ -47,11 +47,11 @@ block pages
                   div
                     div.uk-inline
                       span.uk-form-icon.uk-text-xsmall from
-                      input.uk-input(type="text" placeholder="$59")
+                      input.uk-input(type="text" placeholder="$0")
                   div
                     div.uk-inline
                       span.uk-form-icon.uk-text-xsmall to
-                      input.uk-input(type="text" placeholder="$6559")
+                      input.uk-input(type="text" placeholder="$199")
 
             //- Properties
             each property in filters
@@ -95,4 +95,4 @@ block pages
 
     //- Content
     div.uk-width-expand
-      include /partials/_products
+      div(mu-products)

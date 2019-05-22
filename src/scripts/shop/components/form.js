@@ -4,13 +4,13 @@ import { MuCtxSetterMixin } from '../../mu/bindings';
 
 export class MuForm extends MuMx.compose(null, [MuCtxSetterMixin, 'mu-form']) {
 
-  constructor() {
-    super();
+  onInit() {
     this.submit = this.submit.bind(this);
     this.change = this.change.bind(this);
   }
 
   onMount() {
+    // console.log('FORM MOUNT', this.context._id, this.node);
     const eNoop = e => e.preventDefault();
     this._change = this.node.onchange || eNoop;
     this._submit = this.node.onsubmit || eNoop;
@@ -20,12 +20,13 @@ export class MuForm extends MuMx.compose(null, [MuCtxSetterMixin, 'mu-form']) {
   }
 
   submit(e) {
-    this.emit('submit', this, e);
+    // console.log('SUBMIT', this.context._id, this.node);
+    this.emitOnce('submit', this, e);
     return this._submit(e);
   }
 
   change(e) {
-    this.emit('change', this, e);
+    this.emitOnce('change', this, e);
     this._change(e);
   }
 

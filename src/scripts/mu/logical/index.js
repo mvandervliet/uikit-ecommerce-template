@@ -1,5 +1,5 @@
 import { Mu, MuMx } from '../mu';
-import { MuCtxSingleAttrMixin, MuCtxAttrMixin } from '../bindings';
+import { MuCtxSingleAttrMixin, MuCtxAttrMixin, MuCtxInheritOnly } from '../bindings';
 import { attrToSelector } from '../util';
 
 const LOGICAL_ATTR = {
@@ -15,9 +15,11 @@ const LOGICAL_ATTR = {
 
 
 /**
- * MuIF micro - conditional display based on context property
+ * Mixin for single attribute context/refresh subscription
+ * @param {*} ctor 
+ * @param {*} attr 
  */
-export class MuIF extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_ATTR.IF]) {
+const MxCtxAttrRefresh = (ctor, attr) => class extends MuCtxSingleAttrMixin(ctor, attr) {
 
   onInit() {
     this.refresh = this.refresh.bind(this);
@@ -25,57 +27,86 @@ export class MuIF extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_ATTR
   }
 
   onMount() {
-    const { parentNode } = this.node;
-    const virtual = this.view.virtual();
-    this.ifComment = virtual.createComment(`${LOGICAL_ATTR.IF} ${this._ctxAttrProp()}`);
-    // create placeholder target and
-    parentNode.insertBefore(this.ifComment, this.node);
-    parentNode.removeChild(this.node);
-
-    // clone the original node for re-use
-    const c = this.nodeCopy = this.node.cloneNode(true);
-    c.removeAttribute(LOGICAL_ATTR.IF); // prevent re-binding
-
-    this.refresh();
-    this.context.on(this._ctxKey(), this.refresh);
+    this.context.always(this._ctxKey(), this.refresh);
     return super.onMount && super.onMount();
   }
 
   onDispose() {
-    this.falsey();
     this.context.off(this._ctxKey(), this.refresh);
-    const { parentNode } = this.ifComment;
-    parentNode && parentNode.removeChild(this.ifComment);
     return super.onDispose && super.onDispose();
   }
 
-  falsey() {
-    const { ifNode, ifComment } = this;
-    if (ifNode) {
-      const { parentNode } = ifComment;
-      this.view.dispose(ifNode, true);
-      this.ifNode = null;
+  refresh() {
+
+  }
+}
+
+/**
+ * MuIF micro - conditional display based on context property
+ */
+export class MuIF extends MuMx.compose(null,
+  MuCtxInheritOnly,
+  [MxCtxAttrRefresh, LOGICAL_ATTR.IF],
+  // [MuCtxSingleAttrMixin, LOGICAL_ATTR.IF]
+) {
+
+  onMount() {
+    const { parentNode } = this.node;
+    const virtual = this.view.virtual();
+    this.placeholder = virtual.createComment(`${LOGICAL_ATTR.IF} ${this._ctxKey()}`);
+    // create placeholder target and remove the source node
+    parentNode.insertBefore(this.placeholder, this.node);
+    parentNode.removeChild(this.node);
+
+    return super.onMount();
+  }
+
+  onDispose() {
+    this.falsy();
+    const { parentNode } = this.placeholder;
+    parentNode && parentNode.removeChild(this.placeholder);
+    return super.onDispose();
+  }
+
+  falsy() {
+    const { current, placeholder } = this;
+    const { parentNode } = placeholder;
+    if (current) {
+      // console.log('dispose if', current);
+      // this.view.dispose(ifNode, true);
+      this.view.dispose(current);
+      this.current = null;
       return parentNode && 
-        parentNode.contains(ifNode) && 
-        parentNode.removeChild(ifNode);
+        parentNode.contains(current) && 
+        parentNode.removeChild(current);
     }
   }
 
-  refresh() {
-    const test = this._ctxAttrBool();
-    // console.log(test, this._ctxAttrProp(), this.ifNode);
-    const exist = this.ifNode && !!this.ifNode.parentNode;
-    if (test) {
-      if (!exist) {
-        const { parentNode } = this.ifComment;
-        const node = this.ifNode = this.nodeCopy.cloneNode(true);
-        const insert = parentNode && parentNode.insertBefore(node, this.ifComment);
-        this.view.attach(node, this.context.child());
-        return insert;
-      }
-    } else {
-      this.falsey();
-    }
+  getOriginal() {
+    // clone the original node for re-use
+    const c = this.node.muOriginal();
+    c.removeAttribute(LOGICAL_ATTR.IF); // prevent re-binding
+    return c;
+  }
+
+  refresh(val, mounting) {
+    // make async
+    return Promise.resolve(this._ctxAttrBool())
+      .then(test => {
+        const { current, placeholder } = this;
+        const exist = current && !!current.parentNode;
+        this.falsy();
+        if (test) {
+          const { parentNode } = placeholder;
+          const fresh = this.getOriginal();
+          // render fresh
+          const virtual = this.current = this.view.virtualContainer();
+          virtual.appendChild(fresh);
+          this.view.attach(virtual, this.context);
+          
+          return parentNode && parentNode.insertBefore(fresh, placeholder);
+        }
+      });
   }
 }
 
@@ -86,12 +117,14 @@ export class MuIF extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_ATTR
  *   <a mu-html="item"></a>
  * </li>
  */
-export class MuEach extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_ATTR.EACH]) {
+export class MuEach extends MuMx.compose(null,
+  MuCtxInheritOnly,
+  [MxCtxAttrRefresh, LOGICAL_ATTR.EACH],
+) {
 
   onInit() {
     this.eachNodes = [];
-    this.refresh = this.refresh.bind(this);
-    return super.onInit && super.onInit();
+    return super.onInit();
   }
 
   onMount() {
@@ -99,54 +132,61 @@ export class MuEach extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_AT
     const { parentNode } = this.node;
 
     const virtual = this.view.virtual();
-    this.eachComment = virtual.createComment(LOGICAL_ATTR.EACH);
-    parentNode.insertBefore(this.eachComment, this.node);
+    this.placeholder = virtual.createComment(`${LOGICAL_ATTR.EACH} ${this._ctxKey()}`);
+    parentNode.insertBefore(this.placeholder, this.node);
     parentNode.removeChild(this.node);
 
-    // clone the node for re-use
-    const c = this.original = this.node.muOriginal();
-    c.removeAttribute(LOGICAL_ATTR.EACH); // prevent re-binding
-
     // console.log('MOUNTED each', this.original);
-    this.refresh();
-    this.context.on(this._ctxKey(), this.refresh);
-    super.onMount && super.onMount();
+    return super.onMount();
   }
 
-  onDispose() {
-    // console.log('DISPOSED each', this.original);
-    this.context.off(this._ctxKey(), this.refresh);
-    return super.onDispose && super.onDispose();
+  getOriginal() {
+    // clone the original node for re-use
+    const c = this.node.muOriginal();
+    c.removeAttribute(LOGICAL_ATTR.EACH); // prevent re-binding
+    return c;
   }
 
-  refresh() {
+  refresh(list, mounting) {
     const val = this._ctxAttrValue();
-    // console.log('EACH RENDER', this.original, val);
     // dispose old
     this.eachNodes = this.eachNodes.reduce((empty, old) => {
-      this.view.dispose(old);
+      this.view.dispose(old, true);
       old.parentNode.removeChild(old);
       return empty;
     }, []);
-    // resolve new
+    
+    // resolve new value
+    // NOTE, because this is a promise, a parent context will bypass the nodes
     return Promise.resolve(typeof val === 'function' ? val() : val)
       .then(items => {
         if (items && items.length) {
-          const itemAs = this.original.getAttribute('mu-each-as') || this._ctxKey();
-          const { parentNode } = this.eachComment;
-          const virtualEnd = this.view.virtualContainer();
-          parentNode.insertBefore(virtualEnd, this.eachComment);
+          const copy = this.getOriginal();
+          const itemAs = copy.getAttribute('mu-each-as') || this._ctxKey();
+          const { parentNode } = this.placeholder;
+
+          // create virtual bumper
+          const bumper = this.view.virtualContainer();
+          parentNode.insertBefore(bumper, this.placeholder);
 
           // populate virtual node with items
-          items.reduce((last, current) => {
-            const fresh = this.original.cloneNode(true);
-            last.insertAdjacentElement("afterend", fresh);
-            this.view.attach(fresh, this.context.child({ [itemAs]: current }));
+          items.reduce((prev, item) => {
+            // create new freshy after the last (or bumper)
+            const fresh = this.getOriginal();
+            prev.insertAdjacentElement("afterend", fresh);
+            
+            // attach the view
+            this.view.attach(fresh, this.context.child({
+              [this._ctxKey()]: null, // remove list from context
+              [itemAs]: item,      // single list item
+            }));
+
+            // keep node in memory
             this.eachNodes.push(fresh);
             return fresh;
-          }, virtualEnd);
+          }, bumper);
 
-          parentNode.removeChild(virtualEnd);
+          parentNode.removeChild(bumper);
         }
       });
   }
@@ -157,25 +197,37 @@ export class MuEach extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_AT
  * @example
  * <input name="name" mu-attr mu-attr-value="fields.name" />
  */
-export class MuAttr extends MuMx.compose(null, MuCtxAttrMixin) {
+export class MuAttr extends MuMx.compose(null, MuCtxInheritOnly, MuCtxAttrMixin) {
+
+  onInit() {
+    this.refresh = this.refresh.bind(this);
+  }
 
   onMount() {
     this.refresh();
-    return super.onMount && super.onMount();
+    this.getAttrs().forEach(p =>
+      this.context.on(this._ctxKey(p.src), this.refresh));
+  }
+
+  onDispose() {
+    this.getAttrs().forEach(p => 
+      this.context.off(this._ctxKey(p.src), this.refresh));
+  }
+
+  getAttrs() {
+    const reg = new RegExp(`^${LOGICAL_ATTR.ATTR}-([\\w-]+)`);
+    // resolve all matching attr bindings
+    return this.node.getAttributeNames()
+      .filter(n => reg.test(n))
+      .map(src => ({ src, to: src.replace(reg, '$1') }));
   }
 
   refresh() {
-    const attrReg = new RegExp(`^${LOGICAL_ATTR.ATTR}-([\\w-]+)`);
     const bools = ['disabled', 'checked', 'selected', 'hidden'];
-    // resolve all matching attr bindings
-    const muAttrs = this.node.getAttributeNames()
-      .filter(n => attrReg.test(n));
-    // iterate and assign
-    muAttrs.forEach(mattr => {
-      const att = mattr.replace(attrReg, '$1');
-      const bool = !!~bools.indexOf(att);
-      const val = bool ? this._ctxAttrBool(mattr) : this._ctxAttrValue(mattr);
-      return val ? this.node.setAttribute(att, val) : this.node.removeAttribute(att);
+    this.getAttrs().forEach(p => {
+      const bool = !!~bools.indexOf(p.to);
+      const val = bool ? this._ctxAttrBool(p.src) : this._ctxAttrValue(p.src);
+      return val ? this.node.setAttribute(p.to, val) : this.node.removeAttribute(p.to);
     });
   }
 }
@@ -185,12 +237,7 @@ export class MuAttr extends MuMx.compose(null, MuCtxAttrMixin) {
  * @example
  * <div mu-hide="true">hidden</div>
  */
-export class MuHide extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_ATTR.HIDE]) {
-
-  onMount() {
-    this.refresh();
-    return super.onMount && super.onMount();
-  }
+export class MuHide extends MuMx.compose(null, [MxCtxAttrRefresh, LOGICAL_ATTR.HIDE]) {
 
   refresh() {
     const test = this._ctxAttrBool();
@@ -199,6 +246,7 @@ export class MuHide extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_AT
       this.node.setAttribute(attr, true) :
       this.node.removeAttribute(attr);
   }
+
 }
 
 
@@ -207,60 +255,59 @@ export class MuHide extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_AT
  * @example
  * <div mu-html="ctx.html"></div>
  */
-export class MuHtml extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_ATTR.HTML]) {
-
-  constructor() {
-    super();
-    this.refresh = this.refresh.bind(this);
-  }
-
-  onMount() {
-    this.refresh();
-    this.context.on(this._ctxKey(), this.refresh);
-    return super.onMount && super.onMount();
-  }
-
-  onDispose() {
-    this.context.off(this._ctxKey(), this.refresh);
-    return super.onDispose && super.onDispose();
-  }
+export class MuHtml extends MuMx.compose(null,
+  MuCtxInheritOnly,
+  [MxCtxAttrRefresh, LOGICAL_ATTR.HTML],
+) {
 
   refresh() {
     const val = this._ctxAttrValue();
     return Promise.resolve(typeof val === 'function' ? val() : val)
-      .then(html => this.view.apply(this.node, html || '', this.context.child()));
+      .then(html => this.view.apply(this.node, html || '', this.context));
   }
 }
 
 
-export class MuClassLogical extends MuMx.compose(null, [MuCtxSingleAttrMixin, LOGICAL_ATTR.CLASS]) {
+export class MuClassLogical extends MuMx.compose(null,
+  MuCtxInheritOnly,
+  [MuCtxSingleAttrMixin, LOGICAL_ATTR.CLASS]
+) {
 
-  constructor() {
-    super();
+  onInit() {
     this.refresh = this.refresh.bind(this);
   }
 
   onMount() {
     this.refresh();
-    return super.onMount && super.onMount();
+    this._rules().forEach(rule => this.context.on(rule.key, this.refresh));
+  }
+
+  onDispose() {
+    this._rules().forEach(rule => this.context.off(rule.key, this.refresh));
+  }
+
+  _rules() {
+    try {
+      const rules = this._ctxAttrValue() || JSON.parse(this._ctxAttrProp().replace(/\'/g,'"'));
+      return Object.keys(rules)
+        .map(k => ({ exp: rules[k], key: this._ctxKey(k), classNames: k.split(/\s+/) }));
+    } catch (e) {
+      // console.warn(this.constructor.name, e);
+      return [];
+    }
   }
 
   refresh() {
-    try {
-      const { classList } = this.node;
-      const rules = this._ctxAttrValue() || JSON.parse(this._ctxAttrProp().replace(/\'/g,'"'));
-      const keys = Object.keys(rules);
-      classList.remove(...[].concat(keys.map(c => c.split(/\s+/))));
-      keys.forEach(key => this._ctxBool(rules[key]) && classList.add(...key.split(/\s+/)));
-    } catch (e) {
-      // console.warn(this.constructor.name, e);
-    }
+    const { classList } = this.node;
+    const rules = this._rules();
+    classList.remove(...[].concat(rules.map(r => r.classNames)));
+    rules.forEach(rule => this._ctxBool(rule.exp) && classList.add(...rule.classNames));
   }
 }
 
 export default Mu.micro('logical.attr', attrToSelector(LOGICAL_ATTR.ATTR), MuAttr)
+  .micro('logical.each', attrToSelector(LOGICAL_ATTR.EACH), MuEach)
   .micro('logical.if', attrToSelector(LOGICAL_ATTR.IF), MuIF)
   .micro('logical.hide', attrToSelector(LOGICAL_ATTR.HIDE), MuHide)
-  .micro('logical.each', attrToSelector(LOGICAL_ATTR.EACH), MuEach)
   .micro('logical.class', attrToSelector(LOGICAL_ATTR.CLASS), MuClassLogical)
   .micro('logical.html', attrToSelector(LOGICAL_ATTR.HTML), MuHtml);

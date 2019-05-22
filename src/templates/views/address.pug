@@ -1,8 +1,8 @@
 include ../mixins/_icon
 
-div.uk-grid-medium.uk-flex-left(uk-grid mu-if="!editing")
-  div.uk-width-1-1
-    div.uk-h4(mu-if="legend" mu-html="legend")
+div.uk-grid-medium.uk-flex-left(uk-grid hidden mu-hide="editing")
+  div.uk-width-1-1.uk-h4(mu-if="legend")
+    div.uk-h4(mu-html="legend")
   div.uk-width-expand
     div(mu-if="address")
       div.uk-text-bolder
@@ -13,7 +13,7 @@ div.uk-grid-medium.uk-flex-left(uk-grid mu-if="!editing")
       p No {{addressType}} address found.
   a.uk-icon-link(uk-icon="pencil" mu-click="edit" uk-tooltip="Change Address")
 
-div(mu-if="editing")
+div(hidden mu-hide="!editing")
   form.uk-form-stacked(mu-form="addressForm")
     div.uk-grid-medium.uk-child-width-1-1(uk-grid)
       fieldset.uk-fieldset

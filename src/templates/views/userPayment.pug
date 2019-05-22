@@ -5,7 +5,8 @@ div.uk-grid-medium.uk-flex-left(uk-grid mu-if="!editing")
     div.uk-h4(mu-if="legend" mu-html="legend")
   div.uk-width-expand
     div(mu-if="card")
-      span.uk-text-bolder Card ending *
+      +icon('credit-card', '1.1')(class="uk-margin-small-right")
+      span.uk-text-bolder card ending *
       span.uk-text-muted(mu-html="card.number")
           
     div.uk-alert-warning(uk-alert mu-if="!card") 

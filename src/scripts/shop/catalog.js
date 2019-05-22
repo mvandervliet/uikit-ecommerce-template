@@ -1,6 +1,7 @@
-import { Mu, MuMx, attrToSelector, MuCtxAttrMixin } from '../mu';
+import { Mu, MuMx, attrToSelector } from '../mu';
 import { ShopMxSubscriber } from './helper/subscriber';
 import { ViewTemplateMixin } from './helper/viewmx';
+import { MxCtxInsulator } from './helper/mixins';
 
 export class CatalogController {
   constructor() {
@@ -52,23 +53,63 @@ const CATALOG_MU = {
   // RESULTS
   // SEARCH
   // 
+  CATEGORY: 'mu-category',
   PRODUCTS: 'mu-products',
   TILE: 'mu-product-tile',
 };
+
+export class CategoryPage extends MuMx.compose(null, 
+  // MxCtxInsulator,
+  ViewTemplateMixin,
+  ShopMxSubscriber,
+) {
+  
+  onInit() {
+    console.log('cat.category', 'INIT', this.context._id);
+    this.subscribeOne('attached:cat.category', this.view, this.load.bind(this));
+  }
+
+  onMount() {
+    const { router, root } = this.mu;
+    const { category, search } = router.queryparams() || {};
+    // update title
+    root.context.set('page.title', category || (search && 'Search') || 'Browse');
+
+    // configure context binding
+    this.context.extend({
+      filterChange: this.filter.bind(this),
+      search: {
+        category,
+        term: search,
+      }
+    });
+
+    return super.onMount();
+  }
+
+  filter(form, e) {
+
+  }
+
+  load() {
+    console.log('cat.category', 'LOAD', this.context._id);
+    return this.render({
+      catReady: true,
+    });
+  }
+}
 
 export class Products extends MuMx.compose(null, 
   ViewTemplateMixin,
   ShopMxSubscriber
 ) {
 
-  constructor() {
-    super();
-    this.subscribe('attached:cat.products', this.view, this.load.bind(this));
+  onInit() {
+    console.log('cat.products', 'INIT', this.context._id);
+    this.subscribeOne('attached:cat.products', this.view, this.load.bind(this));
   }
   
-
   onMount() {
-    super.onMount();
     this.context.extend({
       // state
       error: null,
@@ -78,14 +119,30 @@ export class Products extends MuMx.compose(null,
       page: this._ctxProp('page'),
       ids: this._ctxProp('ids'),
       // actions
+      layout: {
+        grid: this.setLayout.bind(this, 'grid'),
+        list: this.setLayout.bind(this, 'list'),
+      },
     });
+    return super.onMount();
   }
+
+  // onDispose() {
+  //   console.log('cat.products', 'DISPOSE', this.context._id);
+  //   super.onDispose();
+  // }
 
   viewTemplateDelegate() {
     return this._ctxProp('template') || 'productGrid.html';
   }
 
+  setLayout(type, e) {
+    const switcher = this.context.get('layout.switch');
+    switcher.show(type === 'list' ? 1 : 0);
+  }
+
   load() {
+    console.log('cat.products', 'LOAD', this.context._id);
     const { catalog } = this.mu;
     const { page, limit, tags } = this.context.get();
     const params = {
@@ -125,5 +182,6 @@ export class ProductTile extends MuMx.compose(null, ViewTemplateMixin) {
 }
 
 export default Mu.macro('catalog', CatalogController)
+  .micro('cat.category', attrToSelector(CATALOG_MU.CATEGORY), CategoryPage)
   .micro('cat.products', attrToSelector(CATALOG_MU.PRODUCTS), Products)
   .micro('sku.tile', attrToSelector(CATALOG_MU.TILE), ProductTile);

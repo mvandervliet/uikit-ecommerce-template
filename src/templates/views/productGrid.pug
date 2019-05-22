@@ -41,25 +41,23 @@ div.uk-grid-medium.uk-child-width-1-1(uk-grid)
 
               //- Change view
               div.tm-change-view.uk-margin-small-left
-                ul(class="uk-subnav uk-iconnav js-change-view"
-                   uk-switcher)
+                ul.uk-subnav.uk-iconnav(uk-switcher mu-uk-component="layout.switch")
                   li
-                    a.uk-active(data-view="grid"
-                                uk-icon="grid"
-                                uk-tooltip="Grid")
+                    a(uk-icon="grid"
+                      uk-tooltip="Grid"
+                      mu-click="layout.grid"
+                    )
                   li
-                    a(data-view="list"
-                      uk-icon="list"
-                      uk-tooltip="List")
+                    a(uk-icon="list"
+                      uk-tooltip="List"
+                      mu-click="layout.list")
 
         //- Items
         div
-          div(uk-spinner mu-if="loading")
-          div(class="uk-grid-collapse " +
-                    "uk-child-width-1-3 " +
-                    "tm-products-grid " +
-                    "js-products-grid"
-              uk-grid)
+          div.uk-text-center.uk-padding(hidden mu-hide="!loading")
+            div(uk-spinner)
+
+          div.uk-grid-collapse.uk-child-width-1-3.tm-products-grid(uk-grid)
             div(mu-each="items" mu-each-as="item")
               div(mu-product-tile product="item")
 

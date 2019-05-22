@@ -1,7 +1,7 @@
-import { Mu, MuMx, attrToSelector } from '../mu';
+import { Mu, MuMx, attrToSelector, MuCtxSetterMixin } from '../mu';
 import { ShopMxSubscriber } from './helper/subscriber';
 import { ViewTemplateMixin } from './helper/viewmx';
-import { MxCtxInsulator } from './helper/insulator';
+import { MxCtxInsulator } from './helper/mixins';
 
 export class UserController {
   constructor() {
@@ -54,8 +54,8 @@ export class UserController {
 
   getUser() {
     // NOTE: the customers service reads from the session cookie and therefore the {id} param is ignored
-    const id = this._user ? this._user.id : 'id';
-    return this.mu.api.get(`/customers/${id}`)
+    // const id = this._user ? this._user.id : 'id';
+    return this.mu.api.get(`/profile`)
       .then(res => this._getRes(res, this._setUser))
       .catch(e => this._userError(e))
   }
@@ -144,7 +144,7 @@ export const UserViewMixin = (ctor, attr, viewName) => class extends MuMx.compos
   constructor() {
     super();
     // listen to user change
-    this.subscribe('user.profile', this.mu.user, this._dataUpdate.bind(this, 'profile'));
+    this.subscribeAlways('user.profile', this.mu.user, this._dataUpdate.bind(this, 'profile'));
   }
 
   _debug(...args) {
@@ -152,12 +152,17 @@ export const UserViewMixin = (ctor, attr, viewName) => class extends MuMx.compos
   }
 
   _dataUpdate(prop, data) {
-    return this.render({ [prop]: data });
+    // support callbacks as well: onProfile, onAddress, onCard
+    const cbProp = 'on' + prop.charAt(0).toUpperCase() + prop.slice(1);
+    const cb = this._ctxAttrValue(cbProp) || (() => {});
+    return this.render({ [prop]: data }).then(cb);
   }
 }
 
 /**
- * arbitrary any user view
+ * arbitrary any user view to load `profile` into the context
+ * @example
+ * <div mu-user-view></div>
  */
 export class UserView extends MuMx.compose(null, [UserViewMixin, USER_MU.VIEW]) {
 
@@ -168,29 +173,20 @@ export class UserView extends MuMx.compose(null, [UserViewMixin, USER_MU.VIEW]) 
  */
 export class UserToolbar extends MuMx.compose(null, [UserViewMixin, null, 'userToolbar.html']) {
 
-  constructor() {
-    super();
+  onInit() {
     // view context bindings
-    // console.log('TOOLBAR SUBSCRIBING');
-    this.subscribeOne('form.auth', this.context, f => f && f.one('submit', this.submitAuth.bind(this)))
-      .subscribeOne('form.reg', this.context, f => f && f.one('submit', this.submitReg.bind(this)));
+    // console.log('TOOLBAR SUBSCRIBING', this.context._id);
+    this.subscribe('form.auth', this.context, f => f && f.one('submit', this.submitAuth.bind(this)))
+      .subscribe('form.reg', this.context, f => f && f.one('submit', this.submitReg.bind(this)));
   }
 
   onMount() {
-    // console.log('TOOLBAR MOUNT', this.node);
     this.context.extend({
       inline: this._ctxAttrBool('inline'),
       offcanvas: this.node.getAttribute(USER_MU.TOOLBAR) === 'offcanvas',
     });
-    this._debug('MOUNTED');
     return super.onMount();
   }
-
-  // onDispose() {
-  //   const forms = this.context.get('form') || {};
-  //   Object.keys(forms).forEach(name => forms[name].one('submit', () => {}));
-  //   return super.onDispose();
-  // }
 
   modal() {
     return this.context.get('ui.modal');
@@ -204,12 +200,12 @@ export class UserToolbar extends MuMx.compose(null, [UserViewMixin, null, 'userT
   }
 
   submitAuth(form, e) {
-    // console.log('SUBMIT AUTH', form);
+    // console.log('SUBMIT AUTH', this.context._id);
     const fields = form.getData();
     const { username, password } = fields;
     this.mu.user.login(username, password)
       .then(u => this.success(`Welcome back ${u.firstName}!`))
-      .catch(() => this.renderShow({
+      .catch(() => this.renderShow('form.auth', {
         fields,
         register: false,
         error: { auth: 'Invalid Credentials' },
@@ -217,30 +213,33 @@ export class UserToolbar extends MuMx.compose(null, [UserViewMixin, null, 'userT
   }
 
   submitReg(form, e) {
-    this._debug('REGISTER', form);
     const fields = form.getData();
     this.mu.user.register(fields)
       .then(() => this.success(`Welcome ${fields.firstName}`))
-      .catch(() => this.renderShow({
+      .catch(() => this.renderShow('form.reg', {
         fields,
         register: true,
         error: { reg: `Unable to register username: ${fields.username}` },
       }));
   }
 
-  renderShow(data) {
+  renderShow(after, data) {
+    // modal resides inside an async render function
+    this.context.on(after, () => this.modal().show());
     return this.render(data)
-      .then(() => this.modal().show());
   }
 
 }
 
-export class UserAddress extends MuMx.compose(null, [UserViewMixin, null, 'address.html']) {
-  constructor() {
-    super();
-    this.subscribeOne('user.address', this.mu.user, this._dataUpdate.bind(this, 'address')) // subscribe to address changes
-      .subscribeOne('attached:user.address', this.view, () => this.mu.user.address()) // fire GET address
-      .subscribeOne('addressForm', this.context, f => f && f // when form attaches
+export class UserAddress extends MuMx.compose(null,
+  // [MuCtxSetterMixin, USER_MU.ADDRESS],
+  [UserViewMixin, null, 'address.html'],
+) {
+
+  onInit() {
+    this.subscribeOne('attached:user.address', this.view, () => this.mu.user.address()) // fire GET address when attached
+      .subscribe('user.address', this.mu.user, this._dataUpdate.bind(this, 'address')) // subscribe to address changes
+      .subscribe('addressForm', this.context, f => f && f // when form attaches
         .one('submit', this.save.bind(this))
         .on('change', this.change.bind(this)));
   }
@@ -254,7 +253,7 @@ export class UserAddress extends MuMx.compose(null, [UserViewMixin, null, 'addre
       addressType: this._ctxProp('type') || 'home',
       legend: this._ctxProp('legend'),
       // actions
-      edit: this.edit.bind(this)
+      edit: this.edit.bind(this),
     });
     
     super.onMount();
@@ -295,12 +294,15 @@ export class UserAddress extends MuMx.compose(null, [UserViewMixin, null, 'addre
 }
 
 
-export class UserPayment extends MuMx.compose(null, [UserViewMixin, null, 'userPayment.html']) {
+export class UserPayment extends MuMx.compose(null, 
+  // [MuCtxSetterMixin, USER_MU.PAYMENT],
+  [UserViewMixin, null, 'userPayment.html']
+) {
   constructor() {
     super();
-    this.subscribeOne('user.card', this.mu.user, this._dataUpdate.bind(this, 'card')) // subscribe user payment
-      .subscribeOne('attached:user.payment', this.view, () => this.mu.user.card()) // trigger card into
-      .subscribeOne('paymentForm', this.context, f => f && f.one('submit', this.save.bind(this))); // when form attaches
+    this.subscribeOne('attached:user.payment', this.view, () => this.mu.user.card()) // trigger card into
+      .subscribe('user.card', this.mu.user, this._dataUpdate.bind(this, 'card')) // subscribe user payment
+      .subscribe('paymentForm', this.context, f => f && f.on('submit', this.save.bind(this))); // when form attaches
   }
 
   onMount() {

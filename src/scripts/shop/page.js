@@ -31,7 +31,7 @@ const pages = {
 const authPage = 'auth';
 const errPage = '50x';
 const nfPage = '404';
-const restricted = ['personal', 'settings', 'orders'];
+const restricted = ['personal', 'settings', 'orders', 'checkout'];
 
 function pageHref(page) {
   return pages[page];
@@ -52,7 +52,7 @@ export class PageController {
   _bindAuth() {
     const { user } = this.mu;
     this.context.on('user.ready', () => {
-      user.on('user.profile', this._aclUpdate.bind(this));
+      user.always('user.profile', this._aclUpdate.bind(this));
     });
   }
 
@@ -80,7 +80,7 @@ export class PageController {
   }
   
   _aclDeny(page) {
-    return (!this._hasAuth && ~restricted.indexOf(page));
+    return (!this._hasAuth && !!~restricted.indexOf(page));
   }
 
   _aclGate(page, search, params) {
@@ -111,8 +111,12 @@ export class PageController {
   }
 
   setPage(page) {
-    this.document.title = `MuShop::${page}`;
+    this.document.title = `MuShop::${this.pageName(page)}`;
     this.emit(page);
+  }
+
+  pageName(page) {
+    return page.charAt(0).toUpperCase() + page.slice(1);
   }
   
   update(page, search, params) {
@@ -127,6 +131,7 @@ export class PageController {
     return this.view.load(url)
       .then(html => {
         const { root } = this.mu;
+        root.context.set('page.title', this.pageName(page));
         // update root dom
         const node = this.view.virtual(html, root.selector); // render full page in virtual DOM
         this.view.apply(root.element, (node ? node.innerHTML : html)); // swap root content
