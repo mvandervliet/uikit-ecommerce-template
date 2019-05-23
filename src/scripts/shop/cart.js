@@ -160,7 +160,13 @@ export class MuCart extends MuMx.compose(CartSubscriber,
     const cb = this._ctxAttrValue('onItems') || (() => {});
 
     // load corresponding sku records
-    return this.render({ loading: true })
+    if (this._viewDidRender) {
+      this.context.extend({ loading: true });
+    }
+    // this.context.set('loading', true);
+    return Promise.resolve(this._viewDidRender ?
+      this.context.set('loading', true) : // simply update context listeners
+      this.render({ loading: true }))
       .then(() => cart.combined())
       .then(items => items.map(row => ({
         ...row,

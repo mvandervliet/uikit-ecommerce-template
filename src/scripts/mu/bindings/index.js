@@ -48,7 +48,8 @@ export const MuCtxAttrMixin = ctor => class extends ctor {
     const ctxVal = ctxKey && this.context.get(ctxKey);
     let test = !!ctxVal;
     if (typeof ctxVal === 'function') { // invoke bound test to
-      test = ctxVal();
+      // this is a problem when the flag reprents a conditional method
+      // test = ctxVal();
     } else if (!ctxVal && typeof expression === 'string') {
       try { test = JSON.parse(expression); } catch (e) { }
     }

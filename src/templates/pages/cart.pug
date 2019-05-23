@@ -36,7 +36,7 @@ block pages
                   div(style="width: 20px;")
 
         //- Body
-        div.uk-text-center.uk-card-body(mu-hide="!loading")
+        //- div.uk-text-center.uk-card-body(mu-hide="!loadings")
           div(uk-spinner)
 
         div(mu-hide="loading")
@@ -105,13 +105,17 @@ block pages
                     +icon("close")
 
         div.uk-card-footer
-          label
-            span.uk-form-label.uk-margin-small-right Promo Code
-            div.uk-inline
-              a.uk-form-icon.uk-form-icon-flip(
-                uk-icon="arrow-right"
-                mu onclick="this.mu.ui.notification('Invalid promo code', 'danger')")
-              input.uk-input.uk-form-width-small(type="text")
+          div.uk-grid-small.uk-flex-middle(uk-grid)
+            label.uk-width-expand
+              span.uk-form-label.uk-margin-small-right Promo Code
+              div.uk-inline
+                a.uk-form-icon.uk-form-icon-flip(
+                  uk-icon="arrow-right"
+                  mu onclick="this.mu.ui.notification('Invalid promo code', 'danger')")
+                input.uk-input.uk-form-width-small(type="text")
+
+            div.uk-text-right(mu-hide="!loading")
+              div(uk-spinner)
 
     //- Checkout
     div.uk-width-1-1.tm-aside-column(class="uk-width-1-4@m")
@@ -148,7 +152,7 @@ block pages
             div.uk-text-lead.uk-text-bolder
               +price("totals.total")
 
-        div.uk-card-body.uk-text-center(mu-hide="!loading")
+        //- div.uk-card-body.uk-text-center(mu-hide="!loading")
           div(uk-spinner)
 
           //- div(mu-debug="totals")
@@ -156,6 +160,7 @@ block pages
           href="checkout.html"
           mu-route
           mu-if="items.length"
+          mu-attr mu-attr-disabled="loading"
         ) Proceed to checkout
 
     //- div(mu-debug="items")

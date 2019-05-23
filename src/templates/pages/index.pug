@@ -70,7 +70,7 @@ block default
   section.uk-section.uk-section-default.uk-section-small
     div.uk-container
       h2.uk-text-center Trending Now
-      div(mu-products template="productSlider.html" limit="5" paginate="false")
+      div(mu-products template="productSlider.html" max="5")
       div.uk-margin.uk-text-center
         +link-to-all("shop all", "catalog.html")
 

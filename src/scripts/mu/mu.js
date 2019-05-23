@@ -236,6 +236,13 @@ export class MuContext extends MuEmitter {
   set(key, val) {
     MuUtil.mergeProp(this.data, key, val);
     this.emit(key, this.get(key));
+    if (val && typeof val === 'object') {
+      // propagate to the child subscribers
+      const pre = (key ? key + '.' : '');
+      Object.keys(val)
+        .map(k => pre + k)
+        .forEach(k => this.emit(k, this.get(k)));
+    }
     return this;
   }
 
@@ -462,14 +469,13 @@ export class MuView extends MuEmitter {
     const _mus = MuUtil.resolveProp(target, MUPROP.MUS);
     const { context: rootCtx } = this.mu.root;
     if (_mus) {
-      let m = _mus.shift();
-      while (m) {
+      let m;
+      while (m = _mus.shift()) {
         m.emit('dispose').dispose();  // dispose emitter
         m.onDispose && m.onDispose(); // dispose hook
         if (andContext && m.context !== rootCtx) { // dispose (non-root) context
           m.context.dispose();
         }
-        m = _mus.shift();
       }
     }
     return target;

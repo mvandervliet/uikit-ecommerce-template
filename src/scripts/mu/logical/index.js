@@ -151,8 +151,9 @@ export class MuEach extends MuMx.compose(null,
     const val = this._ctxAttrValue();
     // dispose old
     this.eachNodes = this.eachNodes.reduce((empty, old) => {
-      this.view.dispose(old, true);
-      old.parentNode.removeChild(old);
+      const { virtual, node, node: { parentNode }} = old;
+      this.view.dispose(virtual, true);
+      parentNode && parentNode.removeChild(node);
       return empty;
     }, []);
     
@@ -173,16 +174,22 @@ export class MuEach extends MuMx.compose(null,
           items.reduce((prev, item) => {
             // create new freshy after the last (or bumper)
             const fresh = this.getOriginal();
-            prev.insertAdjacentElement("afterend", fresh);
+            const virtual = this.view.virtualContainer();
+            virtual.appendChild(fresh);
             
             // attach the view
-            this.view.attach(fresh, this.context.child({
+            this.view.attach(virtual, this.context.child({
               [this._ctxKey()]: null, // remove list from context
               [itemAs]: item,      // single list item
             }));
-
-            // keep node in memory
-            this.eachNodes.push(fresh);
+            prev.insertAdjacentElement("afterend", fresh);
+            
+            // keep node in memory for GC
+            this.eachNodes.push({
+              virtual,
+              node: fresh,
+            });
+            // new bumper
             return fresh;
           }, bumper);
 
@@ -278,8 +285,8 @@ export class MuClassLogical extends MuMx.compose(null,
   }
 
   onMount() {
-    this.refresh();
     this._rules().forEach(rule => this.context.on(rule.key, this.refresh));
+    this.refresh();
   }
 
   onDispose() {
@@ -290,7 +297,11 @@ export class MuClassLogical extends MuMx.compose(null,
     try {
       const rules = this._ctxAttrValue() || JSON.parse(this._ctxAttrProp().replace(/\'/g,'"'));
       return Object.keys(rules)
-        .map(k => ({ exp: rules[k], key: this._ctxKey(k), classNames: k.split(/\s+/) }));
+        .map(k => ({
+          exp: rules[k],
+          key: this._ctxAttrPropKey(rules[k]),
+          classNames: k.split(/\s+/),
+        }));
     } catch (e) {
       // console.warn(this.constructor.name, e);
       return [];

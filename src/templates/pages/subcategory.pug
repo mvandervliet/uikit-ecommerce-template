@@ -91,8 +91,8 @@ block pages
             div.uk-card-body
               button.uk-button.uk-button-default.uk-width-1-1
                 +icon("close", ".75")(class="uk-margin-xsmall-right")
-                | Reset all filters
+                | Reset filters
 
     //- Content
     div.uk-width-expand
-      div(mu-products)
+      div(mu-products ref="products" autoload="search" limit="6")

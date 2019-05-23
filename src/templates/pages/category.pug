@@ -15,6 +15,7 @@ block pages
 
     //- Filters
     aside#filters.uk-width-1-4.tm-aside-column.tm-filters(
+      mu-uk-component
       uk-offcanvas="overlay: true; " +
                    "container: false;")
 
@@ -39,13 +40,10 @@ block pages
             style="flex-basis: auto")
 
             //- Categories
-            section.uk-card-small.uk-card-body
-              h4.uk-margin-small-bottom Categories
-              ul.uk-nav.uk-nav-default
-                each category in catalog
-                  each item in category.items
-                    li: a(href=("category.html?category="+item) mu-route)= item
-                  - break
+            section.uk-card-body
+              h4.uk-margin-remove Categories
+              div.uk-accordion-content
+                +filterbox("filters.categories")
 
             //- Prices
             section.uk-card-body.uk-open.js-accordion-section
@@ -61,50 +59,20 @@ block pages
                       span.uk-form-icon.uk-text-xsmall to
                       input.uk-input(type="text" placeholder="$199")
 
-            //- Properties
-            each property in filters
-              if property.id= 1
-                section.uk-card-body.js-accordion-section(
-                  class= { "uk-open": property.isOpen })
-                  h4.uk-accordion-title.uk-margin-remove= property.title
-                    if property.description
-                      +icon("question", ".75")(
-                        class="tm-help-icon"
-                        onclick="event.stopPropagation();")
-                      div.uk-margin-remove(
-                        uk-drop="mode: click;" +
-                                "boundary-align: true; " +
-                                "boundary: !.uk-accordion-title; " +
-                                "pos: bottom-justify;")
-                        div(class="uk-card " +
-                                  "uk-card-body " +
-                                  "uk-card-default " +
-                                  "uk-card-small " +
-                                  "uk-box-shadow-xlarge " +
-                                  "uk-text-small")= property.description
-                  div.uk-accordion-content
-                    ul.uk-list.tm-scrollbox
-                      each item in property.items
-                        li
-                          input.tm-checkbox(
-                            id= property.name + "-" + item.id
-                            name= property.name
-                            value= item.id
-                            type="checkbox")
-                          label(for= property.name + "-" + item.id)
-                            span= item.name
-                              |
-                              |
-                              span.uk-text-meta.uk-text-xsmall= item.quantity
-              - break
+            //- Brands
+            section.uk-card-body.uk-open.js-accordion-section
+              h4.uk-accordion-title.uk-margin-remove Brands
+              div.uk-accordion-content
+                +filterbox("filters.brands")
 
             //- Reset filters
             div.uk-card-body
               button.uk-button.uk-button-default.uk-width-1-1
                 +icon("close", ".75")(class="uk-margin-xsmall-right")
-                | Reset all filters
+                | Reset filters
+
+            //- div(mu-debug="filters")
 
     //- Content
     div.uk-width-expand
-      div(mu-products)
-      //- include /partials/_products
+      div(mu-products ref="products" autoload="search" limit="6")

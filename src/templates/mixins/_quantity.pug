@@ -1,7 +1,7 @@
 mixin quantity(qty, hooks)
   a(uk-icon="icon: minus; ratio: .75" mu-click= hooks + ".dec")
   input(class="uk-input tm-quantity-input"
-        mu-attr mu-attr-value= qty
+        mu-attr mu-attr-value= qty mu-attr-disabled="loading"
         mu-change= hooks + ".change"
         type="number"
         maxlength="3")
