@@ -12,8 +12,8 @@ export class MuForm extends MuMx.compose(null, [MuCtxSetterMixin, 'mu-form']) {
   onMount() {
     // console.log('FORM MOUNT', this.context._id, this.node);
     const eNoop = e => e.preventDefault();
-    this._change = this.node.onchange || eNoop;
-    this._submit = this.node.onsubmit || eNoop;
+    this._change = this._ctxAttrValue('muChange') || this.node.onchange || eNoop;
+    this._submit = this._ctxAttrValue('muSubmit') || this.node.onsubmit || eNoop;
     this.node.onchange = this.change;
     this.node.onsubmit = this.submit;
     return super.onMount && super.onMount();
@@ -22,12 +22,12 @@ export class MuForm extends MuMx.compose(null, [MuCtxSetterMixin, 'mu-form']) {
   submit(e) {
     // console.log('SUBMIT', this.context._id, this.node);
     this.emitOnce('submit', this, e);
-    return this._submit(e);
+    return this._submit(e, this);
   }
 
   change(e) {
     this.emitOnce('change', this, e);
-    this._change(e);
+    this._change(e, this);
   }
 
   getData() {
@@ -55,7 +55,13 @@ export class MuForm extends MuMx.compose(null, [MuCtxSetterMixin, 'mu-form']) {
   
       // Convert field data to a query string
       else if ((field.type !== 'checkbox' && field.type !== 'radio') || field.checked) {
-        data[field.name] = field.value;
+        if (/\]$/.test(field.name)) {
+          const name = field.name.split('[').shift();
+          data[name] = data[name] || [];
+          data[name].push(field.value);
+        } else {
+          data[field.name] = field.value;
+        }
       }
     }
   

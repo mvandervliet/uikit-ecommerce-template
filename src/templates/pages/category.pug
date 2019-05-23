@@ -35,41 +35,42 @@ block pages
               button.uk-offcanvas-close(type="button" uk-close)
 
           //- Accordion
-          div.uk-margin-remove.uk-flex-1.uk-overflow-auto(
-            uk-accordion="multiple: true; targets: > .js-accordion-section"
-            style="flex-basis: auto")
+          form(mu-form muChange="filterChange")
+            div.uk-margin-remove.uk-flex-1.uk-overflow-auto(
+              uk-accordion="multiple: true; targets: > .js-accordion-section"
+              style="flex-basis: auto")
 
-            //- Categories
-            section.uk-card-body
-              h4.uk-margin-remove Categories
-              div.uk-accordion-content
-                +filterbox("filters.categories")
+              //- Categories
+              section.uk-card-body
+                h4.uk-margin-remove Categories
+                div.uk-accordion-content
+                  +filterbox("filters.categories", "categories")
 
-            //- Prices
-            section.uk-card-body.uk-open.js-accordion-section
-              h4.uk-accordion-title.uk-margin-remove Prices
-              div.uk-accordion-content
-                div.uk-grid-small.uk-child-width-1-2.uk-text-small(uk-grid)
-                  div
-                    div.uk-inline
-                      span.uk-form-icon.uk-text-xsmall from
-                      input.uk-input(type="text" placeholder="$0")
-                  div
-                    div.uk-inline
-                      span.uk-form-icon.uk-text-xsmall to
-                      input.uk-input(type="text" placeholder="$199")
+              //- Prices
+              section.uk-card-body.uk-open.js-accordion-section
+                h4.uk-accordion-title.uk-margin-remove Prices
+                div.uk-accordion-content
+                  div.uk-grid-small.uk-child-width-1-2.uk-text-small(uk-grid)
+                    div
+                      div.uk-inline
+                        span.uk-form-icon.uk-text-xsmall from
+                        input.uk-input(type="text" name="priceMin" placeholder="$0")
+                    div
+                      div.uk-inline
+                        span.uk-form-icon.uk-text-xsmall to
+                        input.uk-input(type="text" name="priceMax" placeholder="$199")
 
-            //- Brands
-            section.uk-card-body.uk-open.js-accordion-section
-              h4.uk-accordion-title.uk-margin-remove Brands
-              div.uk-accordion-content
-                +filterbox("filters.brands")
+              //- Brands
+              section.uk-card-body.uk-open.js-accordion-section
+                h4.uk-accordion-title.uk-margin-remove Brands
+                div.uk-accordion-content
+                  +filterbox("filters.brands", "brands")
 
-            //- Reset filters
-            div.uk-card-body
-              button.uk-button.uk-button-default.uk-width-1-1
-                +icon("close", ".75")(class="uk-margin-xsmall-right")
-                | Reset filters
+              //- Reset filters
+              div.uk-card-body
+                button.uk-button.uk-button-default.uk-width-1-1
+                  +icon("close", ".75")(class="uk-margin-xsmall-right")
+                  | Reset filters
 
             //- div(mu-debug="filters")
 

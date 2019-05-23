@@ -113,8 +113,8 @@ export class CategoryPage extends MuMx.compose(null,
     // });
   }
 
-  setFilters(form, e) {
-
+  setFilters(e, form) {
+    console.log('filters', form.getData());
   }
 
   /**

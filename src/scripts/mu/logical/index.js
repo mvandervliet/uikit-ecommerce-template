@@ -89,7 +89,7 @@ export class MuIF extends MuMx.compose(null,
     return c;
   }
 
-  refresh(val, mounting) {
+  refresh() {
     // make async
     return Promise.resolve(this._ctxAttrBool())
       .then(test => {
@@ -147,13 +147,13 @@ export class MuEach extends MuMx.compose(null,
     return c;
   }
 
-  refresh(list, mounting) {
+  refresh() {
     const val = this._ctxAttrValue();
     // dispose old
     this.eachNodes = this.eachNodes.reduce((empty, old) => {
       const { virtual, node, node: { parentNode }} = old;
-      this.view.dispose(virtual, true);
       parentNode && parentNode.removeChild(node);
+      this.view.dispose(virtual, true);
       return empty;
     }, []);
     
@@ -183,7 +183,7 @@ export class MuEach extends MuMx.compose(null,
               [itemAs]: item,      // single list item
             }));
             prev.insertAdjacentElement("afterend", fresh);
-            
+
             // keep node in memory for GC
             this.eachNodes.push({
               virtual,
