@@ -18,7 +18,7 @@ block pages
             input.tm-checkbox(id="show-difference" type="checkbox")
             label(for="show-difference") Show differences only
 
-          each product in products
+          //- each product in products
             if product.isAddedToCompare
               td.tm-compare-table-column
                 div.uk-height-1-1
@@ -32,7 +32,7 @@ block pages
                     div
                       +product-small(product)
 
-      each group in compare
+      //- each group in compare
         tbody
           tr
             th(colspan="4")

@@ -104,6 +104,7 @@ export class PageController {
 
   setPage(page) {
     this.document.title = `MuShop::${this.pageName(page)}`;
+    this.emit('page', page);
     this.emit(page);
   }
 

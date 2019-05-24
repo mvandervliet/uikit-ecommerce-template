@@ -171,7 +171,7 @@ export class MuEach extends MuMx.compose(null,
           parentNode.insertBefore(bumper, this.placeholder);
 
           // populate virtual node with items
-          items.reduce((prev, item) => {
+          items.reduce((prev, item, index) => {
             // create new freshy after the last (or bumper)
             const fresh = this.getOriginal();
             const virtual = this.view.virtualContainer();
@@ -181,6 +181,7 @@ export class MuEach extends MuMx.compose(null,
             this.view.attach(virtual, this.context.child({
               [this._ctxKey()]: null, // remove list from context
               [itemAs]: item,      // single list item
+              index,
             }));
             prev.insertAdjacentElement("afterend", fresh);
 
@@ -234,7 +235,7 @@ export class MuAttr extends MuMx.compose(null, MuCtxInheritOnly, MuCtxAttrMixin)
     this.getAttrs().forEach(p => {
       const bool = !!~bools.indexOf(p.to);
       const val = bool ? this._ctxAttrBool(p.src) : this._ctxAttrValue(p.src);
-      return val ? this.node.setAttribute(p.to, val) : this.node.removeAttribute(p.to);
+      return (val || val === 0) ? this.node.setAttribute(p.to, val) : this.node.removeAttribute(p.to);
     });
   }
 }

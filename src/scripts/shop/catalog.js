@@ -310,6 +310,7 @@ export class Products extends MuMx.compose(null,
   filter(items, shallow) {
     const { category, term } = this._ctxAttrValue('delegate') || { };
     const filters = this._ctxAttrValue('filter') || { };
+    const omit = this._ctxAttrValue('omit');
     const { priceMin, priceMax, text = term } = filters;
     
     // construct criteria
@@ -328,6 +329,11 @@ export class Products extends MuMx.compose(null,
     // console.log(match);
     // apply the filters
     return (items || []).filter(item => {
+      // explicit omission
+      if (omit === item.id) {
+        return false;
+      }
+
       const tests = [];
       // match category
       if (match.cat.length) {
@@ -364,19 +370,44 @@ export class Products extends MuMx.compose(null,
 
 
 
-export class ProductTile extends MuMx.compose(null, ViewTemplateMixin) {
+export class SingleProduct extends MuMx.compose(null, 
+  MxCtxInsulator,
+  ShopMxSubscriber,
+  ViewTemplateMixin,
+) {
   
   onMount() {
     super.onMount();
-    const product = this._ctxAttrValue('product');
-    this.render({
-      product,
-      atc: this.addToCart.bind(this),
+    return Promise.resolve(this._ctxAttrValue('product') || this.pageLoad())
+      .then(product => this.render({
+        product,
+        loading: false,
+        atc: this.addToCart.bind(this),
+      }))
+      .catch(error => this.render({ error, loading: false }));
+  }
+
+  pageLoad() {
+    const { router, catalog, page, root } = this.mu;
+    return new Promise((resolve, reject) => {
+      this.render({ loading: true });
+      page.on('page', name => {
+        if (name === 'product') {
+          this.context.on('product', p => root.context.set('page.title', p.title))
+          const { id } = router.queryparams();
+          resolve(this.render({ loading: true })
+            .then(() => catalog.product(id)))
+        } else {
+          reject('Unknown context for product');
+        }
+      });
+      
     });
   }
 
   viewTemplateDelegate() {
-    return this._ctxProp('template') || 'productCard.html';
+    const template = this._ctxProp('template');
+    return template === 'contents' ? null : (template || 'productCard.html');
   }
 
   addToCart() {
@@ -388,4 +419,5 @@ export class ProductTile extends MuMx.compose(null, ViewTemplateMixin) {
 export default Mu.macro('catalog', CatalogController)
   .micro('cat.category', attrToSelector(CATALOG_MU.CATEGORY), CategoryPage)
   .micro('cat.products', attrToSelector(CATALOG_MU.PRODUCTS), Products)
-  .micro('sku.tile', attrToSelector(CATALOG_MU.TILE), ProductTile);
+  .micro('sku.product', attrToSelector(CATALOG_MU.PRODUCT), SingleProduct)
+  .micro('sku.tile', attrToSelector(CATALOG_MU.TILE), SingleProduct);

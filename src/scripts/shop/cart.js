@@ -186,13 +186,18 @@ export class MuCart extends MuMx.compose(CartSubscriber,
   increment(row, amnt) {
     const { item: { quantity } } = row;
     const v = Math.max(1, quantity + amnt);
-    return row.actions.update(v);
+    return this.updateRow(row, v);
   }
 
   qtyChange(row, e) {
     const v = Math.max(1, ~~e.target.value);
     e.target.value = v;
-    return row.actions.update(v);
+    return this.updateRow(row, v);
+  }
+
+  updateRow(row, qty) {
+    return this.render({ loading: true })
+      .then(() => row.actions.update(qty));
   }
 
 }

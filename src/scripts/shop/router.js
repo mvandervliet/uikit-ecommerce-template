@@ -99,6 +99,10 @@ export class MuRouterMacro {
     return route.path + qs;
   }
 
+  is(name) {
+    return name === this.resolve();
+  }
+
   /**
    * make router/state reflect the params
    */
