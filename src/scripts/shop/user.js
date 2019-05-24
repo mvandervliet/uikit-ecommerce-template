@@ -240,7 +240,7 @@ export class UserAddress extends MuMx.compose(null,
     this.subscribeOne('attached:user.address', this.view, () => this.mu.user.address()) // fire GET address when attached
       .subscribe('user.address', this.mu.user, this._dataUpdate.bind(this, 'address')) // subscribe to address changes
       .subscribe('addressForm', this.context, f => f && f // when form attaches
-        .one('submit', this.save.bind(this))
+        .on('submit', this.save.bind(this))
         .on('change', this.change.bind(this)));
   }
 
@@ -275,9 +275,9 @@ export class UserAddress extends MuMx.compose(null,
   }
 
   save(form) {
-    this.loading(true);
     const address = form.getData();
-    this.mu.user.saveAddress(address)
+    return this.loading(true)
+      .then(() => this.mu.user.saveAddress(address))
       .then(a => this.done(null, a))
       .catch(e => this.done(e, address));
   }
@@ -329,9 +329,9 @@ export class UserPayment extends MuMx.compose(null,
   }
 
   save(form) {
-    this.loading(true);
     const card = form.getData();
-    this.mu.user.saveCard(card)
+    return this.loading(true)
+      .then(() => this.mu.user.saveCard(card))
       .then(a => this.done(null, a))
       .catch(e => this.done(e, card));
   }
