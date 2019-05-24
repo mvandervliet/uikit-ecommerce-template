@@ -3,6 +3,22 @@ import { ShopMxSubscriber } from './helper/subscriber';
 import { ViewTemplateMixin } from './helper/viewmx';
 import { MxCtxInsulator } from './helper/mixins';
 
+
+const CATEGORY_RULES = {
+  // name --> matches
+  "feeders":    [/(feeder|bowl|placemat|storage)/i],
+  "food":       [/(food|diet)/i],
+  "grooming":   [/(groom|brush|shampoo)/i],
+  "cat litter": [/(litter|clean|odor)/i],
+};
+
+const CATALOG_MU = {
+  CATEGORY: 'mu-category',
+  PRODUCTS: 'mu-products',
+  PRODUCT: 'mu-product',
+  TILE: 'mu-product-tile',
+};
+
 export class CatalogController {
   constructor() {
     this._serviceUri = '/catalogue';
@@ -19,6 +35,7 @@ export class CatalogController {
       .map(src => src.replace(this._serviceReg, '/api$1'));
     product.image = product.imageUrl[0];
     // fix price format
+    product.priceDecimal = product.price;
     product.price = product.price.toFixed(2);
     // create pseudo shortdesc
     product.shortDescription = product.description.split('.').shift();
@@ -42,6 +59,12 @@ export class CatalogController {
     }
   }
 
+  categories() {
+    return this.mu.api.get('/categories')
+      .then(this._handleRes)
+      .then(d => d.categories);
+  }
+
   search(params) {
     const { router, api } = this.mu;
     const qs = typeof params === 'string' ? params : router.querystring(params || {});
@@ -57,15 +80,9 @@ export class CatalogController {
   }
 }
 
-const CATALOG_MU = {
-  // FILTERS
-  // RESULTS
-  // SEARCH
-  // 
-  CATEGORY: 'mu-category',
-  PRODUCTS: 'mu-products',
-  TILE: 'mu-product-tile',
-};
+
+
+
 
 export class CategoryPage extends MuMx.compose(null, 
   MxCtxInsulator,
@@ -74,47 +91,59 @@ export class CategoryPage extends MuMx.compose(null,
 ) {
   
   onInit() {
-    // console.log('cat.category', 'INIT', this.context._id);
-    this.connectProducts = this.connectProducts.bind(this);
+
     this.skusLoaded = this.skusLoaded.bind(this);
-    this.subscribe('products', this.context, this.connectProducts);
+    this.connectGrid = this.connectGrid.bind(this);
+    this.subscribe('products', this.context, this.connectGrid);
+
   }
 
   onMount() {
     super.onMount();
     const { router, root } = this.mu;
     const { category, search } = router.queryparams() || {};
-    
-    // update title
+
+    // update page title
     root.context.set('page.title', category || (search && 'Search') || 'Browse');
+
+    // rules
+    const rules = CATEGORY_RULES[(category || '').toLowerCase()];
 
     // configure context binding
     return this.render({
-      filterChange: this.setFilters.bind(this),
+      filterChange: this.filterChange.bind(this),
       search: {
-        category,
+        category: rules || category,
         term: search,
       }
     });
   }
 
-  connectProducts(products) {
+  /**
+   * when products mu mounts
+   * @param {Products} products 
+   */
+  connectGrid(products) {
     products.on('loaded', this.skusLoaded);
   }
 
+  /**
+   * handle skus from products grid api call
+   * @param {*} skus 
+   */
   skusLoaded(skus) {
     const brands = this._propGroup(skus, 'brand');
     const categories = this._propGroup(skus, 'category');
-
-    this.context.set('filters', { brands, categories });
-    // console.log({
-    //   brands,
-    //   categories,
-    // });
+    this.context.extend('filter.options', { brands, categories });
   }
 
-  setFilters(e, form) {
-    console.log('filters', form.getData());
+  /**
+   * filter form change handler
+   * @param {*} e 
+   * @param {*} form 
+   */
+  filterChange(e, form) {
+    this.context.set('filter.values', form.getData());
   }
 
   /**
@@ -138,15 +167,18 @@ export class CategoryPage extends MuMx.compose(null,
 
 }
 
+
+
+/**
+ * self-loading products grid
+ */
 export class Products extends MuMx.compose(null,
-  ShopMxSubscriber,
   ViewTemplateMixin,
   [MuCtxSetterMixin, 'ref'],
 ) {
 
   onInit() {
-    // console.log('cat.products', 'INIT', this.context._id);
-    // this.subscribe('attached:cat.products', this.view, this.load.bind(this));
+    
   }
   
   onMount() {
@@ -170,18 +202,19 @@ export class Products extends MuMx.compose(null,
       },
     });
 
+    // subscribe to context-provided filters
+    this.context.on(this._ctxKey('filter'), this.filterChanged.bind(this));
+
     // Handle load on context-provided property
-    const autoload = this._ctxKey('autoload');
-    return autoload ?
-      this.context.always(autoload, s => s && this.load()) :
+    const delegate = this._ctxKey('delegate');
+    return delegate ?
+      this.context.always(delegate, s => s && this.load()) :
       this.load();
   }
 
-  // onDispose() {
-  //   console.log('cat.products', 'DISPOSE', this.context._id);
-  //   super.onDispose();
-  // }
-
+  /**
+   * provide the view
+   */
   viewTemplateDelegate() {
     return this._ctxProp('template') || 'productGrid.html';
   }
@@ -197,9 +230,8 @@ export class Products extends MuMx.compose(null,
     // console.log('cat.products', 'LOAD', this.context._id);
     const { catalog } = this.mu;
     const { max } = this.context.get('pagination');
-    const { category } = this.context.get('search') || {};
-
-    const categories = category && [].concat(category || []);
+    // const { category } = this._ctxAttrValue('delegate') || {};
+    // const categories = category && [].concat(category || []);
     const params = {
       ...(max ? { size: max } : {}), // limit total results
       // TODO: fix broken filtering
@@ -209,12 +241,13 @@ export class Products extends MuMx.compose(null,
       // }: {}),
     };
     
-    // console.log('PRODUCTS', params);
     this.render({ loading: true })
       .then(() => catalog.search(params))
-      .then(items => {
-        this.emit('loaded', items);
-        return this.renderPage(items, 1);
+      .then(all => {
+        // apply shallow filter on the delegated search pre-conditions
+        const matched = this.filter(all, true);
+        this.emit('loaded', matched);
+        return this.renderMatched(matched);
       })
       .catch(error => this.render({
         error,
@@ -223,23 +256,25 @@ export class Products extends MuMx.compose(null,
        }));
   }
 
-  renderPage(items, p) {
+  renderPage(items, page) {
     const { limit } = this.context.get('pagination');
     const numPages = limit ? Math.ceil(items.length / limit) : 1;
-    const slice = limit ? items.slice().slice((p - 1) * limit, p * limit) : items;
+    const slice = limit ? items.slice().slice((page - 1) * limit, page * limit) : items;
     
     // create client-pagination bindings
-    const prev = p > 1 && this.renderPage.bind(this, items, p - 1);
-    const next = p < numPages && this.renderPage.bind(this, items, p + 1);
+    const prev = page > 1 && this.renderPage.bind(this, items, page - 1);
+    const next = page < numPages && this.renderPage.bind(this, items, page + 1);
     const hasMore = !!next;
     const pages = Array.apply(null, Array(numPages)).map((n, i) => ({
       number: i + 1,
-      isCurrent: p === i + 1,
-      click: this.renderPage.bind(this, items, i + 1), 
+      isCurrent: page === i + 1,
+      click: this.renderPage.bind(this, items, i + 1),
     }));
 
+    // render page with pagination bindings
     return this.render({
       loading: false,
+      error: !items.length && 'No products found',
       items: slice, // this page of items
       pages, // paging
       hasMore,
@@ -250,7 +285,84 @@ export class Products extends MuMx.compose(null,
     });
   }
 
+  /**
+   * filter items and render
+   * @param {object[]} all - full set of pre-filtered results
+   */
+  renderMatched(all) {
+    this._all = all || this._all;
+    return this.renderPage(this.filter(this._all), 1);
+  }
+
+  /**
+   * respond to upstream filter changes
+   */
+  filterChanged() {
+    return this.renderMatched();
+  }
+
+
+  /**
+   * reduce items to those statisfying the filters
+   * @param {object[]} items 
+   * @param {boolean} shallow
+   */
+  filter(items, shallow) {
+    const { category, term } = this._ctxAttrValue('delegate') || { };
+    const filters = this._ctxAttrValue('filter') || { };
+    const { priceMin, priceMax, text = term } = filters;
+    
+    // construct criteria
+    const cat = [].concat(category || [], filters.categories || []);
+    const match = {
+      cat: cat.filter(c => !(c instanceof RegExp)),
+      catRx: cat.filter(c => c instanceof RegExp),
+      // apply other filters after shallow
+      ...(shallow ? { } : {
+        search: (text || '').toLowerCase(),
+        brand: [].concat(filters.brands || []),
+        min: priceMin && parseFloat(priceMin.replace(/[^\d\.]/, '')),
+        max: priceMax && parseFloat(priceMax.replace(/[^\d\.]/, '')),
+      })
+    };
+    // console.log(match);
+    // apply the filters
+    return (items || []).filter(item => {
+      const tests = [];
+      // match category
+      if (match.cat.length) {
+        tests.push(item.category.reduce((pass, cat) => {
+          return pass || match.cat.indexOf(cat) > -1;
+        }, false));
+      }
+      if (match.catRx.length) {
+        tests.push(item.category.reduce((pass, cat) => {
+          return pass || !!match.catRx.filter(r => r.test(cat)).length;
+        }, false));
+      }
+      // match brand
+      if (match.brand && match.brand.length) {
+        tests.push(match.brand.indexOf(item.brand) > -1);
+      }
+      // title 
+      if (match.search) {
+        tests.push(item.title.toLowerCase().indexOf(match.search) > -1);
+      }
+      // price
+      if (match.min) {
+        tests.push(item.priceDecimal >= match.min);
+      }
+      if (match.max) {
+        tests.push(item.priceDecimal <= match.max);
+      }
+      
+      // if any failures -> falsy
+      return tests.length && tests.filter(p => !p).length ? false : true;
+    });
+  }
 }
+
+
 
 export class ProductTile extends MuMx.compose(null, ViewTemplateMixin) {
   

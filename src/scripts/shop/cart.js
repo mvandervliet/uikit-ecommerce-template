@@ -160,30 +160,27 @@ export class MuCart extends MuMx.compose(CartSubscriber,
     const cb = this._ctxAttrValue('onItems') || (() => {});
 
     // load corresponding sku records
-    if (this._viewDidRender) {
-      this.context.extend({ loading: true });
-    }
-    // this.context.set('loading', true);
+
     return Promise.resolve(this._viewDidRender ?
       this.context.set('loading', true) : // simply update context listeners
       this.render({ loading: true }))
-      .then(() => cart.combined())
-      .then(items => items.map(row => ({
-        ...row,
-        // qty manipulation bindings
-        qty: {
-          inc: this.increment.bind(this, row, 1),
-          dec: this.increment.bind(this, row, -1),
-          change: this.qtyChange.bind(this, row),
-        }
-      })))
-      .then(items => this.render({
-        loading: false,
-        items,
-        size,
-        totals,
-        rawTotals,
-      }).then(() => cb(items)));
+        .then(() => cart.combined())
+        .then(items => items.map(row => ({
+          ...row,
+          // qty manipulation bindings
+          qty: {
+            inc: this.increment.bind(this, row, 1),
+            dec: this.increment.bind(this, row, -1),
+            change: this.qtyChange.bind(this, row),
+          }
+        })))
+        .then(items => this.render({
+          loading: false,
+          items,
+          size,
+          totals,
+          rawTotals,
+        }).then(() => cb(items)));
   }
 
   increment(row, amnt) {

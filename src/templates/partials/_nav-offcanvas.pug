@@ -1,4 +1,4 @@
-div#nav-offcanvas.tm-nav-offcanvas(uk-offcanvas="overlay: true")
+div#nav-offcanvas.tm-nav-offcanvas(uk-offcanvas="overlay: true" mu-uk-component)
   aside.uk-offcanvas-bar.uk-padding-remove
 
     div.uk-card.uk-card-default.uk-card-small.tm-shadow-remove
@@ -40,15 +40,9 @@ div#nav-offcanvas.tm-nav-offcanvas(uk-offcanvas="overlay: true")
                   if item.name === "Brands"
                     li
                       +link-to-all('see all brands', item.href)(mu-route)
-          //- li
-          //-   a(href="compare.html" mu-route) Compare
-          //-     span.uk-badge.uk-margin-xsmall-left 3
 
       //- Toolbar links
       div.uk-card-small.uk-card-body(mu-user-toolbar="offcanvas")
-        //- ul.uk-nav.uk-nav-default
-        //-   each item in toolbarMenu
-        //-     li: a(href= item.href mu-route)= item.name
         
       //- Social
       nav.uk-card-body

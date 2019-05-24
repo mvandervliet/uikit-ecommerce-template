@@ -31,7 +31,7 @@ block pages
           header.uk-card-header.uk-flex.uk-flex-middle
             div.uk-grid-small.uk-flex-1(uk-grid)
               div.uk-width-expand
-                div.uk-h3 Filters
+                div.uk-h3 Filter
               button.uk-offcanvas-close(type="button" uk-close)
 
           //- Accordion
@@ -40,15 +40,23 @@ block pages
               uk-accordion="multiple: true; targets: > .js-accordion-section"
               style="flex-basis: auto")
 
+              //- Search
+              section.uk-card-body.uk-open(hidden mu-hide="!search.term")
+                //- h4.uk-accordion-title.uk-margin-remove Search
+                div.uk-accordion-content.uk-margin-remove
+                  div.uk-inline.uk-width-expand
+                    +icon('search')(class="uk-form-icon")
+                    input.uk-input(ype="search" name="text" placeholder="Search..." mu-attr mu-attr-value="search.term")
+
               //- Categories
-              section.uk-card-body
-                h4.uk-margin-remove Categories
+              section.uk-card-body.uk-animation-slide-left-medium(hidden mu-hide="!filter.options.categories")
+                h4.uk-margin-remove Category
                 div.uk-accordion-content
-                  +filterbox("filters.categories", "categories")
+                  +filterbox("filter.options.categories", "categories")
 
               //- Prices
               section.uk-card-body.uk-open.js-accordion-section
-                h4.uk-accordion-title.uk-margin-remove Prices
+                h4.uk-accordion-title.uk-margin-remove Price
                 div.uk-accordion-content
                   div.uk-grid-small.uk-child-width-1-2.uk-text-small(uk-grid)
                     div
@@ -61,10 +69,11 @@ block pages
                         input.uk-input(type="text" name="priceMax" placeholder="$199")
 
               //- Brands
-              section.uk-card-body.uk-open.js-accordion-section
-                h4.uk-accordion-title.uk-margin-remove Brands
+              section.uk-card-body.uk-open.js-accordion-section.uk-animation-slide-left-medium(
+                hidden mu-hide="!filter.options.brands")
+                h4.uk-accordion-title.uk-margin-remove Brand
                 div.uk-accordion-content
-                  +filterbox("filters.brands", "brands")
+                  +filterbox("filter.options.brands", "brands")
 
               //- Reset filters
               div.uk-card-body
@@ -76,4 +85,4 @@ block pages
 
     //- Content
     div.uk-width-expand
-      div(mu-products ref="products" autoload="search" limit="6")
+      div(mu-products ref="products" delegate="search" filter="filter.values" limit="6")

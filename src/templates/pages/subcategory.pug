@@ -31,68 +31,41 @@ block pages
           header.uk-card-header.uk-flex.uk-flex-middle
             div.uk-grid-small.uk-flex-1(uk-grid)
               div.uk-width-expand
-                h3 Filters
+                h3 Filter
               button.uk-offcanvas-close(type="button" uk-close)
 
           //- Accordion
-          div.uk-margin-remove.uk-flex-1.uk-overflow-auto(
-            uk-accordion="multiple: true; targets: > .js-accordion-section"
-            style="flex-basis: auto")
+          form(mu-form muChange="filterChange")
+            div.uk-margin-remove.uk-flex-1.uk-overflow-auto(
+              uk-accordion="multiple: true; targets: > .js-accordion-section"
+              style="flex-basis: auto")
 
-            //- Prices
-            section.uk-card-body.uk-open.js-accordion-section
-              h4.uk-accordion-title.uk-margin-remove Prices
-              div.uk-accordion-content
-                div.uk-grid-small.uk-child-width-1-2.uk-text-small(uk-grid)
-                  div
-                    div.uk-inline
-                      span.uk-form-icon.uk-text-xsmall from
-                      input.uk-input(type="text" placeholder="$0")
-                  div
-                    div.uk-inline
-                      span.uk-form-icon.uk-text-xsmall to
-                      input.uk-input(type="text" placeholder="$199")
-
-            //- Properties
-            each property in filters
-              section.uk-card-body.js-accordion-section(
-                class= { "uk-open": property.isOpen })
-                h4.uk-accordion-title.uk-margin-remove= property.title
-                  if property.description
-                    +icon("question", ".75")(
-                      class="tm-help-icon"
-                      onclick="event.stopPropagation();")
-                    div.uk-margin-remove(
-                      uk-drop="mode: click;" +
-                              "boundary-align: true; " +
-                              "boundary: !.uk-accordion-title; " +
-                              "pos: bottom-justify;")
-                      div(class="uk-card " +
-                                "uk-card-body " +
-                                "uk-card-default " +
-                                "uk-card-small " +
-                                "uk-box-shadow-xlarge " +
-                                "uk-text-small")= property.description
+              //- Prices
+              section.uk-card-body.uk-open.js-accordion-section
+                h4.uk-accordion-title.uk-margin-remove Price
                 div.uk-accordion-content
-                  ul.uk-list.tm-scrollbox
-                    each item in property.items
-                      li
-                        input.tm-checkbox(
-                          id= property.name + "-" + item.id
-                          name= property.name
-                          value= item.id
-                          type="checkbox")
-                        label(for= property.name + "-" + item.id)
-                          span= item.name
-                            |
-                            |
-                            span.uk-text-meta.uk-text-xsmall= item.quantity
+                  div.uk-grid-small.uk-child-width-1-2.uk-text-small(uk-grid)
+                    div
+                      div.uk-inline
+                        span.uk-form-icon.uk-text-xsmall from
+                        input.uk-input(type="text" placeholder="$0")
+                    div
+                      div.uk-inline
+                        span.uk-form-icon.uk-text-xsmall to
+                        input.uk-input(type="text" placeholder="$199")
 
-            div.uk-card-body
-              button.uk-button.uk-button-default.uk-width-1-1
-                +icon("close", ".75")(class="uk-margin-xsmall-right")
-                | Reset filters
+              //- Brands
+              section.uk-card-body.uk-open.js-accordion-section.uk-animation-slide-left-medium(
+                hidden mu-hide="!filter.options.brands")
+                h4.uk-accordion-title.uk-margin-remove Brand
+                div.uk-accordion-content
+                  +filterbox("filter.options.brands", "brands")
+
+              div.uk-card-body
+                button.uk-button.uk-button-default.uk-width-1-1
+                  +icon("close", ".75")(class="uk-margin-xsmall-right")
+                  | Reset filters
 
     //- Content
     div.uk-width-expand
-      div(mu-products ref="products" autoload="search" limit="6")
+      div(mu-products ref="products" delegate="search" filter="filter.values" limit="6")

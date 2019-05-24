@@ -1,7 +1,6 @@
 import { Mu, MuMx } from '../../mu/mu';
 import { MuCtxSetterMixin } from '../../mu/bindings';
 
-
 export class MuForm extends MuMx.compose(null, [MuCtxSetterMixin, 'mu-form']) {
 
   onInit() {
@@ -12,6 +11,8 @@ export class MuForm extends MuMx.compose(null, [MuCtxSetterMixin, 'mu-form']) {
   onMount() {
     // console.log('FORM MOUNT', this.context._id, this.node);
     const eNoop = e => e.preventDefault();
+    this._method = this._ctxAttrProp('method') || 'GET';
+    this._muAction = this._ctxAttrProp('muAction');
     this._change = this._ctxAttrValue('muChange') || this.node.onchange || eNoop;
     this._submit = this._ctxAttrValue('muSubmit') || this.node.onsubmit || eNoop;
     this.node.onchange = this.change;
@@ -22,7 +23,14 @@ export class MuForm extends MuMx.compose(null, [MuCtxSetterMixin, 'mu-form']) {
   submit(e) {
     // console.log('SUBMIT', this.context._id, this.node);
     this.emitOnce('submit', this, e);
-    return this._submit(e, this);
+    if (this._muAction && this._method === 'GET') {
+      e.preventDefault();
+      const { router } = this.mu;
+      const route = router.resolve(this._muAction);
+      return router.go(route, this.getData());
+    } else {
+      return this._submit(e, this);
+    }
   }
 
   change(e) {

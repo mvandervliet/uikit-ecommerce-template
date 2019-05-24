@@ -68,27 +68,19 @@ export class PageController {
     router.on('back', state => {
       var page = (state && state.name);
       return page && this._aclGate(page);
-      // return page && this.update(page);
-    // }).on('update', (page, search, params) => {
-    //   this.update(page);
     }).on('update', this._aclGate.bind(this));
-    
-    // // resolve the initial page
-    // var page = router.initial(nfPage);
-    // // return page === nfPage ? router.go(nfPage) : this.setPage(page);
-    // return page === nfPage ? router.go(nfPage) : this._aclGate(page);
   }
   
-  _aclDeny(page) {
+  _isDeny(page) {
     return (!this._hasAuth && !!~restricted.indexOf(page));
   }
 
   _aclGate(page, search, params) {
-    const deny = this._aclDeny(page);
+    const deny = this._isDeny(page);
     console.log('ACL CHECK', page, { deny });
     if (deny) {
       this._authRedir = { page, search, params };
-      this.mu.router.go(authPage, null, null);
+      this.mu.router.go(authPage, null, null, true);
     } else {
       this.update(page, search, params);
     }
@@ -103,7 +95,7 @@ export class PageController {
       this._authRedir = null; // clear 
       const { page, search, params } = authRedir;
       this._aclGate(page, search, params);
-    } else if (this._aclDeny(current)) {
+    } else if (this._isDeny(current)) {
       this._aclGate(current);
     } else {
       return current === nfPage ? router.go(nfPage) : this.setPage(current);

@@ -283,9 +283,12 @@ export class MuContext extends MuEmitter {
   /**
    * extend the root context with the new object
    * @param {object} data 
+   * @param {object} [data] 
    */
-  extend(data) {
-    return this.set(null, data);
+  extend(prop, data) {
+    const field = data ? prop : null;
+    const val = data ? data : prop;
+    return this.set(field, val);
   }
 
   /**
