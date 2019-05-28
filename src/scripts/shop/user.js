@@ -265,7 +265,7 @@ export class UserAddress extends MuMx.compose(null,
   }
 
   loading(loading) {
-    return this.render({ loading });
+    this.context.set('loading', loading);
   }
 
   change(form) {
@@ -276,8 +276,8 @@ export class UserAddress extends MuMx.compose(null,
 
   save(form) {
     const address = form.getData();
-    return this.loading(true)
-      .then(() => this.mu.user.saveAddress(address))
+    this.loading(true);
+    return this.mu.user.saveAddress(address)
       .then(a => this.done(null, a))
       .catch(e => this.done(e, address));
   }
@@ -325,13 +325,13 @@ export class UserPayment extends MuMx.compose(null,
   }
 
   loading(loading) {
-    return this.render({ loading });
+    this.context.set('loading', loading);
   }
 
   save(form) {
     const card = form.getData();
-    return this.loading(true)
-      .then(() => this.mu.user.saveCard(card))
+    this.loading(true)
+    return this.mu.user.saveCard(card)
       .then(a => this.done(null, a))
       .catch(e => this.done(e, card));
   }

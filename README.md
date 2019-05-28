@@ -70,6 +70,12 @@ make up
 make down
 ```
 
+## Build
+
+```shell
+docker build -t mushop-storefront .
+```
+
 ## Copyright and Credits
 
 [Shopping Categories Colection](https://thenounproject.com/jarosigrist/collection/shopping-categories) icons by Jaro Sigrist from Noun Project. Licensed under Creative Commons Attribution 3.0.

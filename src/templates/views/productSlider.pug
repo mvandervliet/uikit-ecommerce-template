@@ -1,9 +1,18 @@
+include ../mixins/_icon
+
 div.uk-margin-medium-top(uk-slider="finite: true; sets: true;")
   div.uk-position-relative
+    //- loader
+    div.uk-text-center(mu-if="loading")
+      div(uk-spinner)
+      
+    //- error
+    div.uk-text-warning.uk-text-center(mu-if="error")
+      +icon('warning')(class="uk-margin-small-right")
+      span(mu-html="error")
+
+    //- slider
     div.uk-grid-small.uk-flex-middle(uk-grid)
-      //- loader
-      div.uk-text-center.uk-width-1-1(mu-if="loading")
-        div(uk-spinner)
 
       div(class="uk-visible@m")
         a(href="#"

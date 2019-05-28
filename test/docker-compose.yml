@@ -1,25 +1,25 @@
 version: '2'
 
 services:
-  # edge-router:
-  #   image: weaveworksdemos/edge-router
-  #   ports:
-  #     - '80:80'
-  #   hostname: edge-router
-  #   restart: always
-  #   environment:
-  #     - reschedule:on-node-failure
-
-  # Storefront backend service
-  backend:
-    image: weaveworksdemos/front-end
-    hostname: backend
+  edge-router:
+    image: phx.ocir.io/intvravipati/mushop/edge-router
+    # ports:
+    #   - '80:80'
+    hostname: edge-router
     restart: always
     environment:
-      - PORT=8080
       - reschedule:on-node-failure
+
+  # Storefront backend API service
+  api:
+    image: phx.ocir.io/intvravipati/mushop/api
+    hostname: api
+    restart: always
     ports:
-      - "8080:8080"
+      - '8080:3000'
+    environment:
+      - PORT=3000
+      - reschedule:on-node-failure
   
   # OCI Catalog service
   catalogue:
@@ -27,15 +27,15 @@ services:
     hostname: catalogue
     restart: always
     cap_drop:
-        - all
+      - all
     cap_add:
-        - NET_BIND_SERVICE
+      - NET_BIND_SERVICE
     read_only: true
     environment:
-        - reschedule=on-node-failure
-        - OADB_USER=catalogue_user
-        - OADB_PW=default_Password1
-        - OADB_SERVICE=mcatalogue_tp
+      - reschedule=on-node-failure
+      - OADB_USER=catalogue_user
+      - OADB_PW=default_Password1
+      - OADB_SERVICE=mcatalogue_tp
 
   # catalogue:
   #   image: weaveworksdemos/catalogue

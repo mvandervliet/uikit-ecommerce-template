@@ -3,7 +3,6 @@ import { ShopMxSubscriber } from './helper/subscriber';
 import { ViewTemplateMixin } from './helper/viewmx';
 import { MxCtxInsulator } from './helper/mixins';
 
-
 const CATEGORY_RULES = {
   // name --> matches
   "feeders":    [/(feeder|bowl|placemat|storage)/i],
@@ -19,20 +18,25 @@ const CATALOG_MU = {
   TILE: 'mu-product-tile',
 };
 
+export function getStaticUrl(src) {
+  const prefix = (STATIC_ASSET_URL || '/api/catalogue/images').replace(/\/$/, '');
+  return `${prefix}/${src.replace(/^\//, '')}`;
+}
+
 export class CatalogController {
   constructor() {
     this._serviceUri = '/catalogue';
     this._serviceReg = new RegExp(`^(${this._serviceUri})`);
     this._normalize = this._normalize.bind(this);
     this._handleRes = this._handleRes.bind(this);
+    console.log({ STATIC_ASSET_URL, PRODUCTION })
   }
 
   _normalize(product) {
     // create route link
     product.href = `product.html?id=${product.id}`;
     // map product images from API to the respective ingress
-    product.imageUrl = (product.imageUrl || [])
-      .map(src => src.replace(this._serviceReg, '/api$1'));
+    product.imageUrl = (product.imageUrl || []).map(getStaticUrl);
     product.image = product.imageUrl[0];
     // fix price format
     product.priceDecimal = product.price;
@@ -177,10 +181,6 @@ export class Products extends MuMx.compose(null,
   [MuCtxSetterMixin, 'ref'],
 ) {
 
-  onInit() {
-    
-  }
-  
   onMount() {
     // console.log('cat.products', 'MOUNT', this.context._id, this.node.parentNode);
     super.onMount();

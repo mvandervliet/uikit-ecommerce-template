@@ -1,20 +1,13 @@
 {
-  "name": "uikit-ecommerce-template",
+  "name": "mushop-storefront",
   "version": "1.0.0",
-  "description": "E-commerce template built with UIkIt",
+  "description": "MuShop eCommerce demo",
   "scripts": {
     "start": "gulp",
     "server": "gulp server",
     "watch": "gulp watch",
     "build": "gulp build --production"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/chekromul/uikit-ecommerce-template.git"
-  },
-  "author": "Roman Chekurov",
-  "license": "MIT",
-  "homepage": "https://github.com/chekromul/uikit-ecommerce-template",
   "devDependencies": {
     "@babel/core": "^7.4.4",
     "@babel/preset-env": "^7.4.4",
@@ -23,6 +16,7 @@
     "babel-preset-es2015": "^6.24.1",
     "browser-sync": "^2.24.6",
     "del": "^3.0.0",
+    "dotenv": "^8.0.0",
     "gulp": "^4.0.0",
     "gulp-cache": "^1.0.2",
     "gulp-concat": "^2.6.1",

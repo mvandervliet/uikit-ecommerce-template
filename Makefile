@@ -1,5 +1,6 @@
 IMAGE=mushop-dev-storefront
-BACKEND=http://backend:8080
+
+API=http://api:3000
 
 up: services test-image start
 
@@ -22,7 +23,8 @@ start:
 		-v $$PWD:/usr/src/app   \
 		-P                      \
 		-e NODE_ENV=development \
-		-e API_PROXY=$(BACKEND) \
+		-e STATIC_ASSET_URL="https://objectstorage.us-phoenix-1.oraclecloud.com/n/intvravipati/b/mushop-images/o/" \
+		-e API_PROXY=$(API) 		\
 		-e PORT=3000            \
 		-p 3000:3000            \
 		--network mutest_default  \
