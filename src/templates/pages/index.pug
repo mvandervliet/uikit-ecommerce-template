@@ -3,23 +3,27 @@ extends /layouts/_default
 block vars
   -
     page = {
-      title: 'Home'
+      title: shopInfo.storeName
     }
 
 block default
 
   //- Slider
-  section.uk-position-relative.uk-visible-toggle.uk-light(uk-slideshow="min-height: 300; max-height: 600;")
+  section.uk-position-relative.uk-visible-toggle.uk-light(uk-slideshow="animation: pull; ratio: 1920:700; max-height: 500")
     ul.uk-slideshow-items
       each item in promo
-        li(style="background-color: " + item.background)
-          a(href="#")
-            figure.uk-container.uk-height-1-1
-              img(src= item.image
-                  alt= item.title
-                  width="1200"
-                  height="600"
-                  uk-cover)
+        li.mu-promo-container(style="background-color: " + item.background)
+          figure.uk-height-1-1(uk-parallax="y: 0,250")
+            img.uk-animation-kenburns(src= item.image
+                alt= item.title)
+            div.uk-container.uk-position-cover
+              div.mu-promo-detail(class="uk-position-medium uk-position-" + item.position)
+                h2(class="uk-heading-medium uk-visible@m")= item.title
+                p(class="uk-text-lead uk-visible@s")= item.subtitle
+                a.uk-button.uk-button-default(
+                  mu-route
+                  href=item.href
+                )= item.cta
 
     a.uk-position-center-left.uk-position-small.uk-hidden-hover(
       href="#"
@@ -48,7 +52,7 @@ block default
                     "uk-display-block " +
                     "uk-padding-small " +
                     "uk-box-shadow-hover-large"
-              href= category.href)
+              href= category.href mu-route)
               if category.image
                 div.tm-ratio.tm-ratio-4-3
                   div.tm-media-box
@@ -84,7 +88,7 @@ block default
         +link-to-all("shop all", "subcategory.html")
 
   //- Brands
-  section.uk-section.uk-section-default.uk-section-small
+  //- section.uk-section.uk-section-default.uk-section-small
     div.uk-container
 
       h2.uk-text-center Popular Brands
@@ -128,7 +132,7 @@ block default
         +link-to-all("see all brands", "brands.html")
 
   //- Blog
-  section.uk-section.uk-section-small
+  //- section.uk-section.uk-section-small
     div.uk-container
 
       h2.uk-text-center Blog
@@ -147,7 +151,7 @@ block default
         +link-to-all("see all articles", "blog.html")
 
   //- About & News
-  section.uk-section.uk-section-default.uk-section-small
+  //- section.uk-section.uk-section-default.uk-section-small
     div.uk-container
       div(class="uk-grid-medium " +
                 "uk-child-width-1-1 " +
@@ -164,36 +168,13 @@ block default
           div(class="uk-text-center uk-text-left@s")
             +link-to-all("read more", "about.html")
 
-        //- News
-        section
-
-          h2(class="uk-text-center uk-text-left@s") Latest News
-
-          ul.uk-list.uk-list-small.uk-list-divider
-            each article in news
-              li
-                article.uk-article
-                  div.uk-article-body
-                    //- Date
-                    div.uk-article-meta.uk-margin-xsmall-bottom
-                      time= article.date
-                    //- Title
-                    h3.uk-h4.uk-margin-remove
-                      a.uk-link-heading(href= article.href)= article.title
-                    //- Description
-                    if article.description
-                      div.uk-margin-xsmall-top.uk-text-small!= article.description
-
-          div(class="uk-margin uk-text-center uk-text-left@s")
-            +link-to-all("see all news", "news.html")
-
   //- Subscribe
   section.uk-section.uk-section-primary.uk-section-small.uk-light
     div.uk-container
 
         div.uk-text-center
           div.uk-h2.uk-margin-remove Subscribe for updates
-          div Be aware of new products and special offers.
+          div Find out about new products before your cat does.
 
         div.uk-margin
           form

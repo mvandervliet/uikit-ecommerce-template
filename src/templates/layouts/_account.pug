@@ -10,7 +10,7 @@ block default
         //- Profile column
         div(class="uk-width-1-1 uk-width-1-4@m tm-aside-column")
           div.uk-card.uk-card-default.uk-card-small.tm-ignore-container(
-            uk-sticky="offset: 90; bottom: true; media: @m;")
+            uk-sticky="offset: 75; bottom: true; media: @m;")
 
             //- Profile
             div.uk-card-header
@@ -43,12 +43,14 @@ block default
                   div.uk-grid-small.uk-flex-center(uk-grid)
 
                     div
-                      a.uk-button.uk-button-default.uk-button-small(href="settings.html")
+                      a.uk-button.uk-button-default.uk-button-small(href="settings.html" mu-route)
                         +icon("cog", ".75")(class="uk-margin-xsmall-right")
                         span Settings
 
                     div
                       button.uk-button.uk-button-default.uk-button-small(
+                        mu
+                        onclick="return this.mu.user.logout();"
                         href="#"
                         title="Log out")
                         +icon("sign-out", ".75")
@@ -58,11 +60,7 @@ block default
                 ul.uk-nav.uk-nav-default.tm-nav
                   each item in profileNav
                     li(class= {"uk-active": item.id == profileActivePage})
-                      a(href= item.href)= item.title
-                        if item.amount
-                          |
-                          |
-                          span (#{item.amount})
+                      a(href= item.href mu-route)= item.title
 
         //- Content column
         div(class="uk-width-1-1 uk-width-expand@m")

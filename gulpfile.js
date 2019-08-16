@@ -1,7 +1,9 @@
 var gulp         = require('gulp'),
+    util         = require('gulp-util'),
     less         = require('gulp-less'),
     sync         = require('browser-sync'),
-    concat       = require('gulp-concat'),
+    // concat       = require('gulp-concat'),
+    webpack      = require('webpack-stream'),
     del          = require('del'),
     imagemin     = require('gulp-imagemin'),
     pngquant     = require('imagemin-pngquant'),
@@ -10,18 +12,17 @@ var gulp         = require('gulp'),
     postcss      = require('gulp-postcss'),
     csso         = require('gulp-csso'),
     pug          = require('gulp-pug'),
-    jsmin        = require('gulp-jsmin'),
-    ghPages      = require('gulp-gh-pages'),
-    include      = require('gulp-include');
+    proxy        = require('http-proxy-middleware');
 
 // HTML
 
 gulp.task('html', function() {
   return gulp.src(['src/templates/pages/**/*.pug'])
     .pipe(pug({
-      basedir: 'src/templates'
+      basedir: 'src/templates',
+      pretty: true,
     }))
-    .pipe(gulp.dest('dest'))
+    .pipe(gulp.dest('build'))
     .pipe(sync.stream());
 });
 
@@ -30,10 +31,10 @@ gulp.task('html', function() {
 gulp.task('styles', function() {
   return gulp.src(['src/styles/**/*.less', '!src/styles/**/_*.less'])
     .pipe(less({ relativeUrls: true }))
-    .pipe(concat('style.css'))
+    // .pipe(concat('style.css'))
     .pipe(postcss([autoprefixer({ browsers: 'last 2 versions' })]))
     .pipe(csso())
-    .pipe(gulp.dest('dest/styles'))
+    .pipe(gulp.dest('build/styles'))
     .pipe(sync.stream({
       once: true
     }));
@@ -42,17 +43,15 @@ gulp.task('styles', function() {
 // Scripts
 
 gulp.task('scripts', function() {
+  const wpconf = require('./webpack.config');
+  const { production } = util.env;
   return gulp.src('src/scripts/*.js')
-    .pipe(include({
-      extensions: 'js',
-      hardFail: true,
-      includePaths: [
-        __dirname + '/node_modules',
-        __dirname + '/src/js'
-      ]
+    .pipe(webpack({
+      ...wpconf,
+      mode: production ? 'production' : 'development',
+      devtool: production ? false : 'eval',
     }))
-    .pipe(jsmin())
-    .pipe(gulp.dest('dest/scripts'))
+    .pipe(gulp.dest('build'))
     .pipe(sync.stream({
       once: true
     }));
@@ -61,14 +60,14 @@ gulp.task('scripts', function() {
 // Images
 
 gulp.task('images', function() {
-  return gulp.src('src/images/**/*')
+  return gulp.src(['src/images/**/*'])
     .pipe(cache(imagemin({
       interlaced: true,
       progressive: true,
       svgoPlugins: [{ removeViewBox: false }],
       use: [pngquant()]
     })))
-    .pipe(gulp.dest('dest/images'));
+    .pipe(gulp.dest('build/images'));
 });
 
 // Copy
@@ -77,13 +76,14 @@ gulp.task('copy', function() {
   return gulp.src([
     'src/*',
     'src/fonts/*',
+    'src/views/*',
     '!src/images/*',
     '!src/styles/*',
     '!src/scripts/*'
   ], {
     base: 'src'
   })
-    .pipe(gulp.dest('dest'))
+    .pipe(gulp.dest('build'))
     .pipe(sync.stream({
       once: true
     }));
@@ -92,12 +92,20 @@ gulp.task('copy', function() {
 // Server
 
 gulp.task('server', function() {
+  // READ the API_PROXY environment variable for the shop services
+  const { API_PROXY = 'http://localhost:8080' } = process.env;
   sync.init({
     notify: false,
-    //ui: false,
-    //tunnel: true,
+    open: false,
+    port: 3000,
+    ui: false,
+    routes: { '/': 'index.html' },
+    middleware: [ proxy('/api', {
+      target: API_PROXY,
+      pathRewrite: { '^/api': '' },
+    }) ],
     server: {
-      baseDir: 'dest'
+      baseDir: 'build'
     }
   });
 });
@@ -105,7 +113,7 @@ gulp.task('server', function() {
 // Clean
 
 gulp.task('clean', function() {
-  return del.sync('dest');
+  return del('build');
 });
 
 // Clear
@@ -125,13 +133,14 @@ gulp.task('watch:styles', function() {
 });
 
 gulp.task('watch:scripts', function() {
-  return gulp.watch('src/scripts/*.js', gulp.series('scripts'));
+  return gulp.watch('src/scripts/**/*.js', gulp.series('scripts'));
 });
 
 gulp.task('watch:copy', function() {
   return gulp.watch([
     'src/*',
     'src/fonts/*',
+    'src/views/*',
     '!src/images/*',
     '!src/styles/*',
     '!src/scripts/*'
@@ -147,19 +156,16 @@ gulp.task('watch', gulp.parallel(
 
 // Build
 
-gulp.task('build', gulp.parallel(
-  'html',
-  'styles',
-  'scripts',
-  'copy'
+gulp.task('build', gulp.series(
+  'clean',
+  gulp.parallel(
+    'html',
+    'styles',
+    'scripts',
+    'copy',
+    'images',
+  )
 ));
-
-// Deploy
-
-gulp.task('deploy', function () {
-  return gulp.src('./dest/**/*')
-    .pipe(ghPages())
-});
 
 // Default
 

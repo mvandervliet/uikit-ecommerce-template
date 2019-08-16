@@ -1,4 +1,4 @@
-div#cart-offcanvas(uk-offcanvas="overlay: true; flip: true")
+div#cart-offcanvas(mu-minicart uk-offcanvas="overlay: true; flip: true")
   aside.uk-offcanvas-bar.uk-padding-remove
     div(class="uk-card " +
               "uk-card-default " +
@@ -19,13 +19,13 @@ div#cart-offcanvas(uk-offcanvas="overlay: true; flip: true")
           each product in products
             if product.isAddedToCart
               li.uk-visible-toggle
-                arttcle
+                article
                   div.uk-grid-small(uk-grid)
 
                     //- Image
                     div.uk-width-1-4
                       div.tm-ratio.tm-ratio-4-3
-                        a.tm-media-box(href= product.href)
+                        a.tm-media-box(href= product.href mu-route)
                           figure.tm-media-box-wrap
                             if product.image
                               img(src= product.image.small alt= product.name)
@@ -34,7 +34,7 @@ div#cart-offcanvas(uk-offcanvas="overlay: true; flip: true")
                     //- Info
                     div.uk-width-expand
                       div.uk-text-meta.uk-text-xsmall= product.type
-                      a.uk-link-heading.uk-text-small(href= product.href)= product.name
+                      a.uk-link-heading.uk-text-small(href= product.href mu-route)= product.name
                       div.uk-margin-xsmall.uk-grid-small.uk-flex-middle(uk-grid)
                         div.uk-text-bolder.uk-text-small= product.price
                         div.uk-text-meta.uk-text-xsmall 1 × #{product.price}
@@ -58,7 +58,7 @@ div#cart-offcanvas(uk-offcanvas="overlay: true; flip: true")
                   "uk-margin-small" uk-grid)
           div
             a(class="uk-button uk-button-default uk-margin-small uk-width-1-1"
-              href="cart.html") view cart
+              href="cart.html" mu-route) view cart
           div
             a(class="uk-button uk-button-primary uk-margin-small uk-width-1-1"
-              href="checkout.html") checkout
+              href="checkout.html" mu-route) checkout

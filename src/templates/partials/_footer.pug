@@ -6,23 +6,26 @@ section.uk-section.uk-section-secondary.uk-section-small.uk-light
         uk-grid)
 
       div
-        a.uk-logo(href="index.html")
-          img(src="images/logo-inverse.svg" width="90" height="32" alt="Logo")
-        p.uk-text-small Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut mauris eros. Nulla quis ante sed tortor efficitur facilisis.
-        ul.uk-iconnav
-          each social in socials
-            li: a(href="#" title= social.name uk-icon= social.icon)
+        a.uk-logo(href="index.html" mu-route)
+          img(src="images/logo-inverse.png" alt=shopInfo.storeLogoText)
+          //- img(uk-svg src="images/logo-inverse.svg" alt=shopInfo.storeLogoText)
+          //- include _logo-inverse.pug
+        p.uk-text-small Specialty products that every cat deserves, especially yours.
 
       div
         nav.uk-grid-small.uk-child-width-1-2(uk-grid)
           div
             ul.uk-nav.uk-nav-default
               each item in footerMenuLeft
-                li: a(href= item.href)= item.name
+                li: a(href= item.href mu-route)= item.name
           div
             ul.uk-nav.uk-nav-default
               each item in footerMenuRight
-                li: a(href= item.href)= item.name
+                li: a(href= item.href mu-route)= item.name
+        
+        ul.uk-iconnav.uk-margin
+          each social in socials
+            li: a(href="#" title= social.name uk-icon= social.icon)
 
       div
         ul.uk-list.uk-text-small
@@ -51,6 +54,9 @@ section.uk-section.uk-section-secondary.uk-section-small.uk-light
               a.uk-form-icon.uk-form-icon-flip(href="#" uk-icon="mail")
               input.uk-input(type="email" placeholder="Your email" required)
 
-        div.uk-margin.uk-text-small.uk-text-muted Shopping Categories icons by Jaro Sigrist from Noun Project
+        div.uk-margin.uk-text-small.uk-text-muted
+          p Made with 
+            span(uk-icon="heart")
+            |  by Oracle A-Team
 
 

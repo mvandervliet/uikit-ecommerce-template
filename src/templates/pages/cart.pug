@@ -52,7 +52,7 @@ block pages
                     //- Image
                     div.uk-width-1-3
                       div.tm-ratio.tm-ratio-4-3
-                        a.tm-media-box(href= product.href)
+                        a.tm-media-box(href= product.href mu-route)
                           figure.tm-media-box-wrap
                             if product.image
                               img(src= product.image.small alt= product.name)
@@ -62,7 +62,7 @@ block pages
                     //- Info
                     div.uk-width-expand
                       div.uk-text-meta= product.type
-                      a.uk-link-heading(href= product.href)= product.name
+                      a.uk-link-heading(href= product.href mu-route)= product.name
 
                 // Other cells
                 div
@@ -120,4 +120,4 @@ block pages
             div.uk-text-lead.uk-text-bolder $3119
 
           a.uk-button.uk-button-primary.uk-margin-small.uk-width-1-1(
-            href="checkout.html") checkout
+            href="checkout.html" mu-route) checkout

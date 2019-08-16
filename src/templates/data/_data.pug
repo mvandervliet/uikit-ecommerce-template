@@ -1,77 +1,61 @@
 -
   var shopInfo = {
-    phone: '8 800 799 99 99',
+    phone: '+1 800.392.2999',
     email: 'example@example.com',
-    address: 'St.&nbsp;Petersburg, Nevsky&nbsp;Prospect&nbsp;28',
+    address: 'Lanai, Hawaii 96763',
     openingHours: 'Daily 10:00–22:00',
-    storeName: 'Store Name',
-    latitude: 59.9356728,
-    longitude: 30.3258604
+    storeLogoText: 'μShop',
+    storeName: 'MuShop',
+    latitude: 20.7379498, 
+    longitude: -156.8871740
   }
 
   var catalog = [{
-    name: 'Laptops & Tablets',
-    id: 'laptops-tablets',
+    name: 'Feeders',
+    id: 'feeders',
     href: 'category.html',
-    image: 'images/catalog/computers.svg',
-    quantity: 367,
+    //- image: 'images/catalog/computers.svg',
+    quantity: 10,
     items: [
-      'Laptops',
-      'Tablets',
-      'Peripherals',
-      'Keyboards',
-      'Accessories'
+      'Auto Feeders',
+      'Bowls',
+      'Placemats',
+      'Storage',
     ]
   }, {
-    name: 'Phones & Gadgets',
-    id: 'phones-gadgets',
+    name: 'Food',
+    id: 'food',
     href: 'category.html',
-    image: 'images/catalog/phones.svg',
+    //- image: 'images/catalog/phones.svg',
     quantity: 144,
     items: [
-      'Smartphones',
-      'Mobile Phones',
-      'Smart watches',
-      'Charging and batteries',
-      'Accessories'
+      'Dry Food',
+      'Wet Food',
+      'Food Pouches',
+      'Limited Diet',
     ]
   }, {
-    name: 'TV & Video',
-    id: 'tv-video',
+    name: 'Grooming',
+    id: 'grooming',
     href: 'category.html',
-    image: 'images/catalog/tv.svg',
+    //- image: 'images/catalog/tv.svg',
     quantity: 58,
     items: [
-      'TV',
-      'Home Cinema',
-      'Satellite & Cable TV',
-      'Projectors',
-      'DVD & Blu-ray',
-      'Accessories'
+      'Brushes',
+      'Grooming Tools',
+      'Shampoos and Conditioners'
     ]
   }, {
-    name: 'Games & Entertainment',
-    id: 'games-entertainment',
+    name: 'Cat Litter',
+    id: 'litter',
     href: 'category.html',
-    image: 'images/catalog/games.svg',
+    //- image: 'images/catalog/games.svg',
     quantity: 13,
     items: [
-      'Gaming consoles',
-      'Games',
-      'Software',
-      'Joysticks & gamepads',
-      'Accessories'
-    ]
-  }, {
-    name: 'Photo',
-    id: 'photo',
-    href: 'category.html',
-    image: 'images/catalog/photo.svg',
-    quantity: 59,
-    items: [
-      'Cameras',
-      'Lenses',
-      'Accessories'
+      'Cleaning Supplies',
+      'Deodorizers',
+      'Litter Accessories',
+      'Litter Boxes'
     ]
   }]
 
@@ -114,9 +98,6 @@
   }]
 
   var toolbarMenu = [{
-    name: 'News',
-    href: 'news.html'
-  }, {
     name: 'FAQ',
     href: 'faq.html'
   }, {
@@ -128,77 +109,74 @@
     name: 'Catalog',
     href: 'catalog.html',
     items: catalog
-  }, {
-    name: 'Brands',
-    href: 'brands.html',
-    items: brands
-  }, {
-    name: 'Pages',
-    href: '#',
-    items: [{
-      name: 'Catalog',
-      href: 'catalog.html'
-    }, {
-      name: 'Category',
-      href: 'category.html'
-    }, {
-      name: 'Subcategory',
-      href: 'subcategory.html'
-    }, {
-      name: 'Product',
-      href: 'product.html'
-    }, {
-      name: 'Cart',
-      href: 'cart.html'
-    }, {
-      name: 'Checkout',
-      href: 'checkout.html'
-    }, {
-      name: 'Compare',
-      href: 'compare.html'
-    }, {
-      name: 'Brands',
-      href: 'brands.html'
-    }, {
-      name: 'Compare',
-      href: 'compare.html'
-    }, {
-      name: 'Account',
-      href: 'account.html'
-    }, {
-      name: 'Favorites',
-      href: 'favorites.html'
-    }, {
-      name: 'Personal',
-      href: 'personal.html'
-    }, {
-      name: 'Settings',
-      href: 'settings.html'
-    }, {
-      name: 'About',
-      href: 'about.html'
-    }, {
-      name: 'Contacts',
-      href: 'contacts.html'
-    }, {
-      name: 'Blog',
-      href: 'blog.html'
-    }, {
-      name: 'News',
-      href: 'news.html'
-    }, {
-      name: 'Article',
-      href: 'article.html'
-    }, {
-      name: 'FAQ',
-      href: 'faq.html'
-    }, {
-      name: 'Delivery',
-      href: 'delivery.html'
-    }, {
-      name: '404',
-      href: '404.html'
-    }]
+  //- }, {
+  //-   name: 'Brands',
+  //-   href: 'brands.html',
+  //-   items: brands
+  //- }, {
+  //-   name: 'Pages',
+  //-   href: '#',
+  //-   items: [{
+  //-     name: 'Catalog',
+  //-     href: 'catalog.html'
+  //-   }, {
+  //-     name: 'Category',
+  //-     href: 'category.html'
+  //-   }, {
+  //-     name: 'Subcategory',
+  //-     href: 'subcategory.html'
+  //-   }, {
+  //-     name: 'Product',
+  //-     href: 'product.html'
+  //-   }, {
+  //-     name: 'Cart',
+  //-     href: 'cart.html'
+  //-   }, {
+  //-     name: 'Checkout',
+  //-     href: 'checkout.html'
+  //-   }, {
+  //-     name: 'Compare',
+  //-     href: 'compare.html'
+  //-   }, {
+  //-     name: 'Brands',
+  //-     href: 'brands.html'
+  //-   }, {
+  //-     name: 'Compare',
+  //-     href: 'compare.html'
+  //-   }, {
+  //-     name: 'Orders',
+  //-     href: 'orders.html'
+  //-   }, {
+  //-     name: 'Favorites',
+  //-     href: 'favorites.html'
+  //-   }, {
+  //-     name: 'Personal',
+  //-     href: 'personal.html'
+  //-   }, {
+  //-     name: 'Settings',
+  //-     href: 'settings.html'
+  //-   }, {
+  //-     name: 'About',
+  //-     href: 'about.html'
+  //-   }, {
+  //-     name: 'Contact',
+  //-     href: 'contacts.html'
+  //-   }, {
+  //-     name: 'Blog',
+  //-     href: 'blog.html'
+  //-   }, {
+  //-     name: 'Article',
+  //-     href: 'article.html'
+  //-   }, {
+  //-     name: 'FAQ',
+  //-     href: 'faq.html'
+  //-   }, {
+  //-     name: 'Delivery',
+  //-     href: 'delivery.html'
+  //-   }, {
+  //-     name: '404',
+  //-     href: '404.html'
+  //-   }]
   }, {
     name: 'Blog',
     href: 'blog.html'
@@ -206,7 +184,7 @@
     name: 'About',
     href: 'about.html'
   }, {
-    name: 'Contacts',
+    name: 'Contact',
     href: 'contacts.html'
   }]
 
@@ -214,45 +192,43 @@
     name: 'Catalog',
     href: 'catalog.html'
   }, {
-    name: 'Brands',
-    href: 'brands.html'
-  }, {
+  //-   name: 'Brands',
+  //-   href: 'brands.html'
+  //- }, {
     name: 'Delivery',
     href: 'delivery.html'
   }, {
     name: 'FAQ',
     href: 'faq.html'
-  }, {
-    name: 'Payment',
-    href: '#'
   }]
 
   var footerMenuRight = [{
     name: 'About',
     href: 'about.html'
   }, {
-    name: 'Contacts',
+    name: 'Contact',
     href: 'contacts.html'
   }, {
     name: 'Blog',
     href: 'blog.html'
-  }, {
-    name: 'News',
-    href: 'news.html'
   }]
 
   var socials = [{
     name: 'Facebook',
-    icon: 'facebook'
+    icon: 'facebook',
+    href: '#'
   }, {
     name: 'Twitter',
-    icon: 'twitter'
+    icon: 'twitter',
+    href: '#'
   }, {
     name: 'YouTube',
-    icon: 'youtube'
+    icon: 'youtube',
+    href: '#'
   }, {
     name: 'Instagram',
-    icon: 'instagram'
+    icon: 'instagram',
+    href: '#'
   }]
 
   var products = [{
@@ -1005,23 +981,6 @@
     href: 'article.html'
   }]
 
-  var news = [{
-    title: 'Highlights from WWDC',
-    description: '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sodales eget ipsum id aliquam. Nam consectetur interdum nibh eget sodales. Cras volutpat efficitur ornare.</p>',
-    date: 'June 4, 2018',
-    href: 'article.html'
-  }, {
-    title: 'Apple introduces macOS Mojave',
-    description: '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sodales eget ipsum id aliquam. Nam consectetur interdum nibh eget sodales. Cras volutpat efficitur ornare.</p>',
-    date: 'June 4, 2018',
-    href: 'article.html'
-  }, {
-    title: 'iOS 11.4 brings stereo pairs and multi-room audio with AirPlay 2',
-    description: '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sodales eget ipsum id aliquam. Nam consectetur interdum nibh eget sodales. Cras volutpat efficitur ornare.</p>',
-    date: 'May 29, 2018',
-    href: 'article.html'
-  }]
-
   var profile = {
     firstName: 'Thomas',
     lastName: 'Bruns',
@@ -1035,12 +994,10 @@
   var profileNav = [{
     id: 1,
     title: 'Orders',
-    amount: 2,
-    href: 'account.html'
+    href: 'orders.html'
   }, {
     id: 2,
     title: 'Favorites',
-    amount: 3,
     href: 'favorites.html'
   }, {
     id: 3,
@@ -1067,43 +1024,51 @@
   }]
 
   var informationalNav = [{
-    id: 1,
+    id: 'about',
     title: 'About',
     href: 'about.html'
   }, {
-    id: 2,
-    title: 'Contacts',
+    id: 'contact',
+    title: 'Contact',
     href: 'contacts.html'
   }, {
-    id: 3,
+    id: 'blog',
     title: 'Blog',
     href: 'blog.html'
   }, {
-    id: 4,
-    title: 'News',
-    href: 'news.html'
-  }, {
-    id: 5,
+    id: 'faq',
     title: 'FAQ',
     href: 'faq.html'
   }, {
-    id: 6,
+    id: 'delivery',
     title: 'Delivery',
     href: 'delivery.html'
   }]
 
   var promo = [{
-    background: '#0b0a12',
-    image: 'images/promo/macbook-new.jpg',
-    title: 'New Macbook'
+    background: '#004950',
+    image: 'images/hero/01.jpg',
+    title: 'Food!',
+    subtitle: 'Food for your feline friend',
+    cta: 'Shop Food',
+    href: 'category.html',
+    position: 'center-right'
   }, {
-    background: '#ce071e',
-    image: 'images/promo/iphone.jpg',
-    title: 'iPhone'
+    background: '#7f7f7f',
+    image: 'images/hero/02.jpg',
+    title: 'Accessorize!',
+    subtitle: 'Great deals on great accessories',
+    cta: 'Shop Accessories',
+    href: 'category.html',
+    position: 'center-right'
   }, {
-    background: '#1f2024',
-    image: 'images/promo/ipad.jpg',
-    title: 'iPad'
+    background: '#12110c',
+    image: 'images/hero/03.jpg',
+    title: 'Play!',
+    subtitle: 'Toys like never before',
+    cta: 'Shop Toys',
+    href: 'category.html',
+    position: 'center-left'
   }]
 
   var categories = [{
@@ -1139,25 +1104,25 @@
   }]
 
   var advantages = [{
-    title: 'Mauris placerat',
-    description: 'Donec mollis nibh dolor, sit amet auctor',
-    icon: 'star'
+    title: 'Love cats',
+    description: 'The internet does, so why shouldn\'t we?',
+    icon: 'heart'
   }, {
-    title: 'Lorem ipsum',
-    description: 'Sit amet, consectetur adipiscing elit',
+    title: 'Unbeatable',
+    description: 'Our cats price our products, which makes everyone happy',
+    icon: 'happy'
+  }, {
+    title: 'Call us',
+    description: 'A friendly agent might be very surprised',
     icon: 'receiver'
   }, {
-    title: 'Proin pharetra',
-    description: 'Nec quam a fermentum ut viverra',
+    title: 'Mu stores',
+    description: 'Find one and we\'ll be impressed!',
     icon: 'location'
   }, {
-    title: 'Praesent ultrices',
-    description: 'Praesent ultrices, orci nec finibus',
+    title: 'Feedback',
+    description: 'No guarantees the cats will listen. Mew ¯\\_(ツ)_/¯',
     icon: 'comments'
-  }, {
-    title: 'Duis condimentum',
-    description: 'Pellentesque eget varius arcu',
-    icon: 'happy'
   }]
 
 
